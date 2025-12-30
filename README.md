@@ -47,7 +47,7 @@
 ## 🚀 Getting Started
 ```sh
 # 1. 프로젝트 clone
-https://github.com/DeveloperAcademy-POSTECH/2025-C6-A13-NBS.git
+git clone https://github.com/TapTapTeam/taptap-ios.git
 
 # 2. Tuist 설치 
 tuist install
