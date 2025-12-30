@@ -138,6 +138,6 @@ let project = Project.project(
   targets: [
     appTarget,
     safariTarget,
-    actionExtensionTarget
+    shareExtensionTarget
   ]
 )
