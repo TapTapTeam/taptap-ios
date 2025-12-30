@@ -19,7 +19,7 @@ let appTarget = Target.target(
       "CFBundleDevelopmentRegion": "ko",
       "CFBundleLocalizations": ["ko"],
       "CFBundleVersion": "1",
-      "CFBundleDisplayName": "탭탭",
+      "CFBundleDisplayName": "$(INFOPLIST_KEY_CFBundleDisplayName)",
       "CFBundleShortVersionString": "1.0.4",
 
       "NSAppTransportSecurity": [

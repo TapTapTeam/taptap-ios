@@ -111,7 +111,8 @@ extension Target {
             "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.app",
             "PROVISIONING_PROFILE_SPECIFIER": "match AppStore \(baseBundleId).dev.ADA.app",
             "CODE_SIGN_IDENTITY": "Apple Distribution: Yunhong Kim (WN2B884S76)",
-            "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon"
+            "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
+            "INFOPLIST_KEY_CFBundleDisplayName": "탭탭"
           ])
         ]
       )
