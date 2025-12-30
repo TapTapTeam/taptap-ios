@@ -58,4 +58,4 @@ tuist generate
 <br>
 
 ## 📚 Documentation
-👉 자세한 내용은 [Wiki](https://github.com/DeveloperAcademy-POSTECH/2025-C6-A13-NBS/wiki)를 확인하세요!
+👉 자세한 내용은 [Wiki](https://github.com/TapTapTeam/taptap-ios/wiki)를 확인하세요!
