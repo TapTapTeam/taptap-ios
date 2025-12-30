@@ -10,6 +10,7 @@ import ProjectDescription
 extension Target {
   public static func target (
     name: String,
+    destinations: Destinations? = nil,
     product: Product,
     bundleId: String? = nil,
     infoPlist: InfoPlist? = .default,
@@ -25,7 +26,7 @@ extension Target {
     
     return Target.target(
       name: name,
-      destinations: .init([.iPhone]),
+      destinations: destinations ?? .init([.iPhone]),
       product: product,
       bundleId: bundleId ?? Project.bundleID + "." + name.lowercased(),
       deploymentTargets: .iOS(Project.iosVersion),
@@ -50,26 +51,11 @@ extension SourceFilesList {
 
 extension Target {
   private static func signingSettings(for product: Product, name: String)
-    -> (base: [String: SettingValue], configs: [Configuration]) {
-    
+  -> (base: [String: SettingValue], configs: [Configuration]) {
+    let baseBundleId = "com.Nbs"
+    let bundleIdName = name == "SafariExtension" ? "safariExtension" : "shareExtension"
     switch product {
     case .framework:
-      return (
-        base: [
-          "CODE_SIGN_STYLE": "Automatic",
-          "DEVELOPMENT_TEAM": "WN2B884S76"
-        ],
-        configs: [
-          .debug(name: "Debug", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "com.Nbs.dev.ADA.\(name.lowercased())"
-          ]),
-          .release(name: "Release", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "com.Nbs.ADA.\(name.lowercased())"
-          ])
-        ]
-      )
-      
-    case .app:
       return (
         base: [
           "CODE_SIGN_STYLE": "Manual",
@@ -77,14 +63,55 @@ extension Target {
         ],
         configs: [
           .debug(name: "Debug", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "com.Nbs.dev.ADA.app",
-            "PROVISIONING_PROFILE_SPECIFIER": "match Development com.Nbs.dev.ADA.app",
+            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.app",
+            "PROVISIONING_PROFILE_SPECIFIER": "match Development \(baseBundleId).dev.ADA.app",
             "CODE_SIGN_IDENTITY": "$(CODE_SIGN_IDENTITY)"
           ]),
           .release(name: "Release", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "com.Nbs.dev.ADA.app",
-            "PROVISIONING_PROFILE_SPECIFIER": "match AppStore com.Nbs.dev.ADA.app",
-            "CODE_SIGN_IDENTITY": "Apple Distribution: Yunhong Kim (WN2B884S76)"
+            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.\(name)"
+          ])
+        ]
+      )
+    case .appExtension:
+      return (
+        base: [
+          "DEVELOPMENT_TEAM": "WN2B884S76",
+          "CODE_SIGN_STYLE": "Manual",
+          "TARGETED_DEVICE_FAMILY": "1,2"
+        ],
+        configs: [
+          .debug(name: "Debug", settings: [
+            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.app.\(bundleIdName)",
+            "CODE_SIGN_IDENTITY": "Apple Development: Yunhong Kim (Q7CMJ86WZQ)",
+            "PROVISIONING_PROFILE_SPECIFIER": "\(baseBundleId).dev.app.\(bundleIdName) Development"
+          ]),
+          .release(name: "Release", settings: [
+            "CODE_SIGN_IDENTITY": "Apple Distribution: Yunhong Kim (WN2B884S76)",
+            "PROVISIONING_PROFILE_SPECIFIER": "match AppStore \(baseBundleId).dev.ADA.app.\(bundleIdName == "shareExtension" ? "actionExtension" : "safariExtension")",
+            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.app.\(bundleIdName == "shareExtension" ? "actionExtension" : "safariExtension")"
+          ])
+        ]
+      )
+    case .app:
+      print("탭탭 개발자들 파이팅🔥")
+      return (
+        base: [
+          "CODE_SIGN_STYLE": "Manual",
+          "DEVELOPMENT_TEAM": "WN2B884S76"
+        ],
+        configs: [
+          .debug(name: "Debug", settings: [
+            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.app",
+            "PROVISIONING_PROFILE_SPECIFIER": "\(baseBundleId).dev.app Development",
+            "CODE_SIGN_IDENTITY": "$(CODE_SIGN_IDENTITY)",
+            "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIconDev",
+            "INFOPLIST_KEY_CFBundleDisplayName": "탭탭Dev",
+          ]),
+          .release(name: "Release", settings: [
+            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.app",
+            "PROVISIONING_PROFILE_SPECIFIER": "match AppStore \(baseBundleId).dev.ADA.app",
+            "CODE_SIGN_IDENTITY": "Apple Distribution: Yunhong Kim (WN2B884S76)",
+            "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon"
           ])
         ]
       )
@@ -97,10 +124,10 @@ extension Target {
         ],
         configs: [
           .debug(name: "Debug", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "com.Nbs.dev.ADA.\(name.lowercased())"
+            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.\(name.lowercased())"
           ]),
           .release(name: "Release", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "com.Nbs.ADA.\(name.lowercased())"
+            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).ADA.\(name.lowercased())"
           ])
         ]
       )
