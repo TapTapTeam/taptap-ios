@@ -8,7 +8,7 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let protject = Project.project(
+let project = Project.project(
   name: Module.Domain.rawValue,
   targets: [
     Target.target(
