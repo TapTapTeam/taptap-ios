@@ -83,7 +83,7 @@ extension Target {
           .debug(name: "Debug", settings: [
             "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.app.\(bundleIdName)",
             "CODE_SIGN_IDENTITY": "Apple Development: Yunhong Kim (Q7CMJ86WZQ)",
-            "PROVISIONING_PROFILE_SPECIFIER": "\(baseBundleId).dev.app.\(bundleIdName) Development"
+            "PROVISIONING_PROFILE_SPECIFIER": "match Development \(baseBundleId).dev.app.\(bundleIdName)"
           ]),
           .release(name: "Release", settings: [
             "CODE_SIGN_IDENTITY": "Apple Distribution: Yunhong Kim (WN2B884S76)",
@@ -102,8 +102,8 @@ extension Target {
         configs: [
           .debug(name: "Debug", settings: [
             "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.app",
-            "PROVISIONING_PROFILE_SPECIFIER": "\(baseBundleId).dev.app Development",
-            "CODE_SIGN_IDENTITY": "$(CODE_SIGN_IDENTITY)",
+            "PROVISIONING_PROFILE_SPECIFIER": "match Development \(baseBundleId).dev.app",
+            "CODE_SIGN_IDENTITY": "Apple Development: Yunhong Kim (Q7CMJ86WZQ)",
             "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIconDev",
             "INFOPLIST_KEY_CFBundleDisplayName": "탭탭Dev",
           ]),
