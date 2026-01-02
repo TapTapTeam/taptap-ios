@@ -13,6 +13,7 @@ extension Target {
     destinations: Destinations? = nil,
     product: Product,
     bundleId: String? = nil,
+    deploymentTargets: DeploymentTargets? = nil,
     infoPlist: InfoPlist? = .default,
     sources: SourceFilesList? = nil,
     resources: ResourceFileElements? = nil,
@@ -29,7 +30,7 @@ extension Target {
       destinations: destinations ?? .init([.iPhone]),
       product: product,
       bundleId: bundleId ?? Project.bundleID + "." + name.lowercased(),
-      deploymentTargets: .iOS(Project.iosVersion),
+      deploymentTargets: deploymentTargets ?? .iOS(Project.iosVersion),
       infoPlist: infoPlist,
       sources: sources,
       resources: resources,
@@ -94,28 +95,54 @@ extension Target {
       )
     case .app:
       print("탭탭 개발자들 파이팅🔥")
-      return (
-        base: [
-          "CODE_SIGN_STYLE": "Manual",
-          "DEVELOPMENT_TEAM": "WN2B884S76"
-        ],
-        configs: [
-          .debug(name: "Debug", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.app",
-            "PROVISIONING_PROFILE_SPECIFIER": "match Development \(baseBundleId).dev.app",
-            "CODE_SIGN_IDENTITY": "Apple Development: Yunhong Kim (Q7CMJ86WZQ)",
-            "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIconDev",
-            "INFOPLIST_KEY_CFBundleDisplayName": "탭탭Dev",
-          ]),
-          .release(name: "Release", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.app",
-            "PROVISIONING_PROFILE_SPECIFIER": "match AppStore \(baseBundleId).dev.ADA.app",
-            "CODE_SIGN_IDENTITY": "Apple Distribution: Yunhong Kim (WN2B884S76)",
-            "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
-            "INFOPLIST_KEY_CFBundleDisplayName": "탭탭"
-          ])
-        ]
-      )
+      if name == "TapTapMac" {
+          return (
+            base: [
+              "CODE_SIGN_STYLE": "Manual",
+              "DEVELOPMENT_TEAM": "WN2B884S76",
+              "TARGETED_DEVICE_FAMILY": "3"
+            ],
+            configs: [
+              .debug(name: "Debug", settings: [
+                "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.taptap.macOS",
+                "PROVISIONING_PROFILE_SPECIFIER": "match Development \(baseBundleId).dev.taptap.macOS macos",
+                "CODE_SIGN_IDENTITY": "Apple Development: Yunhong Kim (Q7CMJ86WZQ)",
+//                "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIconDev",
+                "INFOPLIST_KEY_CFBundleDisplayName": "탭탭MacDev",
+              ]),
+              .release(name: "Release", settings: [
+                "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.macOS",
+                "PROVISIONING_PROFILE_SPECIFIER": "match AppStore \(baseBundleId).dev.ADA.macOS macos",
+                "CODE_SIGN_IDENTITY": "Apple Distribution: Yunhong Kim (WN2B884S76)",
+                "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
+                "INFOPLIST_KEY_CFBundleDisplayName": "탭탭"
+              ])
+            ]
+          )
+      } else {
+        return (
+          base: [
+            "CODE_SIGN_STYLE": "Manual",
+            "DEVELOPMENT_TEAM": "WN2B884S76"
+          ],
+          configs: [
+            .debug(name: "Debug", settings: [
+              "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.app",
+              "PROVISIONING_PROFILE_SPECIFIER": "match Development \(baseBundleId).dev.app",
+              "CODE_SIGN_IDENTITY": "Apple Development: Yunhong Kim (Q7CMJ86WZQ)",
+              "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIconDev",
+              "INFOPLIST_KEY_CFBundleDisplayName": "탭탭Dev",
+            ]),
+            .release(name: "Release", settings: [
+              "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.app",
+              "PROVISIONING_PROFILE_SPECIFIER": "match AppStore \(baseBundleId).dev.ADA.app",
+              "CODE_SIGN_IDENTITY": "Apple Distribution: Yunhong Kim (WN2B884S76)",
+              "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
+              "INFOPLIST_KEY_CFBundleDisplayName": "탭탭"
+            ])
+          ]
+        )
+      }
       
     default:
       return (
