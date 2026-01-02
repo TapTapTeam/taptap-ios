@@ -1,14 +1,25 @@
-# Nbs/fastlane/Fastfile
-
-default_platform(:ios)
-
-platform :ios do
-  desc "Push a new beta build to TestFlight"
-  lane :beta do
-    build_app(
-      workspace: "NBS.xcworkspace",
-      scheme: "Nbs"
+lane :match_dev do
+    match(
+        type: "development",
+        app_identifier: [
+            "com.Nbs.dev.app",
+            "com.Nbs.dev.app.safariExtension",
+            "com.Nbs.dev.app.shareExtension",
+	    "com.Nbs.dev.taptap.macOS",
+   	    "com.Nbs.dev.taptap.macOS.safariExtension"
+        ]
     )
-    upload_to_testflight
-  end
+end
+
+lane :match_appstore do
+    match(
+        type: "appstore",
+        app_identifier: [
+            "com.Nbs.dev.ADA.app",
+            "com.Nbs.dev.ADA.app.safariExtension",
+            "com.Nbs.dev.ADA.app.actionExtension",
+	    "com.Nbs.dev.ADA.macOS",
+	    "com.Nbs.dev.ADA.macOS.safariExtension"
+        ]
+    )
 end
