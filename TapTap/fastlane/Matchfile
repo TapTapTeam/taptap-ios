@@ -1,4 +1,4 @@
 git_url("https://github.com/TapTapTeam/taptap-match.git")
 storage_mode("git")
 username("dbsghdz1.dev@gmail.com") # Your Apple Developer Portal username
-#readonly(true)
+readonly(true)

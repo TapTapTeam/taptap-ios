@@ -13,21 +13,44 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 # Available Actions
 
-### match_dev
+## iOS
+
+### ios dev
 
 ```sh
-[bundle exec] fastlane match_dev
+[bundle exec] fastlane ios dev
 ```
 
 
 
-### match_appstore
+### ios release
 
 ```sh
-[bundle exec] fastlane match_appstore
+[bundle exec] fastlane ios release
 ```
 
 
+
+----
+
+
+## macos
+
+### macos dev
+
+```sh
+[bundle exec] fastlane macos dev
+```
+
+탭탭 macOS Development 인증서/프로비저닝
+
+### macos release
+
+```sh
+[bundle exec] fastlane macos release
+```
+
+탭탭 macOS AppStore 인증서/프로비저닝
 
 ----
 

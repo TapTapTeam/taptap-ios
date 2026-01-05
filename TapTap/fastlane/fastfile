@@ -1,25 +1,47 @@
-lane :match_dev do
-    match(
-        type: "development",
-        app_identifier: [
-            "com.Nbs.dev.app",
-            "com.Nbs.dev.app.safariExtension",
-            "com.Nbs.dev.app.shareExtension",
-            "com.Nbs.dev.taptap.macOS",
-            "com.Nbs.dev.taptap.macOS.safariExtension"
-        ]
-    )
+default_platform(:ios)
+
+platform :ios do
+    lane :dev do
+        match(
+            type: "development",
+            app_identifier: [
+                "com.Nbs.dev.app",
+                "com.Nbs.dev.app.safariExtension",
+                "com.Nbs.dev.app.shareExtension",
+            ],
+            platform: "ios"
+        )
+    end
+
+    lane :release do
+        match(
+            type: "appstore",
+            app_identifier: [
+                "com.Nbs.dev.ADA.app",
+                "com.Nbs.dev.ADA.app.safariExtension",
+                "com.Nbs.dev.ADA.app.actionExtension",
+            ],
+            platform: "ios"
+        )
+    end
 end
 
-lane :match_appstore do
+platform :macos do
+  desc "탭탭 macOS Development 인증서/프로비저닝"
+  lane :dev do
     match(
-        type: "appstore",
-        app_identifier: [
-            "com.Nbs.dev.ADA.app",
-            "com.Nbs.dev.ADA.app.safariExtension",
-            "com.Nbs.dev.ADA.app.actionExtension",
-            "com.Nbs.dev.ADA.macOS",
-            "com.Nbs.dev.ADA.macOS.safariExtension"
-        ]
+      type: "development",
+      app_identifier: "com.Nbs.dev.taptap.macOS",
+      platform: "macos"
     )
+  end
+
+  desc "탭탭 macOS AppStore 인증서/프로비저닝"
+  lane :release do
+    match(
+      type: "appstore",
+      app_identifier: "com.Nbs.dev.ADA.macOS",
+      platform: "macos"
+    )
+  end
 end
