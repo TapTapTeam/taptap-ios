@@ -5,8 +5,8 @@ lane :match_dev do
             "com.Nbs.dev.app",
             "com.Nbs.dev.app.safariExtension",
             "com.Nbs.dev.app.shareExtension",
-	    "com.Nbs.dev.taptap.macOS",
-   	    "com.Nbs.dev.taptap.macOS.safariExtension"
+            "com.Nbs.dev.taptap.macOS",
+            "com.Nbs.dev.taptap.macOS.safariExtension"
         ]
     )
 end
@@ -18,8 +18,8 @@ lane :match_appstore do
             "com.Nbs.dev.ADA.app",
             "com.Nbs.dev.ADA.app.safariExtension",
             "com.Nbs.dev.ADA.app.actionExtension",
-	    "com.Nbs.dev.ADA.macOS",
-	    "com.Nbs.dev.ADA.macOS.safariExtension"
+            "com.Nbs.dev.ADA.macOS",
+            "com.Nbs.dev.ADA.macOS.safariExtension"
         ]
     )
 end
