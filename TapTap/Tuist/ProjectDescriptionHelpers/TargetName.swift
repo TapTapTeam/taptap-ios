@@ -8,20 +8,20 @@
 import ProjectDescription
 
 public enum TargetName: String {
-  case SafariExtension
-  case ShareExtension
+  case safariExtension
+  case shareExtension
   
   public var sourcesPath: String {
     switch self {
-    case .SafariExtension: return "SafariExtension/Sources/**"
-    case .ShareExtension: return "ShareExtension/Sources/**"
+    case .safariExtension: return "SafariExtension/Sources/**"
+    case .shareExtension: return "ShareExtension/Sources/**"
     }
   }
   
   public var resourcesPath: String {
     switch self {
-    case .SafariExtension: return "SafariExtension/Resources/**"
-    case .ShareExtension: return "ShareExtension/Resources/**"
+    case .safariExtension: return "SafariExtension/Resources/**"
+    case .shareExtension: return "ShareExtension/Resources/**"
     }
   }
 }
