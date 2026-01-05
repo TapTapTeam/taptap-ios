@@ -129,7 +129,7 @@ extension Target {
             .debug(name: "Debug", settings: [
               "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.app",
               "PROVISIONING_PROFILE_SPECIFIER": "match Development \(baseBundleId).dev.app",
-              "CODE_SIGN_IDENTITY": "Apple Development: Yunhong Kim (Q7CMJ86WZQ)",
+              "CODE_SIGN_IDENTITY": "Apple Development",
               "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIconDev",
               "INFOPLIST_KEY_CFBundleDisplayName": "탭탭Dev",
             ]),
