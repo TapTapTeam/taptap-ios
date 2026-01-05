@@ -9,7 +9,6 @@ enum Scheme: String {
 let appTarget = Target.target(
   name: Project.appName,
   product: .app,
-  bundleId: "com.Nbs.dev.app",
   infoPlist: .extendingDefault(
     with: [
       "UILaunchScreen": [
@@ -18,9 +17,9 @@ let appTarget = Target.target(
       ],
       "CFBundleDevelopmentRegion": "ko",
       "CFBundleLocalizations": ["ko"],
-      "CFBundleVersion": "1",
+      "CFBundleVersion": "$(CFBundleVersion)",
       "CFBundleDisplayName": "$(INFOPLIST_KEY_CFBundleDisplayName)",
-      "CFBundleShortVersionString": "1.0.4",
+      "CFBundleShortVersionString": "$(CFBundleShortVersionString)",
 
       "NSAppTransportSecurity": [
         "NSAllowsArbitraryLoads": true
@@ -49,12 +48,11 @@ let appTarget = Target.target(
 )
 
 let safariTarget = Target.target(
-  name: TargetName.SafariExtension.rawValue,
+  name: TargetName.safariExtension.rawValue,
   product: .appExtension,
-  bundleId: Project.bundleID + ".app.safariExtension",
   infoPlist: .file(path: "SafariExtension/info.plist"),
-  sources: [SourceFileGlob(stringLiteral: TargetName.SafariExtension.sourcesPath)],
-  resources: [ResourceFileElement(stringLiteral: TargetName.SafariExtension.resourcesPath)],
+  sources: [SourceFileGlob(stringLiteral: TargetName.safariExtension.sourcesPath)],
+  resources: [ResourceFileElement(stringLiteral: TargetName.safariExtension.resourcesPath)],
   entitlements: .file(path: "SafariExtension.entitlements"),
   dependencies: [
     .domain()
@@ -62,12 +60,11 @@ let safariTarget = Target.target(
 )
 
 let shareExtensionTarget = Target.target(
-  name: TargetName.ShareExtension.rawValue,
+  name: TargetName.shareExtension.rawValue,
   product: .appExtension,
-  bundleId: Project.bundleID + ".app.shareExtension",
   infoPlist: .file(path: "ShareExtension/info.plist"),
-  sources: [SourceFileGlob(stringLiteral: TargetName.ShareExtension.sourcesPath)],
-  resources: [ResourceFileElement(stringLiteral: TargetName.ShareExtension.resourcesPath)],
+  sources: [SourceFileGlob(stringLiteral: TargetName.shareExtension.sourcesPath)],
+  resources: [ResourceFileElement(stringLiteral: TargetName.shareExtension.resourcesPath)],
   entitlements: .file(path: "ShareExtension.entitlements"),
   dependencies: [
     .sdk(name: "UniformTypeIdentifiers", type: .framework),
