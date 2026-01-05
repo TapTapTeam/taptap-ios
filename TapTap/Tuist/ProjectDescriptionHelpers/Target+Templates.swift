@@ -20,16 +20,33 @@ extension Target {
     entitlements: Entitlements? = nil,
     scripts: [TargetScript] = [],
     dependencies: [TargetDependency] = [],
-    settings: Settings? = nil
+    settings: Settings? = nil,
+    xcconfig: Path? = .relativeToRoot("Tuist/Config/Project.xcconfig")
   ) -> Target {
     
     let signing = Target.signingSettings(for: product, name: name)
+    
+    let finalConfigs: [Configuration]
+    if let xcconfig {
+      finalConfigs = signing.configs.map {
+        switch $0.variant {
+        case .debug:
+          return .debug(name: $0.name, settings: $0.settings, xcconfig: xcconfig)
+        case .release:
+          return .release(name: $0.name, settings: $0.settings, xcconfig: xcconfig)
+        @unknown default:
+          return .debug(name: $0.name, settings: $0.settings, xcconfig: xcconfig)
+        }
+      }
+    } else {
+      finalConfigs = signing.configs
+    }
     
     return Target.target(
       name: name,
       destinations: destinations ?? .init([.iPhone]),
       product: product,
-      bundleId: bundleId ?? Project.bundleID + "." + name.lowercased(),
+      bundleId: bundleId ?? Project.bundleIDBase + "." + name,
       deploymentTargets: deploymentTargets ?? .iOS(Project.iosVersion),
       infoPlist: infoPlist,
       sources: sources,
@@ -39,7 +56,7 @@ extension Target {
       dependencies: dependencies,
       settings: .settings(
         base: signing.base,
-        configurations: signing.configs
+        configurations: finalConfigs
       )
     )
   }
@@ -53,112 +70,56 @@ extension SourceFilesList {
 extension Target {
   private static func signingSettings(for product: Product, name: String)
   -> (base: [String: SettingValue], configs: [Configuration]) {
-    let baseBundleId = "com.Nbs"
-    let bundleIdName = name == "SafariExtension" ? "safariExtension" : "shareExtension"
+    
+    let baseSettings: [String: SettingValue] = [
+      "CODE_SIGN_STYLE": "Manual",
+      "DEVELOPMENT_TEAM": "$(DEVELOPMENT_TEAM)"
+    ]
+    
+    var debugSettings: [String: SettingValue] = [
+      "CODE_SIGN_IDENTITY": "$(CODE_SIGN_IDENTITY)",
+    ]
+    var releaseSettings: [String: SettingValue] = [
+      "CODE_SIGN_IDENTITY": "$(CODE_SIGN_IDENTITY)",
+      "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
+      "INFOPLIST_KEY_CFBundleDisplayName": "\(name)",
+    ]
+    
     switch product {
-    case .framework:
-      return (
-        base: [
-          "CODE_SIGN_STYLE": "Manual",
-          "DEVELOPMENT_TEAM": "WN2B884S76"
-        ],
-        configs: [
-          .debug(name: "Debug", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.app",
-            "PROVISIONING_PROFILE_SPECIFIER": "match Development \(baseBundleId).dev.ADA.app",
-            "CODE_SIGN_IDENTITY": "$(CODE_SIGN_IDENTITY)"
-          ]),
-          .release(name: "Release", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.\(name)"
-          ])
-        ]
-      )
-    case .appExtension:
-      return (
-        base: [
-          "DEVELOPMENT_TEAM": "WN2B884S76",
-          "CODE_SIGN_STYLE": "Manual",
-          "TARGETED_DEVICE_FAMILY": "1,2"
-        ],
-        configs: [
-          .debug(name: "Debug", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.app.\(bundleIdName)",
-            "CODE_SIGN_IDENTITY": "Apple Development: Yunhong Kim (Q7CMJ86WZQ)",
-            "PROVISIONING_PROFILE_SPECIFIER": "match Development \(baseBundleId).dev.app.\(bundleIdName)"
-          ]),
-          .release(name: "Release", settings: [
-            "CODE_SIGN_IDENTITY": "Apple Distribution: Yunhong Kim (WN2B884S76)",
-            "PROVISIONING_PROFILE_SPECIFIER": "match AppStore \(baseBundleId).dev.ADA.app.\(bundleIdName == "shareExtension" ? "actionExtension" : "safariExtension")",
-            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.app.\(bundleIdName == "shareExtension" ? "actionExtension" : "safariExtension")"
-          ])
-        ]
-      )
     case .app:
-      print("탭탭 개발자들 파이팅🔥")
+      debugSettings["ASSETCATALOG_COMPILER_APPICON_NAME"] = "AppIconDev"
+      releaseSettings["INFOPLIST_KEY_CFBundleDisplayName"] = "\(name)Dev"
       if name == "TapTapMac" {
-          return (
-            base: [
-              "CODE_SIGN_STYLE": "Manual",
-              "DEVELOPMENT_TEAM": "WN2B884S76",
-              "TARGETED_DEVICE_FAMILY": "3"
-            ],
-            configs: [
-              .debug(name: "Debug", settings: [
-                "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.taptap.macOS",
-                "PROVISIONING_PROFILE_SPECIFIER": "match Development \(baseBundleId).dev.taptap.macOS macos",
-                "CODE_SIGN_IDENTITY": "Apple Development: Yunhong Kim (Q7CMJ86WZQ)",
-//                "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIconDev",
-                "INFOPLIST_KEY_CFBundleDisplayName": "탭탭MacDev",
-              ]),
-              .release(name: "Release", settings: [
-                "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.macOS",
-                "PROVISIONING_PROFILE_SPECIFIER": "match AppStore \(baseBundleId).dev.ADA.macOS macos",
-                "CODE_SIGN_IDENTITY": "Apple Distribution: Yunhong Kim (WN2B884S76)",
-                "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
-                "INFOPLIST_KEY_CFBundleDisplayName": "탭탭"
-              ])
-            ]
-          )
+        debugSettings["ASSETCATALOG_COMPILER_APPICON_NAME"] = "AppIconDev"
+        releaseSettings["INFOPLIST_KEY_CFBundleDisplayName"] = "\(name)Dev"
+        debugSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.macOSbundleID)"
+        releaseSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.macOSbundleIDAppStore)"
+        debugSettings["PROVISIONING_PROFILE_SPECIFIER"] = "$(PROV_PROFILE_MAC_DEV)"
+        releaseSettings["PROVISIONING_PROFILE_SPECIFIER"] = "$(PROV_PROFILE_MAC_RELEASE)"
       } else {
-        return (
-          base: [
-            "CODE_SIGN_STYLE": "Manual",
-            "DEVELOPMENT_TEAM": "WN2B884S76"
-          ],
-          configs: [
-            .debug(name: "Debug", settings: [
-              "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.app",
-              "PROVISIONING_PROFILE_SPECIFIER": "match Development \(baseBundleId).dev.app",
-              "CODE_SIGN_IDENTITY": "Apple Development",
-              "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIconDev",
-              "INFOPLIST_KEY_CFBundleDisplayName": "탭탭Dev",
-            ]),
-            .release(name: "Release", settings: [
-              "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.ADA.app",
-              "PROVISIONING_PROFILE_SPECIFIER": "match AppStore \(baseBundleId).dev.ADA.app",
-              "CODE_SIGN_IDENTITY": "Apple Distribution: Yunhong Kim (WN2B884S76)",
-              "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
-              "INFOPLIST_KEY_CFBundleDisplayName": "탭탭"
-            ])
-          ]
-        )
+        debugSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.bundleIDBase)"
+        releaseSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.bundIDAppStore)"
+        debugSettings["PROVISIONING_PROFILE_SPECIFIER"] = "$(PROV_PROFILE_APP_DEV)"
+        releaseSettings["PROVISIONING_PROFILE_SPECIFIER"] = "$(PROV_PROFILE_APP_RELEASE)"
       }
       
+    case .appExtension:
+      debugSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.bundleIDBase).\(name)"
+      releaseSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.bundIDAppStore).\(name == "shareExtension" ? "actionExtension" : "safariExtension")"
+      debugSettings["PROVISIONING_PROFILE_SPECIFIER"] = "$(PROV_PROFILE_\(name.uppercased())_DEV)"
+      releaseSettings["PROVISIONING_PROFILE_SPECIFIER"] = "$(PROV_PROFILE_\(name.uppercased())_RELEASE)"
+      
     default:
-      return (
-        base: [
-          "CODE_SIGN_STYLE": "Automatic",
-          "DEVELOPMENT_TEAM": "WN2B884S76"
-        ],
-        configs: [
-          .debug(name: "Debug", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).dev.\(name.lowercased())"
-          ]),
-          .release(name: "Release", settings: [
-            "PRODUCT_BUNDLE_IDENTIFIER": "\(baseBundleId).ADA.\(name.lowercased())"
-          ])
-        ]
-      )
+      break
     }
+    
+    return (
+      base: baseSettings,
+      configs: [
+        .debug(name: "Debug", settings: debugSettings),
+        .release(name: "Release", settings: releaseSettings)
+      ]
+    )
   }
 }
+
