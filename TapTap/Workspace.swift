@@ -9,7 +9,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let workspace = Workspace(
-  name: "NBS",
+  name: "TapTap",
   projects:
     Module.allCases.map { module in
         "Projects/\(module.rawValue)"

@@ -21,13 +21,13 @@ extension TargetDependency {
 
 extension TargetDependency {
   public static func safariEx() -> TargetDependency {
-    .target(name: TargetName.SafariExtension.rawValue)
+    .target(name: TargetName.safariExtension.rawValue)
   }
 }
 
 extension TargetDependency {
   public static func actionEx() -> TargetDependency {
-    .target(name: TargetName.ActionExtension.rawValue)
+    .target(name: TargetName.shareExtension.rawValue)
   }
 }
 
