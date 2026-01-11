@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+
 import ComposableArchitecture
-import Domain
+
 import DesignSystem
+import Domain
 
 struct ArticleRowView: View {
   let article: ArticleItem

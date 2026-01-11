@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+
 import DesignSystem
 
 /// 링크 상세 하단 세그먼트 (요약 / 추가 메모)

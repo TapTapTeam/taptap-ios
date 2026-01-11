@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+
 import ComposableArchitecture
-import Domain
+
 import DesignSystem
+import Domain
 
 /// 링크 리스트의 상단 칩 리스트
 struct CategoryChipList {

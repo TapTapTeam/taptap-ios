@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 import Domain
 
 /// SwiftData 없이 View에서 미리보기용으로 사용하는 Mock 데이터 모델

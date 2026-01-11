@@ -6,8 +6,9 @@
 //
 
 import ComposableArchitecture
-import Domain
 import LinkNavigator
+
+import Domain
 
 public struct LinkDetailRouteBuilder {
   

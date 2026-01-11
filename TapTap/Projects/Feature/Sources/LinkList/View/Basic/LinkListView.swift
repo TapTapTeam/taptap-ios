@@ -8,8 +8,9 @@
 import SwiftUI
 
 import ComposableArchitecture
-import Domain
+
 import DesignSystem
+import Domain
 
 /// 링크 리스트 뷰
 struct LinkListView {

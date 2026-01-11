@@ -9,8 +9,9 @@ import SwiftUI
 
 import ComposableArchitecture
 import LinkNavigator
-import Domain
+
 import DesignSystem
+import Domain
 
 @Reducer
 struct MoveLinkFeature {

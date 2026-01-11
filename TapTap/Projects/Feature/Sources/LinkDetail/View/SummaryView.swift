@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
-import Domain
-import DesignSystem
 
 import ComposableArchitecture
+
+import DesignSystem
+import Domain
 
 struct SummaryView: View {
   let link: ArticleItem

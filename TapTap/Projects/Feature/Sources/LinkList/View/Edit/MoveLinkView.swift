@@ -8,8 +8,9 @@
 import SwiftUI
 
 import ComposableArchitecture
-import Domain
+
 import DesignSystem
+import Domain
 
 struct MoveLinkView: View {
   @Bindable var store: StoreOf<MoveLinkFeature>
