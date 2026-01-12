@@ -8,8 +8,9 @@
 import SwiftUI
 
 import ComposableArchitecture
-import DesignSystem
 import Lottie
+
+import DesignSystem
 
 struct HighlightRectPreferenceKey: PreferenceKey {
   static var defaultValue: CGRect = .zero

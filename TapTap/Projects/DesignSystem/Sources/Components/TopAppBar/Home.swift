@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-
 /// `TopAppBarHome`
 ///
 /// 홈 화면 상단에 표시되는 커스텀 네비게이션 바 컴포넌트입니다.

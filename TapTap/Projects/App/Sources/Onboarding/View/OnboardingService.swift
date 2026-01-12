@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-import DesignSystem
-import LinkNavigator
 import ComposableArchitecture
+import LinkNavigator
+
+import DesignSystem
 
 struct OnboardingServiceView {
   let store: StoreOf<OnboardingServiceFeature>

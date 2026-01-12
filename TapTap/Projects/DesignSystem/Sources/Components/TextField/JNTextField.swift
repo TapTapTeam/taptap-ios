@@ -5,8 +5,8 @@
 //  Created by 홍 on 10/16/25.
 //
 
-import SwiftUI
 import Combine
+import SwiftUI
 
 fileprivate struct Shake: GeometryEffect {
   var amount: CGFloat = 10

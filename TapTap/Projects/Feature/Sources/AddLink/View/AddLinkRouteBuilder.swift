@@ -7,8 +7,9 @@
 
 import SwiftUI
 
-import LinkNavigator
 import ComposableArchitecture
+import LinkNavigator
+
 import Domain
 
 public struct AddLinkRouteBuilder {
