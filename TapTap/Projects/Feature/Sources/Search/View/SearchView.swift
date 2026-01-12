@@ -10,8 +10,8 @@ import SwiftUI
 
 import ComposableArchitecture
 
-import Domain
 import DesignSystem
+import Domain
 
 // MARK: - Properties
 struct SearchView: View {
