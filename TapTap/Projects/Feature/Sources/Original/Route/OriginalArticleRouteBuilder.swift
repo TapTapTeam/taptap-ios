@@ -5,10 +5,12 @@
 //  Created by 여성일 on 10/31/25.
 //
 
-import ComposableArchitecture
-import Domain
-import LinkNavigator
 import SwiftUI
+
+import ComposableArchitecture
+import LinkNavigator
+
+import Domain
 
 public struct OriginalArticleRouteBuilder {
   public init() { }

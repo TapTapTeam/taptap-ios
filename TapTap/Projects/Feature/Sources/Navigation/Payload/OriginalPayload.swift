@@ -5,9 +5,9 @@
 //  Created by 여성일 on 11/6/25.
 //
 
-import Domain
 import Foundation
 
+import Domain
 //struct OriginalPayload: Codable {
 //  let url: String
 //  let highlights: [HighlightItem]
