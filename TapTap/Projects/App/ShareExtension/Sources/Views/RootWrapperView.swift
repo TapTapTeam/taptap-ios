@@ -5,12 +5,11 @@
 //  Created by 여성일 on 10/19/25.
 //
 
+import SwiftData
 import SwiftUI
 
-import SwiftData
-
-import Domain
 import DesignSystem
+import Domain
 
 struct RootWrapperView: View {
   let container: ModelContainer

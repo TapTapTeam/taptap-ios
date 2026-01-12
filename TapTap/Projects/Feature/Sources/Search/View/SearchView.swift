@@ -5,13 +5,13 @@
 //  Created by 여성일 on 10/19/25.
 //
 
+import SwiftData
 import SwiftUI
 
 import ComposableArchitecture
-import Domain
-import DesignSystem
 
-import SwiftData
+import DesignSystem
+import Domain
 
 // MARK: - Properties
 struct SearchView: View {

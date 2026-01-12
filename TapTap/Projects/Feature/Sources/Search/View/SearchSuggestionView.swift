@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
-import DesignSystem
+
 import ComposableArchitecture
+
+import DesignSystem
 
 // MARK: - Properties
 struct SearchSuggestionView: View {

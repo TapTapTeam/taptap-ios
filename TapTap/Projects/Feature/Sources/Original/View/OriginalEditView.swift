@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
-import ComposableArchitecture
-import DesignSystem
 
+import ComposableArchitecture
+
+import DesignSystem
 
 // MARK: - Properties
 struct OriginalEditView: View {
