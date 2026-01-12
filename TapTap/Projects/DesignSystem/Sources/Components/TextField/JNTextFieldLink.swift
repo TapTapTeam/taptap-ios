@@ -5,8 +5,8 @@
 //  Created by 홍 on 10/30/25.
 //
 
-import SwiftUI
 import Combine
+import SwiftUI
 
 public struct JNTextFieldLink: View {
   @Binding var text: String

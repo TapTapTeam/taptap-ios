@@ -8,9 +8,10 @@
 import SwiftUI
 
 import ComposableArchitecture
-import Domain
-import DesignSystem
 import LinkNavigator
+
+import DesignSystem
+import Domain
 
 struct HomeView {
   let navigator: SingleLinkNavigator

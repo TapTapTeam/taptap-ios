@@ -8,8 +8,9 @@
 import SwiftUI
 
 import ComposableArchitecture
-import Domain
 import LinkNavigator
+
+import Domain
 
 @Reducer
 struct HomeFeature {

@@ -7,10 +7,10 @@
 
 import SwiftData
 
-import LinkNavigator
 import ComposableArchitecture
+import LinkNavigator
+
 import Domain
-import Foundation
 
 public struct EditCategoryIconNameRouteBuilder {
 

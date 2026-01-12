@@ -8,8 +8,9 @@
 import SwiftUI
 
 import ComposableArchitecture
-import Domain
+
 import DesignSystem
+import Domain
 
 extension Notification.Name {
   static let categoryEdited = Notification.Name("categoryEdited")

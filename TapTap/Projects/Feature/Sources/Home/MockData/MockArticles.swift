@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 import DesignSystem
 
 struct MockArticle: ArticleDisplayable, Identifiable, Equatable {
