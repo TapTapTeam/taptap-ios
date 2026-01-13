@@ -154,10 +154,6 @@ extension LinkDetailView: View {
       // 정보 섹션
       VStack(alignment: .leading, spacing: 12) {
         ArticleInfoItem(icon: Icon.calendar, text: store.link.createAt.formattedKoreanDate())
-        ArticleInfoItem(
-          icon: Icon.book,
-          text: (store.link.newsCompany?.isEmpty == false) ? store.link.newsCompany! : "언론사 없음"
-        )
         ArticleInfoItem(icon: Icon.tag, text: store.link.category?.categoryName ?? "전체")
       }
     }

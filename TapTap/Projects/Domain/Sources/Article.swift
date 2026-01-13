@@ -15,7 +15,7 @@ public struct Article {
   public let imageURL: String?
   public let title: String
   public let createAt: Date
-  public let newsCompany: String
+//  public let newsCompany: String
   
   public init(
     id: UUID,
@@ -23,14 +23,14 @@ public struct Article {
     imageURL: String?,
     title: String,
     createAt: Date,
-    newsCompany: String
+//    newsCompany: String
   ) {
     self.id = id
     self.url = url
     self.imageURL = imageURL
     self.title = title
     self.createAt = createAt
-    self.newsCompany = newsCompany
+//    self.newsCompany = newsCompany
   }
 }
 

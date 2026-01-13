@@ -17,7 +17,6 @@ public struct ArticleCard: View {
   private let categoryName: String?
   private let imageURL: String?
   private let dateString: String
-  private let newsCompany: String?
   @Binding private var isSelected: Bool
   private let editMode: EditMode
   
@@ -27,7 +26,6 @@ public struct ArticleCard: View {
     categoryName: String?,
     imageURL: String?,
     dateString: String,
-    newsCompany: String?,
     isSelected: Binding<Bool> = .constant(false),
     editMode: EditMode = .inactive
   ) {
@@ -35,7 +33,6 @@ public struct ArticleCard: View {
     self.categoryName = categoryName
     self.imageURL = imageURL
     self.dateString = dateString
-    self.newsCompany = newsCompany
     self._isSelected = isSelected
     self.editMode = editMode
   }
@@ -71,18 +68,10 @@ extension ArticleCard {
         .padding(.leading, 2)
         .padding(.top, 10)
       
-      HStack(spacing: 0) {
-        Text("\(dateString)")
-          .font(.B2_M)
-          .foregroundStyle(.caption2)
-        
-        if let company = newsCompany, !company.isEmpty {
-          Text("  ·  \(company)")
-            .font(.B2_M)
-            .foregroundStyle(.caption2)
-        }
-      }
-      .padding(.leading, 2)
+      Text("\(dateString)")
+        .font(.B2_M)
+        .foregroundStyle(.caption2)
+        .padding(.leading, 2)
       
       Spacer()
       
@@ -174,15 +163,13 @@ private extension ArticleCard {
         title: "트럼프 “11월 1일부터 중·대형 트럭에 25% 관세 부과”",
         categoryName: "정치",
         imageURL: "https://images.unsplash.com/photo-1542744094-24638eff58bb",
-        dateString: "2025년 10월 7일",
-        newsCompany: "한국일보"
+        dateString: "2025년 10월 7일"
       )
       ArticleCard(
         title: "AI가 뉴스 생태계를 바꾸다",
         categoryName: "기술",
         imageURL: "https://images.unsplash.com/photo-1542744094-24638eff58bb",
         dateString: "2025년 10월 19일",
-        newsCompany: "조선일보",
         isSelected: .constant(true),
         editMode: .active
       )
@@ -191,7 +178,6 @@ private extension ArticleCard {
         categoryName: "기술",
         imageURL: "https://images.unsplash.com/photo-1542744094-24638eff58bb",
         dateString: "2025년 10월 19일",
-        newsCompany: "조선일보",
         isSelected: .constant(false),
         editMode: .active
       )

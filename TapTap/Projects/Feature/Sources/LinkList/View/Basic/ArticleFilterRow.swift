@@ -22,8 +22,7 @@ struct ArticleRowView: View {
       title: article.title,
       categoryName: article.category?.categoryName ?? "전체",
       imageURL: article.imageURL ?? "notImage",
-      dateString: article.createAt.formattedKoreanDate(), 
-      newsCompany: article.newsCompany ?? ""
+      dateString: article.createAt.formattedKoreanDate()
     )
     .contentShape(Rectangle())
     .background(Color.clear)

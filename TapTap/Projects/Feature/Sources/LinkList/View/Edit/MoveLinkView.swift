@@ -124,7 +124,6 @@ extension MoveLinkView {
           categoryName: link.category?.categoryName ?? "전체",
           imageURL: link.imageURL ?? "notImage",
           dateString: link.createAt.formattedKoreanDate(),
-          newsCompany: link.newsCompany ?? "",
           isSelected: binding,
           editMode: .active
         )
