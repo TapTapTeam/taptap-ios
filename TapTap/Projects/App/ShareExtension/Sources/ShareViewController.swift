@@ -246,9 +246,9 @@ private extension ShareViewController {
     if let existingLink = try? context.fetch(fetchDescriptor).first {
       linkItem = existingLink
       linkItem.imageURL = self.pageImageURL
-      linkItem.newsCompany = self.pageMediaCompany
+//      linkItem.newsCompany = self.pageMediaCompany
     } else {
-      linkItem = ArticleItem(urlString: self.pageURL, title: self.pageTitle, imageURL: self.pageImageURL, newsCompany: self.pageMediaCompany)
+      linkItem = ArticleItem(urlString: self.pageURL, title: self.pageTitle, imageURL: self.pageImageURL)
       context.insert(linkItem)
     }
     

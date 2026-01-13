@@ -13,6 +13,6 @@ public protocol ArticleDisplayable {
   var imageURL: String? { get }
   var title: String { get }
   var createAt: Date { get }
-  var newsCompany: String { get }
+//  var newsCompany: String { get }
   var dateToString: String { get }
 }

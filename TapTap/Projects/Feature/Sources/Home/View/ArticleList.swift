@@ -48,8 +48,7 @@ extension ArticleListView: View {
                 title: article.title,
                 categoryName: article.category?.categoryName ?? "전체",
                 imageURL: article.imageURL ?? "notImage",
-                dateString: article.createAt.formattedKoreanDate(),
-                newsCompany: article.newsCompany ?? ""
+                dateString: article.createAt.formattedKoreanDate()
               )
               .shadow(color: .bgShadow1, radius: 3, x: 0, y: 2)
               .shadow(color: .bgShadow2, radius: 2, x: 0, y: 2)

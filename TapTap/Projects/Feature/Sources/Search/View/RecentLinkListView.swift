@@ -37,8 +37,7 @@ extension RecentLinkListView {
                 title: item.title,
                 categoryName: item.category?.categoryName ?? "전체",
                 imageURL: item.imageURL ?? "notImage",
-                dateString: item.createAt.formattedKoreanDate(),
-                newsCompany: item.newsCompany ?? ""
+                dateString: item.createAt.formattedKoreanDate()
               )
             }
             .buttonStyle(.plain)

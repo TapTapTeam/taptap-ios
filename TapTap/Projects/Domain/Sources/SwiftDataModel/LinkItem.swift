@@ -18,7 +18,7 @@ public final class ArticleItem: Codable, Sendable {
   public var category: CategoryItem?
   public var userMemo: String = "" // 추가 메모
   public var imageURL: String? // 이미지 URL
-  public var newsCompany: String? // 신문사
+//  public var newsCompany: String? // 신문사
   @Relationship(deleteRule: .cascade) public var highlights: [HighlightItem] = [] // 해당 링크에 연결 된 하이라이트
   
   public init(
@@ -26,7 +26,7 @@ public final class ArticleItem: Codable, Sendable {
     title: String,
     lastViewedDate: Date = Date(),
     imageURL: String? = nil,
-    newsCompany: String? = nil
+//    newsCompany: String? = nil
   ) {
     self.id = UUID().uuidString
     self.urlString = urlString
@@ -34,7 +34,7 @@ public final class ArticleItem: Codable, Sendable {
     self.createAt = Date()
     self.lastViewedDate = lastViewedDate
     self.imageURL = imageURL
-    self.newsCompany = newsCompany
+//    self.newsCompany = newsCompany
   }
   
   enum CodingKeys: CodingKey {
@@ -50,7 +50,7 @@ public final class ArticleItem: Codable, Sendable {
     self.lastViewedDate = try container.decode(Date.self, forKey: .lastViewedDate)
     self.userMemo = try container.decode(String.self, forKey: .userMemo)
     self.imageURL = try container.decodeIfPresent(String.self, forKey: .imageURL)
-    self.newsCompany = try container.decodeIfPresent(String.self, forKey: .newsCompany)
+//    self.newsCompany = try container.decodeIfPresent(String.self, forKey: .newsCompany)
     self.category = try container.decodeIfPresent(CategoryItem.self, forKey: .category)
     self.highlights = try container.decode([HighlightItem].self, forKey: .highlights)
   }
@@ -64,7 +64,7 @@ public final class ArticleItem: Codable, Sendable {
     try container.encode(lastViewedDate, forKey: .lastViewedDate)
     try container.encode(userMemo, forKey: .userMemo)
     try container.encodeIfPresent(imageURL, forKey: .imageURL)
-    try container.encodeIfPresent(newsCompany, forKey: .newsCompany)
+//    try container.encodeIfPresent(newsCompany, forKey: .newsCompany)
     try container.encodeIfPresent(category, forKey: .category)
     try container.encode(highlights, forKey: .highlights)
   }
