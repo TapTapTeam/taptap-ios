@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct OnboardingPageControl {
+public struct OnboardingHeaderPageControl {
   var numberOfPages: Int
   var currentPage: Int
   
@@ -17,7 +17,7 @@ public struct OnboardingPageControl {
   }
 }
 
-extension OnboardingPageControl: View {
+extension OnboardingHeaderPageControl: View {
   public var body: some View {
     HStack(spacing: 5) {
       ForEach(0..<numberOfPages, id: \.self) { pagingIndex in
@@ -35,5 +35,5 @@ extension OnboardingPageControl: View {
 }
 
 #Preview {
-  OnboardingPageControl(numberOfPages: 3, currentPage: 1)
+  OnboardingHeaderPageControl(numberOfPages: 3, currentPage: 1)
 }
