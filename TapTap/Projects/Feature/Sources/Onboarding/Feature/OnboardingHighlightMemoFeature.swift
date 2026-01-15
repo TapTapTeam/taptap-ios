@@ -1,0 +1,52 @@
+//
+//  OnboardingHighlightMemoFeature.swift
+//  Feature
+//
+//  Created by 여성일 on 1/13/26.
+//
+
+import ComposableArchitecture
+
+@Reducer
+public struct OnboardingHighlightMemoFeature {
+  @ObservableState
+  public struct State: Equatable {
+    public init() {}
+  }
+  
+  public enum Action: Equatable {
+    case backButtonTapped
+    case nextButtonTapped
+    case skipButtonTapped
+    
+    case moveToOnboardingHighlightGuide
+    case moveToOnboardingShare
+  }
+  
+  @Dependency(\.dismiss) var dismiss
+  
+  public var body: some ReducerOf<Self> {
+    Reduce { state, action in
+      switch action {
+      case .backButtonTapped:
+        return .run { _ in
+          await dismiss()
+        }
+        
+      case .nextButtonTapped:
+        return .send(.moveToOnboardingHighlightGuide)
+        
+      case .skipButtonTapped:
+        return .send(.moveToOnboardingShare)
+        
+      case .moveToOnboardingHighlightGuide:
+        return .none
+        
+      case .moveToOnboardingShare:
+        return .none
+      }
+    }
+  }
+  
+  public init() {}
+}
