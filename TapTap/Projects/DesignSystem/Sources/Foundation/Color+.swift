@@ -112,6 +112,7 @@ public extension ShapeStyle where Self == Color {
   static var bl9:  Color { DesignSystemAsset.bl9.swiftUIColor }
   static var bl10: Color { DesignSystemAsset.bl10.swiftUIColor }
   static var badgeColor: Color { DesignSystemAsset.badgeColor.swiftUIColor}
+  static var onboardingIconColor: Color { DesignSystemAsset.onboardingIconColor.swiftUIColor}
   
   static var c1:  Color { DesignSystemAsset.c1.swiftUIColor }
   static var c2:  Color { DesignSystemAsset.c2.swiftUIColor }
@@ -141,6 +142,7 @@ public extension ShapeStyle where Self == Color {
   static var highlightDetail: Color { DesignSystemAsset.highlightDetail.swiftUIColor }
   static var highlightWhat: Color { DesignSystemAsset.highlightWhat.swiftUIColor }
   static var highlightWhy: Color { DesignSystemAsset.highlightWhy.swiftUIColor }
+  static var highlightDrag: Color { DesignSystemAsset.highlightDrag.swiftUIColor }
   static var stateDefaultLine: Color { DesignSystemAsset.stateDefaultLine.swiftUIColor }
   static var statePressedDim: Color { DesignSystemAsset.statePressedDim.swiftUIColor }
   static var stateTooltipbackground: Color { DesignSystemAsset.stateTooltipbackground.swiftUIColor }

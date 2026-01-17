@@ -9,9 +9,11 @@ import SwiftUI
 
 public struct OnboardingToolTipBox {
   let text: String
+  let multilineTextAlignment: TextAlignment
   
-  public init(text: String) {
+  public init(text: String, multilineTextAlignment: TextAlignment = .leading) {
     self.text = text
+    self.multilineTextAlignment = multilineTextAlignment
   }
 }
 
@@ -27,6 +29,8 @@ extension OnboardingToolTipBox: View {
       Text(text)
         .font(.H4_M)
         .foregroundStyle(.textw)
+        .multilineTextAlignment(multilineTextAlignment)
+        .fixedSize(horizontal: false, vertical: true)
         .padding(.horizontal, 14)
         .padding(.vertical, 6)
         .background(
@@ -39,9 +43,11 @@ extension OnboardingToolTipBox: View {
 
 public struct OnboardingToolTipBoxBottom {
   let text: String
+  let multilineTextAlignment: TextAlignment
   
-  public init(text: String) {
+  public init(text: String, multilineTextAlignment: TextAlignment = .leading) {
     self.text = text
+    self.multilineTextAlignment = multilineTextAlignment
   }
 }
 
@@ -51,6 +57,8 @@ extension OnboardingToolTipBoxBottom: View {
       Text(text)
         .font(.H4_M)
         .foregroundStyle(.textw)
+        .multilineTextAlignment(multilineTextAlignment)
+        .fixedSize(horizontal: false, vertical: true)
         .padding(.horizontal, 14)
         .padding(.vertical, 6)
         .background(
@@ -66,9 +74,11 @@ extension OnboardingToolTipBoxBottom: View {
 
 public struct OnboardingToolTipBoxBottomTrailing {
   let text: String
+  let multilineTextAlignment: TextAlignment
   
-  public init(text: String) {
+  public init(text: String, multilineTextAlignment: TextAlignment = .leading) {
     self.text = text
+    self.multilineTextAlignment = multilineTextAlignment
   }
 }
 
@@ -78,6 +88,8 @@ extension OnboardingToolTipBoxBottomTrailing: View {
       Text(text)
         .font(.H4_M)
         .foregroundStyle(.textw)
+        .multilineTextAlignment(multilineTextAlignment)
+        .fixedSize(horizontal: false, vertical: true)
         .padding(.horizontal, 14)
         .padding(.vertical, 6)
         .background(
@@ -97,9 +109,11 @@ extension OnboardingToolTipBoxBottomTrailing: View {
 
 public struct OnboardingToolTipBoxTopLeading {
   let text: String
+  let multilineTextAlignment: TextAlignment
   
-  public init(text: String) {
+  public init(text: String, multilineTextAlignment: TextAlignment = .leading) {
     self.text = text
+    self.multilineTextAlignment = multilineTextAlignment
   }
 }
 
@@ -115,6 +129,8 @@ extension OnboardingToolTipBoxTopLeading: View {
       Text(text)
         .font(.H4_M)
         .foregroundStyle(.textw)
+        .multilineTextAlignment(multilineTextAlignment)
+        .fixedSize(horizontal: false, vertical: true)
         .padding(.horizontal, 14)
         .padding(.vertical, 6)
         .background(
@@ -155,109 +171,3 @@ fileprivate struct Triangle: Shape {
     return path
   }
 }
-
-//TODO: 왜 안될까..?.?
-//public struct OnboardingToolTipBoxNew {
-//  let text: String
-//  let direction: ArrowDirection
-//  
-//  public init(text: String, direction: ArrowDirection = .top) {
-//    self.text = text
-//    self.direction = direction
-//  }
-//  
-//  public enum ArrowDirection {
-//    case top
-//    case topLeading
-//    case bottom
-//    case bottomTrailing
-//  }
-//}
-//
-//extension OnboardingToolTipBoxNew: View {
-//  public var body: some View {
-//    VStack(alignment: direction.alignment, spacing: 0) {
-//      Group {
-//        if direction.isTop {
-//          arrowView
-//        }
-//      }
-//      
-//      Text(text)
-//        .font(.B1_M_HL)
-//        .foregroundStyle(.textw)
-//        .padding(.horizontal, 14)
-//        .padding(.vertical, 6)
-//        .background(
-//          RoundedRectangle(cornerRadius: 4)
-//            .fill(.bl6)
-//        )
-//        .overlay(alignment: direction.overlayAlignment) {
-//          if direction == .bottomTrailing {
-//            Triangle()
-//              .fill(.bl6)
-//              .frame(width: 18, height: 12)
-//              .padding(.trailing, 14)
-//              .padding(.bottom, -15)
-//          }
-//        }
-//      
-//      Group {
-//        if direction.isBottom && direction != .bottomTrailing {
-//          arrowView
-//        }
-//      }
-//    }
-//  }
-//  
-//  private var arrowView: some View {
-//    Triangle()
-//      .rotation(.degrees(direction.rotation))
-//      .fill(.bl6)
-//      .frame(width: direction.arrowWidth, height: direction.arrowHeight)
-//      .padding(.leading, direction.leadingPadding)
-//  }
-//}
-//
-//extension OnboardingToolTipBoxNew.ArrowDirection {
-//  var alignment: HorizontalAlignment {
-//    switch self {
-//    case .topLeading: return .leading
-//    default: return .center
-//    }
-//  }
-//  
-//  var overlayAlignment: Alignment {
-//    switch self {
-//    case .bottomTrailing: return .bottomTrailing
-//    default: return .center
-//    }
-//  }
-//  
-//  var isTop: Bool {
-//    self == .top || self == .topLeading
-//  }
-//  
-//  var isBottom: Bool {
-//    self == .bottom || self == .bottomTrailing
-//  }
-//  
-//  var rotation: Double {
-//    isTop ? 180 : 0
-//  }
-//  
-//  var arrowWidth: CGFloat {
-//    switch self {
-//    case .bottomTrailing: return 18
-//    default: return 16
-//    }
-//  }
-//  
-//  var arrowHeight: CGFloat {
-//    return 8
-//  }
-//  
-//  var leadingPadding: CGFloat {
-//    self == .topLeading ? 14 : 0
-//  }
-//}
