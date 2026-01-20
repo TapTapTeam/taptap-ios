@@ -49,12 +49,15 @@
 }
 
 .memo-icon {
-  width: 16px;
-  height: 16px;
-  background-color: #5C5C6E;
+  width: 24px;
+  height: 24px;
   position: absolute;
-  top: 12px;
-  left: 17px;
+  top: 8px;
+  left: 14px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .taptap-wrapper {
