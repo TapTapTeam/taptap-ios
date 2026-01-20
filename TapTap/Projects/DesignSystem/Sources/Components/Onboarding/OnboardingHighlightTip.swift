@@ -8,15 +8,27 @@
 import SwiftUI
 
 public struct OnboardingHighlightTip {
+  var visiblePinkChipLottie: Bool
+  var visibleMemoChipLottie: Bool
   var onChipTapped: () -> Void
   var onMemoTapped: () -> Void
+  var onPinkChipLottieCompleted: (() -> Void)?
+  var onMemoChipLottieCompleted: (() -> Void)?
   
   public init(
+    visiblePinkChipLottie: Bool = false,
+    visibleMemoChipLottie: Bool = false,
     onChipTapped: @escaping () -> Void,
-    onMemoTapped: @escaping () -> Void
+    onMemoTapped: @escaping () -> Void,
+    onPinkChipLottieCompleted: (() -> Void)? = nil,
+    onMemoChipLottieCompleted: (() -> Void)? = nil
   ) {
+    self.visiblePinkChipLottie = visiblePinkChipLottie
+    self.visibleMemoChipLottie = visibleMemoChipLottie
     self.onChipTapped = onChipTapped
     self.onMemoTapped = onMemoTapped
+    self.onPinkChipLottieCompleted = onPinkChipLottieCompleted
+    self.onMemoChipLottieCompleted = onMemoChipLottieCompleted
   }
 }
 
@@ -34,6 +46,18 @@ extension OnboardingHighlightTip: View {
               )
             )
             .frame(width: 50, height: 40)
+            .overlay {
+              if visiblePinkChipLottie {
+                LottieWrapperView(
+                  animationName: "OneTap",
+                  loopMode: .playOnce,
+                  loopCount: 2,
+                  bundle: .module,
+                  onComplete: onPinkChipLottieCompleted
+                )
+                .frame(width: 62, height: 62)
+              }
+            }
         }
         
         Capsule()
@@ -64,6 +88,17 @@ extension OnboardingHighlightTip: View {
                 Capsule()
                   .strokeBorder(.stateDefaultLine, lineWidth: 2)
               )
+              .overlay {
+                if visibleMemoChipLottie {
+                  LottieWrapperView(
+                    animationName: "OneTap",
+                    loopMode: .playOnce,
+                    bundle: .module,
+                    onComplete: onMemoChipLottieCompleted
+                  )
+                  .frame(width: 62, height: 62)
+                }
+              }
             DesignSystemAsset.memo.swiftUIImage
               .resizable()
               .renderingMode(.template)
