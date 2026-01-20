@@ -89,7 +89,7 @@ TapTap.tooltip = {
     if (color) {
       TapTap.highlight.highlightRange(range, color);
     } else if (action === 'memo') {
-      const newHighlightId = TapTap.highlight.highlightRange(range, 'yellow');
+      const newHighlightId = TapTap.highlight.highlightRange(range, 'rgba(255, 241, 39, 0.2)');
       if (newHighlightId) {
         requestAnimationFrame(() => {
           TapTap.memo.showMemoInput(newHighlightId);
