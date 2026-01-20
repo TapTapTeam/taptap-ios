@@ -41,7 +41,7 @@ TapTap.memo = {
     const editingMemoId = this.memoUIElement.dataset.editingMemoId;
 
     if (activeHighlightId && memoText) {
-      this.saveMemo(activeHighlightId, memoText);
+      const savedMemo = this.saveMemo(activeHighlightId, memoText, editingMemoId);
 
       if (editingMemoId) {
         const capsuleToUpdate = document.querySelector(`.memo-capsule[data-memo-id="${editingMemoId}"]`);
@@ -49,8 +49,8 @@ TapTap.memo = {
           capsuleToUpdate.querySelector('.capsule-text').textContent = memoText;
           capsuleToUpdate.setAttribute('data-memo-text', memoText);
         }
-      } else {
-        this.renderMemoCapsule(activeHighlightId, memoText);
+      } else if (savedMemo){
+        this.renderMemoCapsule(activeHighlightId, savedMemo);
       }
     }
     
@@ -59,7 +59,7 @@ TapTap.memo = {
     this.hideMemoInput();
   },
   
-  renderMemoCapsule: function(highlightId, memoText) {
+  renderMemoCapsule: function(highlightId, memo) {
     const wrapper = TapTap.highlight.getHighlightElementById(highlightId);
     if (!wrapper) return;
 
@@ -75,7 +75,9 @@ TapTap.memo = {
 
     const highlightColor = TapTap.highlight.getHighlightColor(highlightId) || 'yellow';
     const normalized = TapTap.tooltip.normalizeColor(highlightColor);
-    const memoId = 'memo-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+    
+    const memoId = memo.id;
+    const memoText = memo.text;
 
     const capsule = document.createElement('div');
     capsule.className = 'memo-capsule';
@@ -146,8 +148,33 @@ TapTap.memo = {
     document.body.appendChild(this.memoUIElement);
   },
 
-  saveMemo: function(highlightId, memoText) {
-    console.log(`메모 저장! Highlight ID: ${highlightId}, 내용: "${memoText}"`);
+  saveMemo: function(highlightId, memoText, memoId = null) {
+    const pageKey = 'taptap-highlights-' + window.location.href;
+    const highlights = JSON.parse(localStorage.getItem(pageKey) || '[]');
+    const highlight = highlights.find(h => h.id === highlightId);
+
+    if (!highlight) return null;
+
+    if (!highlight.memos) {
+      highlight.memos = [];
+    }
+
+    let memoToSave;
+    if (memoId) {
+      memoToSave = highlight.memos.find(m => m.id === memoId);
+      if (memoToSave) {
+        memoToSave.text = memoText;
+      }
+    } else {
+      memoToSave = {
+        id: 'memo-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+        text: memoText
+      };
+      highlight.memos.push(memoToSave);
+    }
+    
+    localStorage.setItem(pageKey, JSON.stringify(highlights));
+    return memoToSave;
   },
 
   injectCSS: function(file) {
