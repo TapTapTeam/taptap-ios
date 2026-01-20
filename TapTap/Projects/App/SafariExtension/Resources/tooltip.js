@@ -85,7 +85,7 @@ TapTap.tooltip = {
     if (color) {
       TapTap.highlight.highlightRange(range, color);
     } else if (action === 'memo') {
-      const newHighlightId = TapTap.highlight.highlightRange(range, 'yellow'); // Default color
+      const newHighlightId = TapTap.highlight.highlightRange(range, 'yellow');
       if (newHighlightId) {
         requestAnimationFrame(() => {
           TapTap.memo.showMemoInput(newHighlightId);
@@ -140,7 +140,7 @@ TapTap.tooltip = {
     const colorButtons = this.element.querySelectorAll('.color-button');
     colorButtons.forEach(button => button.classList.remove('selected'));
 
-    let currentColor = 'yellow';
+    let currentColor = null;
     if (this.activeHighlightId) {
       const highlightBgColor = TapTap.highlight.getHighlightColor(this.activeHighlightId);
       if (highlightBgColor) {
