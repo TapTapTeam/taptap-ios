@@ -21,6 +21,7 @@ function initializeWhenReady(tryCount = 0) {
   TapTap.tooltip.init();
   TapTap.memo?.init?.();
   TapTap.customAlert?.init?.();
+  TapTap.highlight.restoreHighlights();
 }
 
 if (document.readyState === 'loading') {
