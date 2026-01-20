@@ -1,0 +1,80 @@
+/* custom-alert.css */
+
+#taptap-custom-alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2147483647; /* Ensure it's on top of everything */
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+#taptap-custom-alert-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.taptap-alert-box {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 300px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transform: scale(0.95);
+  transition: transform 0.2s ease-in-out;
+}
+
+#taptap-custom-alert-overlay.visible .taptap-alert-box {
+  transform: scale(1);
+}
+
+.taptap-alert-message {
+  font-size: 16px;
+  color: #333333;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.taptap-alert-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.taptap-alert-button {
+  flex-grow: 1;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.taptap-alert-button.cancel {
+  background-color: #EFEFEF;
+  color: #555555;
+}
+
+.taptap-alert-button.cancel:hover {
+  background-color: #E0E0E0;
+}
+
+.taptap-alert-button.confirm {
+  background-color: #FF4D4D;
+  color: white;
+}
+
+.taptap-alert-button.confirm:hover {
+  background-color: #E60000;
+}
+
