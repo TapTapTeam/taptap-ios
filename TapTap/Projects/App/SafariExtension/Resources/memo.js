@@ -26,7 +26,6 @@ TapTap.memo = {
     if (memoTextarea) {
       memoTextarea.addEventListener('blur', this.handleMemoBlur.bind(this));
     }
-
     document.addEventListener('click', this.handleExternalClick.bind(this), true);
   },
 
@@ -45,19 +44,16 @@ TapTap.memo = {
       this.saveMemo(activeHighlightId, memoText);
 
       if (editingMemoId) {
-        // --- 수정 모드 ---
         const capsuleToUpdate = document.querySelector(`.memo-capsule[data-memo-id="${editingMemoId}"]`);
         if (capsuleToUpdate) {
           capsuleToUpdate.querySelector('.capsule-text').textContent = memoText;
           capsuleToUpdate.setAttribute('data-memo-text', memoText);
         }
       } else {
-        // --- 생성 모드 ---
         this.renderMemoCapsule(activeHighlightId, memoText);
       }
     }
     
-    // 입력창을 닫고, '수정 모드' 상태를 초기화합니다.
     event.target.value = '';
     delete this.memoUIElement.dataset.editingMemoId;
     this.hideMemoInput();
@@ -67,7 +63,6 @@ TapTap.memo = {
     const wrapper = TapTap.highlight.getHighlightElementById(highlightId);
     if (!wrapper) return;
 
-    // [수정] ID로 캡슐 컨테이너를 정확히 찾거나, 없으면 새로 만듭니다.
     const containerId = 'capsules-for-' + highlightId;
     let capsuleContainer = document.getElementById(containerId);
 
@@ -90,30 +85,21 @@ TapTap.memo = {
     capsule.innerHTML = `
       <span class="capsule-text"></span>
       <button class="capsule-delete-btn" type="button" aria-label="Delete memo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg">
-          <path d="M18 6L6 18" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M6 6L18 18" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 32 32"><path stroke="#71717a" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" d="M21 11 11 21M11 11l10 10"/></svg>
       </button>
     `;
 
     capsule.querySelector('.capsule-text').textContent = memoText;
-    // [수정] 캡슐이 자신의 전체 메모 내용을 알도록 데이터 속성에 저장합니다.
     capsule.setAttribute('data-memo-text', memoText);
 
     capsule.addEventListener('click', (e) => {
       if (e.target.closest('.capsule-delete-btn')) return;
       
-      // DOM 탐색으로 부모 하이라이트의 ID를 찾습니다.
       const wrapper = capsule.closest('.taptap-capsules-container')?.previousElementSibling;
       const highlightId = wrapper?.dataset.highlightId;
       const currentMemoText = capsule.dataset.memoText;
 
       if (highlightId) {
-        // [수정] 콘솔 로그 대신, 에디터를 보여주는 함수를 호출합니다.
         const memoId = capsule.dataset.memoId;
         TapTap.memo.showMemoInput(highlightId, currentMemoText, memoId);
       }
@@ -133,10 +119,8 @@ TapTap.memo = {
     if (!wrapper) return;
     
     this.memoUIElement.dataset.activeHighlightId = highlightId;
-    // [추가] 어떤 메모를 수정하고 있는지 ID를 저장하여 '수정 모드'임을 표시합니다.
     if (editingMemoId) {
       this.memoUIElement.dataset.editingMemoId = editingMemoId;
-      // [추가] 수정 중인 캡슐에 'editing' 클래스를 추가하여 시각적으로 표시합니다.
       const editingCapsule = document.querySelector(`.memo-capsule[data-memo-id="${editingMemoId}"]`);
       if (editingCapsule) {
         editingCapsule.classList.add('editing');
@@ -155,7 +139,6 @@ TapTap.memo = {
   hideMemoInput: function() {
     this.memoUIElement.style.display = 'none';
     this.memoUIElement.dataset.activeHighlightId = '';
-    // [추가] 'editing' 상태였던 캡슐에서 클래스를 제거합니다.
     const currentlyEditingCapsule = document.querySelector('.memo-capsule.editing');
     if (currentlyEditingCapsule) {
       currentlyEditingCapsule.classList.remove('editing');
