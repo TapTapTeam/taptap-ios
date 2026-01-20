@@ -8,7 +8,6 @@
   height: auto;
   min-height: 113px;
   padding: 16px;
-/*  box-sizing: border-box;*/
   z-index: 999998;
   border: none;
 }
@@ -53,8 +52,8 @@
   color: rgba(242, 71, 237, 1);
 }
 .memo-capsule[data-highlight-color="rgba(255, 241, 39, 0.2)"] {
-  background-color: rgba(254, 248, 205, 1);
-  border: 1px solid rgba(222, 146, 16, 1);
+  background-color: rgba(255, 252, 212, 1);
+  border: 1px solid rgba(235, 207, 0, 1);
   color: rgba(222, 146, 16, 1);
 }
 .memo-capsule[data-highlight-color="rgba(31, 180, 255, 0.2)"] {
@@ -64,14 +63,14 @@
 }
 
 .memo-capsule.clicked[data-highlight-color="rgba(255, 85, 249, 0.2)"] { background-color: rgba(242, 71, 237, 1); color: #fff; }
-.memo-capsule.clicked[data-highlight-color="rgba(255, 241, 39, 0.2)"]  { background-color: rgba(222, 146, 16, 1);  color: #fff; }
+.memo-capsule.clicked[data-highlight-color="rgba(255, 241, 39, 0.2)"]  { background-color: rgba(235, 207, 0, 1);  color: #fff; }
 .memo-capsule.clicked[data-highlight-color="rgba(31, 180, 255, 0.2)"] { background-color: rgba(21, 172, 229, 1);  color: #fff; }
 
 .memo-capsule.clicked .capsule-delete-btn svg path { stroke: #fff; }
 
-.memo-capsule.editing[data-highlight-color="rgba(255, 85, 249, 0.2)"] { background-color: rgba(242, 71, 237, 0.7); color: #fff; border-color: rgba(242, 71, 237, 1); }
-.memo-capsule.editing[data-highlight-color="rgba(255, 241, 39, 0.2)"]  { background-color: rgba(222, 146, 16, 0.7);  color: #fff; border-color: rgba(222, 146, 16, 1); }
-.memo-capsule.editing[data-highlight-color="rgba(31, 180, 255, 0.2)"] { background-color: rgba(21, 172, 229, 0.7);  color: #fff; border-color: rgba(21, 172, 229, 1); }
+.memo-capsule.editing[data-highlight-color="rgba(255, 85, 249, 0.2)"] { background-color: rgba(242, 71, 237, 1); color: #fff; border-color: rgba(242, 71, 237, 1); }
+.memo-capsule.editing[data-highlight-color="rgba(255, 241, 39, 0.2)"]  { background-color: rgba(235, 207, 0, 1);  color: #fff; border-color: rgba(235, 207, 0, 1)); }
+.memo-capsule.editing[data-highlight-color="rgba(31, 180, 255, 0.2)"] { background-color: rgba(21, 172, 229, 1);  color: #fff; border-color: rgba(21, 172, 229, 1); }
 
 .memo-capsule.editing .capsule-delete-btn svg path { stroke: #fff; }
 
