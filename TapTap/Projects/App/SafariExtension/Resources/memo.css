@@ -4,7 +4,7 @@
   border-radius: 12px;
   display: flex;
   flex-direction: column;
-  margin: 10px 0px;
+  margin: 16px 0px;
   height: auto;
   min-height: 113px;
   padding: 16px;
@@ -31,6 +31,7 @@
   outline: none;
 }
 
+/* 여기 수정해야함 figma기준 캡슐 두개가 중앙정렬이 잘 안되어있음  */
 .taptap-capsules-container {
   display: flex;
   flex-wrap: wrap;
