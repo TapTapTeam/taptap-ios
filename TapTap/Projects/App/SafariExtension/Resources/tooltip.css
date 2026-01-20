@@ -30,13 +30,13 @@
   transition: border-color 0.2s ease-in-out;
 }
 
-.color-button[data-color='pink'] { background-color: #FFE0F7; }
-.color-button[data-color='yellow'] { background-color: #FEF8CD; }
-.color-button[data-color='blue'] { background-color: #DBF3FF; }
+.color-button[data-color='rgba(255, 85, 249, 0.2)'] { background-color: #FFE0F7; }
+.color-button[data-color='rgba(255, 241, 39, 0.2)'] { background-color: #FEF8CD; }
+.color-button[data-color='rgba(31, 180, 255, 0.2)'] { background-color: #DBF3FF; }
 
-.color-button[data-color='pink'].selected { border-color: #F247ED; }
-.color-button[data-color='yellow'].selected { border-color: #FDB813; }
-.color-button[data-color='blue'].selected { border-color: #0093D1; }
+.color-button[data-color='rgba(255, 85, 249, 0.2)'].selected { border-color: #F247ED; }
+.color-button[data-color='rgba(255, 241, 39, 0.2)'].selected { border-color: #FDB813; }
+.color-button[data-color='rgba(31, 180, 255, 0.2)'].selected { border-color: #0093D1; }
 
 .memo-button {
   width: 50px;

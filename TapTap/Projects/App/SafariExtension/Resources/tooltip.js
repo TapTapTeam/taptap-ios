@@ -18,9 +18,9 @@ TapTap.tooltip = {
     this.element.style.display = 'none';
     this.element.innerHTML = `
       <div class="tooltip-container">
-        <div class="color-button" data-color="pink"></div>
-        <div class="color-button" data-color="yellow"></div>
-        <div class="color-button" data-color="blue"></div>
+        <div class="color-button" data-color="rgba(255, 85, 249, 0.2)"></div>
+        <div class="color-button" data-color="rgba(255, 241, 39, 0.2)"></div>
+        <div class="color-button" data-color="rgba(31, 180, 255, 0.2)"></div>
         <div class="memo-button" data-action="memo">
           <div class="memo-icon">
         <svg width="32" height="232" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

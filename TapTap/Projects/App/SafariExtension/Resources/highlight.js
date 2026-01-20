@@ -79,13 +79,11 @@ TapTap.highlight = {
     const wrapper = this.getHighlightElementById(id);
     if (!wrapper) return;
 
-    // 1. 하이라이트 자체의 색상 변경
     const highlightedTextSpan = wrapper.querySelector('span.taptap-highlighted');
     if (highlightedTextSpan) {
       highlightedTextSpan.style.backgroundColor = color;
     }
 
-    // 2. 연결된 메모 캡슐들의 색상 변경
     const containerId = 'capsules-for-' + id;
     const capsuleContainer = document.getElementById(containerId);
     if (capsuleContainer) {
