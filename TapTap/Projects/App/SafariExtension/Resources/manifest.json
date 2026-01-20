@@ -16,22 +16,20 @@
     "service_worker": "background.js"
   },
   
-  "content_scripts": [
-    {
-      "js": ["content.js"],
-      "css": ["style.css"],
-      "matches": ["<all_urls>"]
-    }
-  ],
-  
+  "content_scripts": [{
+      "js": [ "bootstrap.js", "gesture.js", "sentence.js", "highlight.js", "tooltip.js", "memo.js", "custom-alert.js" ],
+      "matches": [ "<all_urls>" ]
+  }],
+
+  "web_accessible_resources": [{
+      "resources": [ "tooltip.css", "memo.css", "custom-alert.css" ],
+      "matches": [ "<all_urls>" ]
+  }],
+
   "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "48": "icon-48.png",
-      "96": "icon-96.png"
-    }
+      "default_popup": "popup.html",
+      "default_icon": "images/toolbar-icon.svg"
   },
-  
+
   "permissions": ["storage"]
 }
-
