@@ -15,7 +15,7 @@ TapTap.memo = {
     this.memoUIElement.id = 'memo-box';
     this.memoUIElement.style.display = 'none';
     this.memoUIElement.innerHTML = `
-      <textarea class="capsule-input-textarea" placeholder="메모를 입력하세요."></textarea>
+      <textarea class="capsule-input-textarea" placeholder="중요한 내용이나 생각을 입력해보세요"></textarea>
     `;
     document.body.appendChild(this.memoUIElement);
     

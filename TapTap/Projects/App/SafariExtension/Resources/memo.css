@@ -1,15 +1,16 @@
 /* memo.css */
 #memo-box {
   background: rgba(246, 246, 246, 1);
-  border-radius: 8px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  margin: 10px 14px;
+  margin: 10px 0px;
   height: auto;
   min-height: 113px;
   padding: 16px;
-  box-sizing: border-box;
+/*  box-sizing: border-box;*/
   z-index: 999998;
+  border: none;
 }
 
 #memo-box textarea.capsule-input-textarea {
@@ -25,6 +26,7 @@
   padding: 0;
   outline: none;
   margin-top: 10px;
+  caret-color: rgba(98, 81, 251, 1);
 }
 #memo-box textarea.capsule-input-textarea:focus {
   outline: none;
