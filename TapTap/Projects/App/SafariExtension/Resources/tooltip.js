@@ -18,9 +18,9 @@ TapTap.tooltip = {
     this.element.style.display = 'none';
     this.element.innerHTML = `
       <div class="tooltip-container">
-        <div class="color-button" data-color="#F247ED"></div>
+        <div class="color-button" data-color="pink"></div>
         <div class="color-button" data-color="yellow"></div>
-        <div class="color-button" data-color="#87CEEB"></div>
+        <div class="color-button" data-color="blue"></div>
         <div class="memo-button" data-action="memo">
           <div class="memo-icon"></div>
         </div>
@@ -35,8 +35,6 @@ TapTap.tooltip = {
     document.addEventListener('selectionchange', () => {
       if (this.isReopening) return;
       if (this.element.style.display !== 'block') return;
-      // if (TapTap.memo && TapTap.memo.memoUIElement.style.display === 'flex') return;
-
       if (this._tooltipRaf) cancelAnimationFrame(this._tooltipRaf);
 
       this._tooltipRaf = requestAnimationFrame(() => {

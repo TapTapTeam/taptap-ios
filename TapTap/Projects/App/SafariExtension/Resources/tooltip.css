@@ -25,18 +25,18 @@
   height: 40px;
   border-radius: 20px;
   cursor: pointer;
-  border: 2px solid rgba(0, 0, 0, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.4);
   box-sizing: border-box;
   transition: border-color 0.2s ease-in-out;
 }
 
-.color-button[data-color='#F247ED'] { background-color: #FFE0F7; }
+.color-button[data-color='pink'] { background-color: #FFE0F7; }
 .color-button[data-color='yellow'] { background-color: #FEF8CD; }
-.color-button[data-color='#87CEEB'] { background-color: #DBF3FF; }
+.color-button[data-color='blue'] { background-color: #DBF3FF; }
 
-.color-button[data-color='#F247ED'].selected { border-color: #F247ED; }
+.color-button[data-color='pink'].selected { border-color: #F247ED; }
 .color-button[data-color='yellow'].selected { border-color: #FDB813; }
-.color-button[data-color='#87CEEB'].selected { border-color: #0093D1; }
+.color-button[data-color='blue'].selected { border-color: #0093D1; }
 
 .memo-button {
   width: 50px;
