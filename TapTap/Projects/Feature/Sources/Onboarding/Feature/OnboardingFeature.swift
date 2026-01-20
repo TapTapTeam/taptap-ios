@@ -51,6 +51,10 @@ public struct OnboardingFeature {
       case .path(.element(id: _, action: .onboardingHighlightGuide(.moveToOnboardingShare))):
         state.path.append(.onboardingShare(.init()))
         return .none
+      
+      case .path(.element(id: _, action: .onboardingHighlightGuide(.backButtonTapped))):
+        state.path.removeLast()
+        return .none
         
       case .path(.element(id: _, action: .onboardingShare(.moveToOnboardingShareGuide))):
         state.path.append(.onboardingShareGuide(.init()))
