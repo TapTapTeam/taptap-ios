@@ -91,12 +91,13 @@ public struct OnboardingHighlightGuideFeature {
     case moveToOnboardingShare
   }
   
-  @Dependency(\.dismiss) var dismiss
   @Dependency(\.continuousClock) var clock
   
   enum CancelID {
     case onboarding
-    case highlightAnimation
+    case dragAnimation
+    case colorAnimation
+    case memoAnimation
   }
   
   public var body: some ReducerOf<Self> {
@@ -156,6 +157,7 @@ public struct OnboardingHighlightGuideFeature {
           try await clock.sleep(for: .seconds(1.5))
           await send(.dragAnimationEvent)
         }
+        .cancellable(id: CancelID.dragAnimation, cancelInFlight: true)
         
       case .changeDragSecondTip:
         state.visibleDragFirstTip = false
@@ -183,6 +185,7 @@ public struct OnboardingHighlightGuideFeature {
           try await clock.sleep(for: .seconds(2.0))
           await send(.selectColorGuideEvent)
         }
+        .cancellable(id: CancelID.colorAnimation, cancelInFlight: true)
         
       case .changeDragHandImage:
         state.dragHandImageName = "OneFinger"
@@ -217,6 +220,7 @@ public struct OnboardingHighlightGuideFeature {
           try await clock.sleep(for: .seconds(2.0))
           await send(.tapHighlightGuideEvent)
         }
+        .cancellable(id: CancelID.colorAnimation, cancelInFlight: true)
         
       case .tapHighlightGuideEvent:
         state.animationPhase = .tapHighlightEvent
@@ -258,6 +262,7 @@ public struct OnboardingHighlightGuideFeature {
           try await clock.sleep(for: .seconds(3.0))
           await send(.finishEvent)
         }
+        .cancellable(id: CancelID.memoAnimation, cancelInFlight: true)
         
       case .finishEvent:
         guard state.animationPhase == .finisheEvent else {
@@ -270,12 +275,21 @@ public struct OnboardingHighlightGuideFeature {
         
         
       case .backButtonTapped:
-        return .run { _ in
-          await dismiss()
-        }
+        return .concatenate(
+          .cancel(id: CancelID.onboarding),
+          .cancel(id: CancelID.dragAnimation),
+          .cancel(id: CancelID.colorAnimation),
+          .cancel(id: CancelID.memoAnimation),
+        )
         
       case .nextButtonTapped:
-        return .send(.moveToOnboardingShare)
+        return .concatenate(
+          .cancel(id: CancelID.onboarding),
+          .cancel(id: CancelID.dragAnimation),
+          .cancel(id: CancelID.colorAnimation),
+          .cancel(id: CancelID.memoAnimation),
+          .send(.moveToOnboardingShare)
+        )
         
       case .moveToOnboardingShare:
         return .none
