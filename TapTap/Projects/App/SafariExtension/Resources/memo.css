@@ -34,9 +34,9 @@
 .taptap-capsules-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px; /* 캡슐 사이의 간격 */
+  gap: 12px; /* 캡슐 사이의 간격 */
   max-width: 350px; /* 캡슐 2개가 들어갈 정도의 최대 너비 */
-  margin-top: 8px; /* 하이라이트와의 간격 */
+  margin-top: 16px; /* 하이라이트와의 간격 */
 }
 
 .memo-capsule {
