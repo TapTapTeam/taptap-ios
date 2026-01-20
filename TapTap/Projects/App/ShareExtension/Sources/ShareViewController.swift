@@ -159,6 +159,10 @@ private extension ShareViewController {
               return
             }
             
+            if let debugInfo = results["debugInfo"] as? [String: Any] {
+              print(debugInfo)
+            }
+            
             if let title = results["title"] as? String, let url = results["url"] as? String {
               self.pageTitle = title
               self.pageURL = url
@@ -172,8 +176,22 @@ private extension ShareViewController {
               self.pageMediaCompany = mediaCompany
             }
             
-            if let drafts = results["drafts"] as? [[String: Any]] {
-              self.draftHighlights = drafts
+            if let highlightsJSON = results["highlightsJSON"] as? String {
+              do {
+                if let data = highlightsJSON.data(using: .utf8),
+                   let highlights = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+                  self.draftHighlights = highlights
+                  print("하이라이트 내용")
+                  print(highlights)
+                }
+              } catch {
+                print(error.localizedDescription)
+              }
+            } else {
+              // 이전 버전의 highlights 키를 처리하는 코드도 유지합니다.
+              if let highlights = results["highlights"] as? [[String: Any]] {
+                self.draftHighlights = highlights
+              }
             }
             self.checkIfURLExistsAndConfigure()
           }
@@ -231,6 +249,19 @@ private extension ShareViewController {
 
 // MARK: - SwiftData
 private extension ShareViewController {
+  func highlightType(from rgba: String) -> String {
+    switch rgba {
+    case "rgba(255, 85, 249, 0.2)":
+      return "What"
+    case "rgba(255, 241, 39, 0.2)":
+      return "Why"
+    case "rgba(31, 180, 255, 0.2)":
+      return "Detail"
+    default:
+      return "What"
+    }
+  }
+  
   func saveAllData() {
     guard !self.pageURL.isEmpty else {
       return
@@ -246,7 +277,7 @@ private extension ShareViewController {
     if let existingLink = try? context.fetch(fetchDescriptor).first {
       linkItem = existingLink
       linkItem.imageURL = self.pageImageURL
-//      linkItem.newsCompany = self.pageMediaCompany
+      //      linkItem.newsCompany = self.pageMediaCompany
     } else {
       linkItem = ArticleItem(urlString: self.pageURL, title: self.pageTitle, imageURL: self.pageImageURL)
       context.insert(linkItem)
@@ -261,9 +292,10 @@ private extension ShareViewController {
     if let drafts = self.draftHighlights, !drafts.isEmpty {
       for draft in drafts {
         guard let id = draft["id"] as? String,
-              let sentence = draft["sentence"] as? String,
-              let type = draft["type"] as? String,
-              let commentsArray = draft["comments"] as? [[String: Any]] else { continue }
+              let sentence = draft["text"] as? String,
+              let type = draft["color"] as? String else { continue }
+        
+        let commentsArray = draft["memos"] as? [[String: Any]] ?? []
         
         let comments = commentsArray.compactMap { commentDict -> Comment? in
           guard let commentId = commentDict["id"] as? Double,
@@ -276,10 +308,16 @@ private extension ShareViewController {
         let highlightFetch = FetchDescriptor<HighlightItem>(predicate: #Predicate { $0.id == highlightId })
         if let existingHighlight = try? context.fetch(highlightFetch).first {
           existingHighlight.sentence = sentence
-          existingHighlight.type = type
+          existingHighlight.type = highlightType(from: type)
           existingHighlight.comments = comments
         } else {
-          let newHighlight = HighlightItem(id: id, sentence: sentence, type: type, createdAt: Date(), comments: comments)
+          let newHighlight = HighlightItem(
+            id: id,
+            sentence: sentence,
+            type: highlightType(from: type),
+            createdAt: Date(),
+            comments: comments
+          )
           newHighlight.link = linkItem
           context.insert(newHighlight)
         }

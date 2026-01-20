@@ -109,8 +109,12 @@ TapTap.memo = {
 
     capsule.querySelector('.capsule-delete-btn').addEventListener('click', (e) => {
       e.stopPropagation();
+      const highlightId = capsule.closest('.taptap-capsules-container')?.previousElementSibling?.dataset.highlightId;
+      const memoId = capsule.dataset.memoId;
+      if(highlightId && memoId) {
+        this.deleteMemo(highlightId, memoId);
+      }
       capsule.remove();
-      // TODO: 실제 저장소에서도 삭제
     });
 
     capsuleContainer.appendChild(capsule);
@@ -167,14 +171,28 @@ TapTap.memo = {
       }
     } else {
       memoToSave = {
-        id: 'memo-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+        id: Date.now(), // Double 타입의 ID를 위해 Date.now() 사용
+        type: "General", // 기본 타입 추가
         text: memoText
       };
       highlight.memos.push(memoToSave);
     }
     
     localStorage.setItem(pageKey, JSON.stringify(highlights));
+    TapTap.highlight._updateSharedDom(highlights); // DOM에 데이터 저장
     return memoToSave;
+  },
+  
+  deleteMemo: function(highlightId, memoId) {
+      const pageKey = 'taptap-highlights-' + window.location.href;
+      const highlights = JSON.parse(localStorage.getItem(pageKey) || '[]');
+      const highlight = highlights.find(h => h.id === highlightId);
+
+      if (highlight && highlight.memos) {
+          highlight.memos = highlight.memos.filter(m => m.id !== memoId);
+          localStorage.setItem(pageKey, JSON.stringify(highlights));
+          TapTap.highlight._updateSharedDom(highlights); // DOM에 데이터 저장
+      }
   },
 
   injectCSS: function(file) {
