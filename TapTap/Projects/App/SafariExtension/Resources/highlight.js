@@ -55,7 +55,7 @@ TapTap.highlight = {
     
     highlights.push(newHighlight);
     localStorage.setItem(pageKey, JSON.stringify(highlights));
-    
+    this._updateSharedDom(highlights); // DOM에 데이터 저장
     window.getSelection().removeAllRanges();
     return highlightId;
   },
@@ -103,6 +103,7 @@ TapTap.highlight = {
     if (highlight) {
       highlight.color = color;
       localStorage.setItem(pageKey, JSON.stringify(highlights));
+      this._updateSharedDom(highlights); // DOM에 데이터 저장
     }
   },
   
@@ -131,12 +132,13 @@ TapTap.highlight = {
     let highlights = JSON.parse(localStorage.getItem(pageKey) || '[]');
     highlights = highlights.filter(h => h.id !== id);
     localStorage.setItem(pageKey, JSON.stringify(highlights));
+    this._updateSharedDom(highlights); // DOM에 데이터 저장
   },
   
   restoreHighlights: function() {
     const pageKey = 'taptap-highlights-' + window.location.href;
     const highlights = JSON.parse(localStorage.getItem(pageKey) || '[]');
-    
+    this._updateSharedDom(highlights); // DOM에 데이터 저장
     if (highlights.length === 0) return;
     
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
@@ -172,5 +174,16 @@ TapTap.highlight = {
         }
       }
     });
+  },
+  
+  _updateSharedDom: function(highlights) {
+    let sharedDiv = document.getElementById('taptap-data-for-share');
+    if (!sharedDiv) {
+      sharedDiv = document.createElement('div');
+      sharedDiv.id = 'taptap-data-for-share';
+      sharedDiv.style.display = 'none';
+      document.body.appendChild(sharedDiv);
+    }
+    sharedDiv.textContent = JSON.stringify(highlights);
   }
 };
