@@ -196,10 +196,11 @@ extension OnboardingHighlightGuideView: View {
                 onComplete: {
                   store.send(.hideDoubleTapLottie)
                 })
-              .frame(width: 62, height: 62)
+              .frame(width: 110, height: 110)
+              .foregroundStyle(.red)
               .offset(
-                x: (geometry.size.width - 62) / 2,
-                y: (geometry.size.height - 62) / 2
+                x: (geometry.size.width - 110) / 2,
+                y: (geometry.size.height - 110) / 2
               )
             }
             
