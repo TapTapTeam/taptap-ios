@@ -76,7 +76,7 @@ public struct LottieWrapperView: UIViewRepresentable {
   
   public func updateUIView(_ uiView: UIView, context: Context) {}
   
-  public class Coordinator {
+  public final class Coordinator {
     weak var animationView: LottieAnimationView?
     let loopMode: LottieLoopMode
     let loopCount: Int?
@@ -115,7 +115,8 @@ public struct LottieWrapperView: UIViewRepresentable {
         animationView.play { [weak self] finished in
           if finished {
             DispatchQueue.main.async {
-              self?.onComplete?()
+              guard let self = self else { return }
+              self.onComplete?()
             }
           }
         }
@@ -136,7 +137,8 @@ public struct LottieWrapperView: UIViewRepresentable {
             self.workItem?.cancel()
             
             let work = DispatchWorkItem { [weak self] in
-              self?.playWithCount()
+              guard let self = self else { return }
+              self.playWithCount()
             }
             self.workItem = work
             
@@ -148,7 +150,8 @@ public struct LottieWrapperView: UIViewRepresentable {
             self.playWithCount()
           }
         } else {
-          DispatchQueue.main.async {
+          DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.onComplete?()
           }
         }
@@ -165,7 +168,8 @@ public struct LottieWrapperView: UIViewRepresentable {
         self.workItem?.cancel()
         
         let work = DispatchWorkItem { [weak self] in
-          self?.playWithInterval()
+          guard let self = self else { return }
+          self.playWithInterval()
         }
         self.workItem = work
         
