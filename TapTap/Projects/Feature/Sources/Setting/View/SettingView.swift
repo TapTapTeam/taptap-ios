@@ -16,21 +16,28 @@ import Domain
 struct SettingView {
   @Environment(\.openURL) private var openURL
   
-  let store: StoreOf<SettingFeature>
+  @Bindable var store: StoreOf<SettingFeature>
 }
 
 // MARK: View
 extension SettingView: View {
   var body: some View {
-    ZStack {
-      Color.background.ignoresSafeArea()
-      
-      VStack {
-        navigationBar
-        scrollView
+    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+      ZStack {
+        Color.background.ignoresSafeArea()
+        
+        VStack {
+          navigationBar
+          scrollView
+        }
+      }
+      .toolbar(.hidden)
+    } destination: { store in
+      switch store.case {
+      case let .onboardingHighlightGuide(store):
+        OnboardingHighlightGuideView(store: store)
       }
     }
-    .navigationBarHidden(true)
   }
   
   private var navigationBar: some View {

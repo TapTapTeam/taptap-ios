@@ -16,9 +16,13 @@ struct SettingFeature {
   @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
-  struct State: Equatable { }
+  struct State: Equatable {
+    var path: StackState<Path.State> = .init()
+  }
   
   enum Action: Equatable {
+    case path(StackActionOf<Path>)
+    
     case backButtonTapped
     case privacyPolicyTapped
     case termsOfServiceTapped
@@ -67,7 +71,11 @@ struct SettingFeature {
         return .none
         
       case .highlightTipTapped:
-        linkNavigator.push(.onboardingHighlight, Route.home)
+        state.path.append(.onboardingHighlightGuide(.init()))
+        return .none
+      
+      case .path(.element(id: _, action: .onboardingHighlightGuide(.backButtonTapped))):
+        state.path.removeLast()
         return .none
         
       case .shareTipTapped:
@@ -80,7 +88,16 @@ struct SettingFeature {
         
       case .openLinkTapped:
         return .none
+        
+      case .path:
+        return .none
       }
     }
+    .forEach(\.path, action: \.path)
+  }
+  
+  @Reducer(state: .equatable, action: .equatable)
+  enum Path {
+    case onboardingHighlightGuide(OnboardingHighlightGuideFeature)
   }
 }
