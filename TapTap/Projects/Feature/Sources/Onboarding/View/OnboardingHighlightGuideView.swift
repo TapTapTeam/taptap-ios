@@ -32,11 +32,11 @@ extension OnboardingHighlightGuideView: View {
         
         FirstParnassusView()
           .overlay {
-            Rectangle()
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-              .background(.dim)
-              .opacity(store.state.visibleOverlay ? 0.4 : 0)
-              .animation(.easeOut(duration: 0.3), value: store.state.visibleOverlay)
+            if store.state.visibleOverlay {
+              Color.dim
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .animation(.easeOut(duration: 0.3), value: store.state.visibleOverlay)
+            }
           }
         
         VStack(alignment: .leading, spacing: 6) {
@@ -324,11 +324,12 @@ extension OnboardingHighlightGuideView: View {
         }
         .frame(maxHeight: .infinity)
         .overlay {
-          Rectangle()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(.dim).ignoresSafeArea()
-            .opacity(store.state.visibleOverlay ? 0.4 : 0)
-            .animation(.easeOut(duration: 0.3), value: store.state.visibleOverlay)
+          if store.state.visibleOverlay {
+            Color.dim
+              .ignoresSafeArea()
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+              .animation(.easeOut(duration: 0.3), value: store.state.visibleOverlay)
+          }
         }
       }
       
