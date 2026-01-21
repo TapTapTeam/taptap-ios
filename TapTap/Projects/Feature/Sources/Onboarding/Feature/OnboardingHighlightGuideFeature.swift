@@ -61,7 +61,7 @@ public struct OnboardingHighlightGuideFeature {
       case tapColorEvent
       case tapHighlightEvent
       case memoEvent
-      case finisheEvent
+      case finishEvent
     }
     
     public init() {}
@@ -256,7 +256,7 @@ public struct OnboardingHighlightGuideFeature {
         state.visibleMemoFirstTip = false
         state.visibleMemoBox = true
         
-        state.animationPhase = .finisheEvent
+        state.animationPhase = .finishEvent
         
         return .run { send in
           try await clock.sleep(for: .seconds(3.0))
@@ -265,7 +265,7 @@ public struct OnboardingHighlightGuideFeature {
         .cancellable(id: CancelID.memoAnimation, cancelInFlight: true)
         
       case .finishEvent:
-        guard state.animationPhase == .finisheEvent else {
+        guard state.animationPhase == .finishEvent else {
           return .none
         }
         
