@@ -8,6 +8,11 @@
 .highlighted-text[data-highlight-type="detail"] { background-color: rgba(31, 180, 255, 0.2); }
 
 #tulip-menu { position: absolute; background: white; border: 0px solid #ccc; border-radius: 30px; padding: 5px; display: flex; gap: 5px; z-index: 2147483647; font-family: sans-serif; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2)); }
+
+#tulip-menu:after {
+  display: none !important;
+  content: none !important;
+}
 #tulip-menu:after, #tulip-menu:before {
   top: 100%;
   left: 50%;
@@ -18,19 +23,19 @@
   position: absolute;
   pointer-events: none;
 }
-#tulip-menu:after {
-  all: initial;
-  display: block;
-  content: "";
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  background: #fff;
-  transform: translateX(-50%) rotate(45deg);
-  border-bottom-right-radius: 2px;
-  left: 50%;
-  top: calc(100% - 7px);
-}
+/*#tulip-menu:after {*/
+/*  all: initial;*/
+/*  display: block;*/
+/*  content: "";*/
+/*  position: absolute;*/
+/*  width: 14px;*/
+/*  height: 14px;*/
+/*  background: #fff;*/
+/*  transform: translateX(-50%) rotate(45deg);*/
+/*  border-bottom-right-radius: 2px;*/
+/*  left: 50%;*/
+/*  top: calc(100% - 7px);*/
+/*}*/
 #tulip-menu:before {
   display: none;
 }
@@ -158,5 +163,3 @@
         background-color: rgba(44, 44, 57, 1);
     }
 }
-
-
