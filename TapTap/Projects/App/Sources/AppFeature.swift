@@ -58,6 +58,7 @@ struct AppFeature {
         return .run { send in
           do {
             let needUpdate = try await appVersionCheckClient.isUpdateAvailable()
+            await send(.updateCheckResult(needUpdate))
           } catch {
             await send(.updateCheckResult(false))
           }
