@@ -88,7 +88,7 @@ extension Target {
     switch product {
     case .app:
       debugSettings["ASSETCATALOG_COMPILER_APPICON_NAME"] = "AppIconDev"
-      releaseSettings["INFOPLIST_KEY_CFBundleDisplayName"] = "\(name)Dev"
+      releaseSettings["INFOPLIST_KEY_CFBundleDisplayName"] = "탭탭"
       if name == "TapTapMac" {
         debugSettings["ASSETCATALOG_COMPILER_APPICON_NAME"] = "AppIconDev"
         releaseSettings["INFOPLIST_KEY_CFBundleDisplayName"] = "\(name)Dev"
