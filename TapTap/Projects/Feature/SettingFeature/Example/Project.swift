@@ -9,7 +9,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let target = Target.target(
-  name: "\(Module.SettingFeature.rawValue)Example",
+  name: "\(FeatureModule.SettingFeature.rawValue)Example",
   product: .app,
   infoPlist: .default,
   sources: ["Sources/**"],
@@ -17,7 +17,7 @@ let target = Target.target(
 )
 
 let project = Project.project(
-  name: "\(Module.SettingFeature.rawValue)Example",
+  name: "\(FeatureModule.SettingFeature.rawValue)Example",
   targets: [
     target
   ]

@@ -2,10 +2,10 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.project(
-  name: Module.AddLinkFeature.rawValue,
+  name: FeatureModule.AddLinkFeature.rawValue,
   targets: [
     Target.target(
-      name: Module.AddLinkFeature.rawValue,
+      name: FeatureModule.AddLinkFeature.rawValue,
       product: .staticFramework,
       sources: .sources,
       dependencies: [
@@ -16,11 +16,11 @@ let project = Project.project(
       ]
     ),
     Target.target(
-      name: "\(Module.AddLinkFeature.rawValue)Tests",
+      name: "\(FeatureModule.AddLinkFeature.rawValue)Tests",
       product: .unitTests,
       sources: ["Tests/**"],
       dependencies: [
-        .target(name: Module.AddLinkFeature.rawValue),
+        .target(name: FeatureModule.AddLinkFeature.rawValue),
         .TCA()
       ]
     )

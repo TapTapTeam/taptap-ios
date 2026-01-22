@@ -9,10 +9,10 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.project(
-  name: Module.OriginalFeature.rawValue,
+  name: FeatureModule.OriginalFeature.rawValue,
   targets: [
     Target.target(
-      name: Module.OriginalFeature.rawValue,
+      name: FeatureModule.OriginalFeature.rawValue,
       product: .staticFramework,
       sources: .sources,
       dependencies: [
@@ -23,11 +23,11 @@ let project = Project.project(
       ]
     ),
     Target.target(
-      name: "\(Module.OriginalFeature.rawValue)Tests",
+      name: "\(FeatureModule.OriginalFeature.rawValue)Tests",
       product: .unitTests,
       sources: ["Tests/**"],
       dependencies: [
-        .target(name: Module.OriginalFeature.rawValue),
+        .target(name: FeatureModule.OriginalFeature.rawValue),
         .TCA()
       ]
     )
