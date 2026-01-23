@@ -55,7 +55,7 @@ extension OnboardingHighlightTip: View {
                   bundle: .module,
                   onComplete: onPinkChipLottieCompleted
                 )
-                .frame(width: 62, height: 62)
+                .frame(width: 92, height: 92)
               }
             }
         }
@@ -96,7 +96,7 @@ extension OnboardingHighlightTip: View {
                     bundle: .module,
                     onComplete: onMemoChipLottieCompleted
                   )
-                  .frame(width: 62, height: 62)
+                  .frame(width: 92, height: 92)
                 }
               }
             DesignSystemAsset.memo.swiftUIImage

@@ -13,7 +13,7 @@ import DesignSystem
 
 public struct OnboardingHighlightGuideView {
   public let store: StoreOf<OnboardingHighlightGuideFeature>
-
+  
   public init(store: StoreOf<OnboardingHighlightGuideFeature>) {
     self.store = store
   }
@@ -32,11 +32,11 @@ extension OnboardingHighlightGuideView: View {
         
         FirstParnassusView()
           .overlay {
-            Rectangle()
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-              .background(.dim)
-              .opacity(store.state.visibleOverlay ? 0.4 : 0)
-              .animation(.easeOut(duration: 0.3), value: store.state.visibleOverlay)
+            if store.state.visibleOverlay {
+              Color.dim
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .animation(.easeOut(duration: 0.3), value: store.state.visibleOverlay)
+            }
           }
         
         VStack(alignment: .leading, spacing: 6) {
@@ -68,7 +68,7 @@ extension OnboardingHighlightGuideView: View {
                     .offset(x: geometry.size.width * (1 - store.state.dragProgress))
                     .animation(.easeInOut(duration: 0.8), value: store.state.dragProgress)
                     
-                    Color.highlightDrag.opacity(0.25)
+                    Color.highlightDrag
                       .frame(width: geometry.size.width * store.state.dragProgress)
                       .frame(height: geometry.size.height + 6)
                       .offset(x: geometry.size.width * (1 - store.state.dragProgress))
@@ -86,7 +86,7 @@ extension OnboardingHighlightGuideView: View {
               .overlay {
                 GeometryReader { geo in
                   if store.state.visibleDrag {
-                    Color.highlightDrag.opacity(0.25)
+                    Color.highlightDrag
                       .frame(width: geo.size.width, alignment: .leading)
                       .frame(height: geo.size.height + 6, alignment: .center)
                   }
@@ -126,7 +126,7 @@ extension OnboardingHighlightGuideView: View {
             .overlay {
               GeometryReader { geometry in
                 if store.state.visibleDrag {
-                  Color.highlightDrag.opacity(0.25)
+                  Color.highlightDrag
                     .frame(width: geometry.size.width, alignment: .leading)
                   
                   Group {
@@ -194,12 +194,13 @@ extension OnboardingHighlightGuideView: View {
                 animationName: "DoubleTap",
                 bundle: .module,
                 onComplete: {
-                store.send(.hideDoubleTapLottie)
-              })
-              .frame(width: 62, height: 62)
+                  store.send(.hideDoubleTapLottie)
+                })
+              .frame(width: 110, height: 110)
+              .foregroundStyle(.red)
               .offset(
-                x: (geometry.size.width - 62) / 2,
-                y: (geometry.size.height - 62) / 2
+                x: (geometry.size.width - 110) / 2,
+                y: (geometry.size.height - 110) / 2
               )
             }
             
@@ -324,11 +325,12 @@ extension OnboardingHighlightGuideView: View {
         }
         .frame(maxHeight: .infinity)
         .overlay {
-          Rectangle()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(.dim).ignoresSafeArea()
-            .opacity(store.state.visibleOverlay ? 0.4 : 0)
-            .animation(.easeOut(duration: 0.3), value: store.state.visibleOverlay)
+          if store.state.visibleOverlay {
+            Color.dim
+              .ignoresSafeArea()
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+              .animation(.easeOut(duration: 0.3), value: store.state.visibleOverlay)
+          }
         }
       }
       
@@ -385,7 +387,7 @@ extension OnboardingHighlightGuideView: View {
         .zIndex(101)
       }
     }
-    .animation(.easeInOut(duration: 0.3), value: store.state.visibleMemoBox) 
+    .animation(.easeInOut(duration: 0.3), value: store.state.visibleMemoBox)
     .animation(.easeInOut(duration: 0.3), value: store.state.visibleMemoChip)
     .background(Color.background)
     .toolbar(.hidden)

@@ -21,18 +21,19 @@ struct AppView {
 extension AppView: View {
   var body: some View {
     ZStack {
-      Color.background.ignoresSafeArea()
       switch store.state.launchState {
       case .home:
         LinkNavigationView(
           linkNavigator: singleNavigator,
           item: .init(path: Route.home.rawValue)
         )
+        .ignoresSafeArea()
       case .splash:
         SplashView()
       case .onboarding:
         if let onboardingStore = store.scope(state: \.onboarding, action: \.onboarding) {
           OnboardingView(store: onboardingStore)
+            .ignoresSafeArea()
         }
       }
     }
