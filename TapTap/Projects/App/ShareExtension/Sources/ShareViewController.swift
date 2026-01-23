@@ -158,11 +158,7 @@ private extension ShareViewController {
                   let results = dictionary[NSExtensionJavaScriptPreprocessingResultsKey] as? [String: Any] else {
               return
             }
-            
-            if let debugInfo = results["debugInfo"] as? [String: Any] {
-              print(debugInfo)
-            }
-            
+
             if let title = results["title"] as? String, let url = results["url"] as? String {
               self.pageTitle = title
               self.pageURL = url
