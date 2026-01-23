@@ -17,9 +17,9 @@ let appTarget = Target.target(
       ],
       "CFBundleDevelopmentRegion": "ko",
       "CFBundleLocalizations": ["ko"],
-      "CFBundleVersion": "$(CFBundleVersion)",
+      "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
       "CFBundleDisplayName": "$(INFOPLIST_KEY_CFBundleDisplayName)",
-      "CFBundleShortVersionString": "$(CFBundleShortVersionString)",
+      "CFBundleShortVersionString": "$(MARKETING_VERSION)",
 
       "NSAppTransportSecurity": [
         "NSAllowsArbitraryLoads": true
@@ -52,7 +52,14 @@ let safariTarget = Target.target(
   product: .appExtension,
   infoPlist: .file(path: "SafariExtension/info.plist"),
   sources: [SourceFileGlob(stringLiteral: TargetName.safariExtension.sourcesPath)],
-  resources: [ResourceFileElement(stringLiteral: TargetName.safariExtension.resourcesPath)],
+  resources: [
+    "SafariExtension/Resources/manifest.json",
+    "SafariExtension/Resources/popup.html",
+    "SafariExtension/Resources/*.js",
+    "SafariExtension/Resources/*.css",
+    "SafariExtension/Resources/images/**",
+    "SafariExtension/Resources/_locales/**"
+  ],
   entitlements: .file(path: "SafariExtension.entitlements"),
   dependencies: [
     .domain()
