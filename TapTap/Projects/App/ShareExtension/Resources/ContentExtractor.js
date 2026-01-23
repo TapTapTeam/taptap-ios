@@ -2,25 +2,38 @@ var ContentExtractor = function() {};
 
 ContentExtractor.prototype = {
   run: function(arguments) {
-    const draftSpans = document.querySelectorAll('.highlighted-text[data-draft-id]');
-    
-    const drafts = Array.from(draftSpans).map(span => {
-      return {
-        id: span.dataset.draftId,
-        sentence: span.textContent,
-        type: span.dataset.highlightType,
-        comments: JSON.parse(span.dataset.comments || '[]'),
-        url: window.location.href,
-        isDraft: true
-      };
-    });
-    
+    let debugInfo = {};
+    let highlightsJSON = "[]"; // 기본값은 빈 배열 형태의 JSON 문자열
+
+    try {
+      const sharedDiv = document.getElementById('taptap-data-for-share');
+      debugInfo.divExists = !!sharedDiv;
+
+      if (sharedDiv) {
+        const savedHighlightsText = sharedDiv.textContent;
+        debugInfo.rawText = savedHighlightsText;
+
+        if (savedHighlightsText && savedHighlightsText.trim() !== '') {
+          highlightsJSON = savedHighlightsText; // 객체로 변환하지 않고 문자열 그대로 사용
+          debugInfo.passAsString = 'Success';
+        } else {
+          debugInfo.passAsString = 'Skipped: Text was empty or null.';
+        }
+      } else {
+        debugInfo.passAsString = 'Skipped: Div not found.';
+      }
+    } catch (e) {
+      debugInfo.passAsString = 'Error in JS';
+      debugInfo.error = e.toString();
+    }
+
     const result = {
       "title": document.title,
       "url": document.URL,
-      "drafts": drafts,
+      "highlightsJSON": highlightsJSON, // highlights 객체 대신 JSON 문자열을 전달
       "imageURL": this.extractThumbnailImage(),
-      "mediaCompany": this.extractMediaCompany()
+      "mediaCompany": this.extractMediaCompany(),
+      "debugInfo": debugInfo
     };
     
     arguments.completionFunction(result);
@@ -101,4 +114,3 @@ ContentExtractor.prototype = {
 };
 
 var ExtensionPreprocessingJS = new ContentExtractor;
-
