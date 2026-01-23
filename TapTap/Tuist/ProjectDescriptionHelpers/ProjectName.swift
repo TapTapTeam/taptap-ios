@@ -15,4 +15,17 @@ public enum Module: String {
   case TapTapMac
 }
 
+  public enum FeatureModule: String {
+    case SettingFeature
+    case SearchFeature
+    case OriginalFeature
+    case OnboardingFeature
+    case MyCategoryFeature
+    case LinkListFeature
+    case LinkDetailFeature
+    case AddLinkFeature
+    case HomeFeature
+  }
+
 extension Module: CaseIterable {}
+extension FeatureModule: CaseIterable {}

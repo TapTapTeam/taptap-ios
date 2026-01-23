@@ -10,8 +10,8 @@ import ProjectDescriptionHelpers
 
 let workspace = Workspace(
   name: "TapTap",
-  projects:
-    Module.allCases.map { module in
-        "Projects/\(module.rawValue)"
-    }
+  projects: [
+    "Projects/*",
+    "Projects/Feature/*",
+  ] + FeatureModule.allCases.map { "Projects/Feature/\($0.rawValue)/*" }
 )
