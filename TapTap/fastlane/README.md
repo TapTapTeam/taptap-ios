@@ -31,6 +31,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 
 
+### ios beta
+
+```sh
+[bundle exec] fastlane ios beta
+```
+
+TesetFlight 업로드(버전을 입력해주세요.)
+
 ----
 
 
