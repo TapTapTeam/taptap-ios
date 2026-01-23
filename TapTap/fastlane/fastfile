@@ -24,6 +24,41 @@ platform :ios do
             platform: "ios"
         )
     end
+  
+  desc "TesetFlight 업로드(버전을 입력해주세요.)"
+  lane :beta do |options|
+  version = options[:version] || prompt(text: "버전을 입력해주세요. (예: 1.10.0): ")
+
+  release
+
+  app_identifier = "com.Nbs.dev.ADA.app"
+  next_build = latest_testflight_build_number(app_identifier: app_identifier).to_i + 1
+
+  xcconfig_path = "../Tuist/Config/Project.xcconfig"
+  content = File.read(xcconfig_path)
+
+  content = content.gsub(/^MARKETING_VERSION\s*=\s*.*$/, "MARKETING_VERSION = #{version}")
+  content = content.gsub(/^CURRENT_PROJECT_VERSION\s*=\s*.*$/, "CURRENT_PROJECT_VERSION = #{next_build}")
+
+  File.write(xcconfig_path, content)
+
+  build_app(
+    workspace: "../TapTap/TapTap.xcworkspace",
+    scheme: "TapTap",
+    export_method: "app-store"
+  )
+
+  app_store_connect_api_key(
+    key_id: ENV["ASC_KEY_ID"],
+    issuer_id: ENV["ASC_ISSUER_ID"],
+    key_filepath: ENV["ASC_KEY_FILEPATH"]
+  )
+
+  upload_to_testflight(
+    skip_waiting_for_build_processing: true,
+    username: ENV["APPLE_ID"]
+    )
+  end
 end
 
 platform :macos do
