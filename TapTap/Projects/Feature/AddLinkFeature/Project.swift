@@ -16,6 +16,16 @@ let project = Project.project(
       ]
     ),
     Target.target(
+      name: "\(FeatureModule.AddLinkFeature.rawValue)Example",
+      product: .app,
+      infoPlist: .default,
+      sources: ["Example/**"],
+      resources: .default,
+      dependencies: [
+        .target(name: FeatureModule.AddLinkFeature.rawValue)
+      ]
+    ),
+    Target.target(
       name: "\(FeatureModule.AddLinkFeature.rawValue)Tests",
       product: .unitTests,
       sources: ["Tests/**"],

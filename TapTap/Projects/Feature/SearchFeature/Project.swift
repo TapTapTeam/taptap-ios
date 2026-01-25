@@ -22,6 +22,16 @@ let project = Project.project(
       ]
     ),
     Target.target(
+      name: "\(FeatureModule.SearchFeature.rawValue)Example",
+      product: .app,
+      infoPlist: .default,
+      sources: ["Example/**"],
+      resources: .default,
+      dependencies: [
+        .target(name: FeatureModule.SearchFeature.rawValue)
+      ]
+    ),
+    Target.target(
       name: "\(FeatureModule.SearchFeature.rawValue)Tests",
       product: .unitTests,
       sources: ["Tests/**"],

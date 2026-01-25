@@ -23,6 +23,16 @@ let project = Project.project(
       ]
     ),
     Target.target(
+      name: "\(FeatureModule.OnboardingFeature.rawValue)Example",
+      product: .app,
+      infoPlist: .default,
+      sources: ["Example/**"],
+      resources: .default,
+      dependencies: [
+        .target(name: FeatureModule.OnboardingFeature.rawValue)
+      ]
+    ),
+    Target.target(
       name: "\(FeatureModule.OnboardingFeature.rawValue)Tests",
       product: .unitTests,
       sources: ["Tests/**"],
