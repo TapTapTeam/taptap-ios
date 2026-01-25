@@ -24,7 +24,9 @@ let project = Project.project(
       ]),
       sources: .sources,
       resources: .default,
-      dependencies: []
+      dependencies: [
+        .Lottie()
+      ]
     )
   ]
 )
