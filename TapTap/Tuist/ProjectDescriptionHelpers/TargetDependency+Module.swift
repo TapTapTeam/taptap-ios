@@ -14,6 +14,67 @@ extension TargetDependency {
 }
 
 extension TargetDependency {
+  public static func addLinkFeature() -> TargetDependency {
+    .project(target: FeatureModule.AddLinkFeature.rawValue, path: .relativeToRoot("Projects/Feature/AddLinkFeature"))
+  }
+}
+
+extension TargetDependency {
+  public static func homeFeature() -> TargetDependency {
+    .project(target: FeatureModule.HomeFeature.rawValue, path: .relativeToRoot("Projects/Feature/homeFeature"))
+  }
+}
+
+
+extension TargetDependency {
+  public static func linkDetailFeature() -> TargetDependency {
+    .project(target: FeatureModule.LinkDetailFeature.rawValue, path: .relativeToRoot("Projects/Feature/LinkDetailFeature"))
+  }
+}
+
+
+extension TargetDependency {
+  public static func linkListFeature() -> TargetDependency {
+    .project(target: FeatureModule.LinkListFeature.rawValue, path: .relativeToRoot("Projects/Feature/LinkListFeature"))
+  }
+}
+
+
+extension TargetDependency {
+  public static func myCategoryFeature() -> TargetDependency {
+    .project(target: FeatureModule.MyCategoryFeature.rawValue, path: .relativeToRoot("Projects/Feature/MyCategoryFeature"))
+  }
+}
+
+
+extension TargetDependency {
+  public static func onboardingFeature() -> TargetDependency {
+    .project(target: FeatureModule.OnboardingFeature.rawValue, path: .relativeToRoot("Projects/Feature/OnboardingFeature"))
+  }
+}
+
+
+extension TargetDependency {
+  public static func originalFeature() -> TargetDependency {
+    .project(target: FeatureModule.OriginalFeature.rawValue, path: .relativeToRoot("Projects/Feature/OriginalFeature"))
+  }
+}
+
+
+extension TargetDependency {
+  public static func searchFeature() -> TargetDependency {
+    .project(target: FeatureModule.SearchFeature.rawValue, path: .relativeToRoot("Projects/Feature/SearchFeature"))
+  }
+}
+
+
+extension TargetDependency {
+  public static func settingFeature() -> TargetDependency {
+    .project(target: FeatureModule.SettingFeature.rawValue, path: .relativeToRoot("Projects/Feature/SettingFeature"))
+  }
+}
+
+extension TargetDependency {
   public static func designSystem() -> TargetDependency {
     .project(target: Module.DesignSystem.rawValue, path: .relativeToRoot("Projects/DesignSystem"))
   }
