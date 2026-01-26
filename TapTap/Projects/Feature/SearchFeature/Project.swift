@@ -26,7 +26,7 @@ let project = Project.project(
       product: .app,
       infoPlist: .default,
       sources: ["Example/**"],
-      resources: .default,
+//      resources: .default,
       dependencies: [
         .target(name: FeatureModule.SearchFeature.rawValue)
       ]
