@@ -13,5 +13,7 @@ let workspace = Workspace(
   projects: [
     "Projects/*",
     //"Projects/Feature/*",
-  ] + FeatureModule.allCases.map { "Projects/Feature/\($0.rawValue)/*" }
+  ]
+  + FeatureModule.allCases.map { "Projects/Feature/\($0.rawValue)/*" }
+  + ClientModule.allCases.map { "Projects/Client/\($0.rawValue)/*" }
 )

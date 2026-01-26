@@ -12,7 +12,8 @@ let project = Project.project(
         .TCA(),
         .domain(),
         .LinkNavigator(),
-        .Lottie()
+        .Lottie(),
+        .homeClient()
       ]
     ),
     Target.target(
