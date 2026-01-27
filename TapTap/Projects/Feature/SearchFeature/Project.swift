@@ -19,6 +19,7 @@ let project = Project.project(
         .TCA(),
         .domain(),
         .LinkNavigator(),
+        .searchClient()
       ]
     ),
     Target.target(
