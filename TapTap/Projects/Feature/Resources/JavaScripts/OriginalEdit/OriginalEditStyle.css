@@ -7,7 +7,7 @@
 .highlighted-text[data-highlight-type="why"] { background-color: rgba(255, 241, 39, 0.2); }
 .highlighted-text[data-highlight-type="detail"] { background-color: rgba(31, 180, 255, 0.2); }
 
-#tulip-menu { position: absolute; background: white; border: 0px solid #ccc; border-radius: 30px; padding: 5px; display: flex; gap: 5px; z-index: 2147483647; font-family: sans-serif; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2)); }
+#tulip-menu { position: absolute; background: white; border: 0px solid #ccc; border-radius: 30px; padding: 5px; display: flex; gap: 5px; z-index: 2147483647; font-family: sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
 #tulip-menu:after {
   display: none !important;
@@ -123,6 +123,7 @@
   .highlighted-text[data-highlight-type="why"] { background-color: rgba(255, 241, 39, 0.2); color: inherit; }
   .highlighted-text[data-highlight-type="detail"] { background-color: rgba(31, 180, 255, 0.2); color: inherit; }
     
+    /*
     #tulip-menu { background: rgba(34, 34, 42, 1); }
     #tulip-menu:after { background: rgba(34, 34, 42, 1); }
         #tulip-menu:before { display: none; }    #tulip-menu button { border-color: rgba(255, 255, 255, 0.08); }
@@ -135,7 +136,7 @@
     #tulip-menu button.selected[data-highlight-type="what"] { border-color: rgba(178, 60, 174, 1); }
     #tulip-menu button.selected[data-highlight-type="why"] { border-color: rgba(208, 157, 0, 1); }
     #tulip-menu button.selected[data-highlight-type="detail"] { border-color: rgba(16, 134, 178, 1); }
-
+    */
     /*
     #memo-box { background: rgba(42, 42, 50, 1); color: rgba(236, 236, 237, 1); border: 1px solid rgba(52, 52, 61, 1); }
     #memo-box textarea { background: rgba(42, 42, 50, 1); color: rgba(236, 236, 237, 1); border: none; }

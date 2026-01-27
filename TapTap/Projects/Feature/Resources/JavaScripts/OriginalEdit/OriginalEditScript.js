@@ -5,22 +5,58 @@ function applyHighlightToCurrentSelection(type) {
   const sel = window.getSelection();
   if (!sel || sel.rangeCount === 0) return null;
 
-  const range = sel.getRangeAt(0).cloneRange();
+  let range = sel.getRangeAt(0).cloneRange();
   const selectedText = range.toString().trim();
   if (selectedText.length < 1) return null;
 
-  // 기존 하이라이트 겹침 방지
+  // 1. 마커 삽입으로 영역 보존
+  const startMarker = document.createElement('span');
+  const endMarker = document.createElement('span');
+  // 마커가 눈에 보이지 않게 처리
+  startMarker.style.display = 'none';
+  endMarker.style.display = 'none';
+
+  try {
+      range.insertNode(startMarker);
+      range.collapse(false); // 끝으로 이동
+      range.insertNode(endMarker);
+  } catch(e) {
+      console.error("마커 삽입 실패", e);
+      return null;
+  }
+
+  // 2. 겹치는 기존 하이라이트 제거 (Unwrap)
+  // 마커 사이의 영역과 겹치는 하이라이트를 찾기 위해 임시 range 사용
+  const tempRange = document.createRange();
+  tempRange.setStartAfter(startMarker);
+  tempRange.setEndBefore(endMarker);
+
   const highlights = document.querySelectorAll('.highlighted-text');
   for (const h of highlights) {
     const hr = document.createRange();
     hr.selectNodeContents(h);
 
     const overlaps =
-      range.compareBoundaryPoints(Range.END_TO_START, hr) < 0 &&
-      range.compareBoundaryPoints(Range.START_TO_END, hr) > 0;
+      tempRange.compareBoundaryPoints(Range.END_TO_START, hr) < 0 &&
+      tempRange.compareBoundaryPoints(Range.START_TO_END, hr) > 0;
 
-    if (overlaps) return null;
+    if (overlaps) {
+      const capsuleContainer = h.nextElementSibling;
+      if (capsuleContainer && capsuleContainer.classList.contains('capsule-container')) {
+        capsuleContainer.remove();
+      }
+      const memoBox = document.getElementById('memo-box');
+      if (memoBox && memoBox.dataset.highlightId === h.dataset.id) {
+          memoBox.remove();
+      }
+      h.replaceWith(...h.childNodes);
+    }
   }
+
+  // 3. 마커 기준으로 Range 재설정
+  range = document.createRange();
+  range.setStartAfter(startMarker);
+  range.setEndBefore(endMarker);
 
   const span = document.createElement('span');
   span.className = 'highlighted-text';
@@ -29,8 +65,13 @@ function applyHighlightToCurrentSelection(type) {
   span.dataset.comments = '[]';
 
   try {
+    // 4. 하이라이트 적용
     span.appendChild(range.extractContents());
     range.insertNode(span);
+
+    // 5. 마커 제거
+    startMarker.remove();
+    endMarker.remove();
 
     // iOS 기본 선택을 span으로 다시 맞춤
     const rr = document.createRange();
@@ -40,6 +81,9 @@ function applyHighlightToCurrentSelection(type) {
     return span;
   } catch (e) {
     console.error('하이라이트 적용 중 오류 발생:', e);
+    // 실패 시 마커라도 정리
+    if(startMarker.parentNode) startMarker.remove();
+    if(endMarker.parentNode) endMarker.remove();
     return null;
   }
 }
@@ -75,6 +119,11 @@ function showTulipMenuForRange(range) {
       button.disabled = true;
       button.style.opacity = '0.4';
       button.style.cursor = 'default';
+      
+      // 아이콘 추가 (라이트 모드 고정)
+      button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="#5c5c6e" fill-rule="evenodd" d="m12.328 7.024-6.782 6.782-.925 3.45-.608 2.273a.375.375 0 0 0 .458.458l2.272-.609 3.45-.925h.001l6.782-6.782zm7.453.785-3.59-3.59a.75.75 0 0 0-1.058 0l-1.852 1.852 4.648 4.648 1.852-1.852a.75.75 0 0 0 0-1.058" clip-rule="evenodd"/></svg>`;
+    } else {
+      button.textContent = buttonInfo.text;
     }
 
     button.dataset.highlightType = buttonInfo.type;
@@ -368,13 +417,15 @@ function showTulipMenu(span) {
   buttons.forEach(buttonInfo => {
     const button = document.createElement('button');
     if (buttonInfo.type === 'memo') {
+      /*
       if (isDark) {
         button.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M12.328 7.02367L5.54608 13.8056L4.62106 17.2557L4.01261 19.5286C3.99571 19.5921 3.9958 19.6589 4.01286 19.7224C4.02992 19.7859 4.06336 19.8437 4.10982 19.8902C4.15628 19.9366 4.21414 19.9701 4.2776 19.9871C4.34105 20.0042 4.40788 20.0043 4.47138 19.9874L6.74276 19.3782L10.1936 18.4532H10.1944L16.9763 11.6712L12.3288 7.02367H12.328ZM19.7806 7.80949L16.1913 4.21943C16.1218 4.14987 16.0393 4.09469 15.9486 4.05703C15.8578 4.01938 15.7604 4 15.6621 4C15.5639 4 15.4665 4.01938 15.3757 4.05703C15.2849 4.09469 15.2025 4.14987 15.133 4.21943L13.2807 6.07096L17.929 10.7193L19.7806 8.86697C19.8501 8.79753 19.9053 8.71505 19.943 8.62426C19.9806 8.53347 20 8.43614 20 8.33785C20 8.23956 19.9806 8.14224 19.943 8.05145C19.9053 7.96066 19.8501 7.87818 19.7806 7.80874" fill="#B9B9C0"/>
         </svg>`;
       } else {
+      */
         button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="#5c5c6e" fill-rule="evenodd" d="m12.328 7.024-6.782 6.782-.925 3.45-.608 2.273a.375.375 0 0 0 .458.458l2.272-.609 3.45-.925h.001l6.782-6.782zm7.453.785-3.59-3.59a.75.75 0 0 0-1.058 0l-1.852 1.852 4.648 4.648 1.852-1.852a.75.75 0 0 0 0-1.058" clip-rule="evenodd"/></svg>`;
-      }
+      // }
     } else {
       button.textContent = buttonInfo.text;
     }
