@@ -19,7 +19,18 @@ let project = Project.project(
         .TCA(),
         .domain(),
         .LinkNavigator(),
-        .Lottie()
+        .Lottie(),
+        .linkDetailClient()
+      ]
+    ),
+    Target.target(
+      name: "\(FeatureModule.LinkDetailFeature.rawValue)Example",
+      product: .app,
+      infoPlist: .default,
+      sources: ["Example/**"],
+      resources: .default,
+      dependencies: [
+        .target(name: FeatureModule.LinkDetailFeature.rawValue)
       ]
     ),
     Target.target(

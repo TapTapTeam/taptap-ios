@@ -43,7 +43,15 @@ let appTarget = Target.target(
   dependencies: [
     .safariEx(),
     .actionEx(),
-    .feature(),
+    .addLinkFeature(),
+    .homeFeature(),
+    .linkDetailFeature(),
+    .linkListFeature(),
+    .myCategoryFeature(),
+    .onboardingFeature(),
+    .originalFeature(),
+    .searchFeature(),
+    .settingFeature()
   ]
 )
 
