@@ -136,6 +136,7 @@
     #tulip-menu button.selected[data-highlight-type="why"] { border-color: rgba(208, 157, 0, 1); }
     #tulip-menu button.selected[data-highlight-type="detail"] { border-color: rgba(16, 134, 178, 1); }
 
+    /*
     #memo-box { background: rgba(42, 42, 50, 1); color: rgba(236, 236, 237, 1); border: 1px solid rgba(52, 52, 61, 1); }
     #memo-box textarea { background: rgba(42, 42, 50, 1); color: rgba(236, 236, 237, 1); border: none; }
 
@@ -162,4 +163,5 @@
     .vertical-separator {
         background-color: rgba(44, 44, 57, 1);
     }
+    */
 }
