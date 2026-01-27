@@ -15,6 +15,7 @@ import Domain
 struct OriginalEditWebView: UIViewRepresentable {
   let articleItem: ArticleItem
   let store: StoreOf<OriginalEditFeature>
+  @Binding var progress: Double
   
   func makeUIView(context: Context) -> WKWebView {
     let userContentController = WKUserContentController()
@@ -25,6 +26,14 @@ struct OriginalEditWebView: UIViewRepresentable {
     
     let webView = WKWebView(frame: .zero, configuration: configuration)
     webView.navigationDelegate = context.coordinator
+    
+    // progress 관찰을 위한 KVO 등록
+    context.coordinator.observation = webView.observe(\.estimatedProgress, options: [.new]) { webView, change in
+      DispatchQueue.main.async {
+        self.progress = webView.estimatedProgress
+      }
+    }
+    
     return webView
   }
   
@@ -35,8 +44,11 @@ struct OriginalEditWebView: UIViewRepresentable {
       guard let articleURL = URL(string: articleItem.urlString) else {
         return
       }
-      let request = URLRequest(url: articleURL)
-      uiView.load(request)
+      
+      if uiView.url?.absoluteString != articleURL.absoluteString {
+        let request = URLRequest(url: articleURL)
+        uiView.load(request)
+      }
     }
   }
   
@@ -46,9 +58,14 @@ struct OriginalEditWebView: UIViewRepresentable {
   
   class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     var parent: OriginalEditWebView
+    var observation: NSKeyValueObservation?
     
     init(_ parent: OriginalEditWebView) {
       self.parent = parent
+    }
+    
+    deinit {
+      observation?.invalidate()
     }
     
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -74,6 +91,11 @@ struct OriginalEditWebView: UIViewRepresentable {
     }
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+      // 로딩 완료 시 progress를 1.0으로 설정
+      DispatchQueue.main.async {
+        self.parent.progress = 1.0
+      }
+      
       let highlightsJSON = parent.articleItem.highlights.map { item in
         return [
           "id": item.id,

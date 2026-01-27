@@ -29,6 +29,8 @@ struct LinkDetailFeature {
     var showToast: Bool = false
     
     var summary: SummaryFeature.State
+    var isLoadingOriginalArticle: Bool = false
+    var originalArticleProgress: Double = 0.0
     
     init(article: ArticleItem) {
       self.link = article
@@ -63,6 +65,8 @@ struct LinkDetailFeature {
     
     /// 원문보기
     case originalArticleTapped
+    case originalArticleProgressChanged(Double)
+    case originalArticleLoadingCompleted
     case refreshed(ArticleItem?)
     
     /// 토스트
@@ -189,8 +193,18 @@ struct LinkDetailFeature {
         
         /// 원문보기
       case .originalArticleTapped:
-        let payload = OriginalPayload(articleItem: state.link)
+        state.isLoadingOriginalArticle = true
+        state.originalArticleProgress = 0.0
+        return .none
         
+      case let .originalArticleProgressChanged(progress):
+        state.originalArticleProgress = progress
+        return .none
+        
+      case .originalArticleLoadingCompleted:
+        state.isLoadingOriginalArticle = false
+        state.originalArticleProgress = 0.0
+        let payload = OriginalPayload(articleItem: state.link)
         linkNavigator.push(Route.originalArticle, payload)
         return .none
         
