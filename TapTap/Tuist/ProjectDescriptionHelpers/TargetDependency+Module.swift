@@ -75,6 +75,13 @@ extension TargetDependency {
   }
 }
 
+// MARK: - Shared
+extension TargetDependency {
+  public static func shared() -> TargetDependency {
+    .project(target: Module.Shared.rawValue, path: .relativeToRoot("Projects/Shared"))
+  }
+}
+
 // MARK: - Extension
 extension TargetDependency {
   public static func safariEx() -> TargetDependency {
