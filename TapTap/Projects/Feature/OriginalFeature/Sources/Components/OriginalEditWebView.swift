@@ -10,7 +10,7 @@ import WebKit
 
 import ComposableArchitecture
 
-import Domain
+import Core
 
 struct OriginalEditWebView: UIViewRepresentable {
   let articleItem: ArticleItem

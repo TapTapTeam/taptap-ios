@@ -11,7 +11,7 @@ import SwiftUI
 import ComposableArchitecture
 
 import DesignSystem
-import Domain
+import Core
 
 // MARK: - Properties
 struct RecentLinkListView: View {

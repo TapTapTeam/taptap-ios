@@ -11,7 +11,7 @@ import ComposableArchitecture
 import LinkNavigator
 
 import DesignSystem
-import Domain
+import Core
 import Shared
 
 @Reducer

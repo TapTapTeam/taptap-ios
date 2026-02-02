@@ -96,7 +96,7 @@ extension TargetDependency {
 }
 
 extension TargetDependency {
-  public static func domain() -> TargetDependency {
-    .project(target: Module.Domain.rawValue, path: .relativeToRoot("Projects/Domain"))
+  public static func core() -> TargetDependency {
+    .project(target: Module.Core.rawValue, path: .relativeToRoot("Projects/Core"))
   }
 }

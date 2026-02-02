@@ -10,7 +10,7 @@ import Foundation
 import ComposableArchitecture
 
 import DesignSystem
-import Domain
+import Core
 
 @Reducer
 public struct SelectBottomSheetFeature {

@@ -10,7 +10,7 @@ import SwiftUI
 import ComposableArchitecture
 
 import DesignSystem
-import Domain
+import Core
 import Shared
 
 extension Notification.Name {

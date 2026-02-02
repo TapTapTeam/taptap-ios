@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 import ComposableArchitecture
 
-import Domain
+import Core
 
 public struct SwiftDataClient {
   // LinkItem

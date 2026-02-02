@@ -10,7 +10,7 @@ import SwiftUI
 import ComposableArchitecture
 
 import DesignSystem
-import Domain
+import Core
 import Shared
 
 /// 링크 리스트 뷰

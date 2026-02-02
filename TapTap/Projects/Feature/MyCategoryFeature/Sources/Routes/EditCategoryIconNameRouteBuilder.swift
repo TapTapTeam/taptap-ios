@@ -10,7 +10,7 @@ import SwiftData
 import ComposableArchitecture
 import LinkNavigator
 
-import Domain
+import Core
 import Shared
 
 public struct EditCategoryIconNameRouteBuilder {

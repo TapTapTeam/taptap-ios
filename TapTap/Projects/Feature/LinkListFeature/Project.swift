@@ -18,7 +18,7 @@ let project = Project.project(
       resources: .default,
       dependencies: [
         .TCA(),
-        .domain(),
+        .core(),
         .LinkNavigator(),
         .Lottie(),
         .shared()

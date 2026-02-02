@@ -8,7 +8,7 @@
 import Foundation
 import ComposableArchitecture
 
-import Domain
+import Core
 
 public struct UserDefaultsClient {
   private enum UserDefaultsKey: String, CaseIterable {

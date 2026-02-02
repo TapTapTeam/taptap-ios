@@ -10,7 +10,7 @@ import SwiftUI
 import ComposableArchitecture
 
 import DesignSystem
-import Domain
+import Core
 
 struct DeleteLinkView: View {
   @Bindable var store: StoreOf<DeleteLinkFeature>

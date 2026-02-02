@@ -10,7 +10,7 @@ import SwiftData
 
 import ComposableArchitecture
 
-import Domain
+import Core
 import Shared
 
 @Reducer

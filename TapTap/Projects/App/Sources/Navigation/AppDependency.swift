@@ -9,6 +9,6 @@ import SwiftData
 
 import LinkNavigator
 
-import Domain
+import Core
 
 public struct AppDependency: DependencyType {}

@@ -8,7 +8,7 @@
 import SafariServices
 import SwiftData
 
-import Domain
+import Core
 
 final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
   private let appGroupID = "group.com.nbs.dev.ADA.shared"
