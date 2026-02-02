@@ -15,6 +15,7 @@ let project = Project.project(
       name: FeatureModule.OnboardingFeature.rawValue,
       product: .staticFramework,
       sources: .sources,
+      resources: .default,
       dependencies: [
         .TCA(),
         .domain(),
@@ -27,7 +28,6 @@ let project = Project.project(
       product: .app,
       infoPlist: .default,
       sources: ["Example/**"],
-      resources: .default,
       dependencies: [
         .target(name: FeatureModule.OnboardingFeature.rawValue)
       ]
