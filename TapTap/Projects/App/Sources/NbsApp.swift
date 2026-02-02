@@ -3,7 +3,6 @@ import SwiftData
 
 import Domain
 import DesignSystem
-import Feature
 import LinkNavigator
 
 import ComposableArchitecture
