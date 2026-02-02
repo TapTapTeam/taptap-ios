@@ -21,7 +21,8 @@ let project = Project.project(
         .domain(),
         .LinkNavigator(),
         .Lottie(),
-        .shared()
+        .shared(),
+        .onboardingFeature()
       ]
     ),
     Target.target(
