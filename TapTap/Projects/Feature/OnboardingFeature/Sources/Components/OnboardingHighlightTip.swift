@@ -51,7 +51,7 @@ extension OnboardingHighlightTip: View {
             .overlay {
               if visiblePinkChipLottie {
                 LottieWrapperView(
-                  animationName: "OneTap",
+                  animationName: "oneTap",
                   loopMode: .playOnce,
                   loopCount: 2,
                   bundle: .module,
@@ -93,7 +93,7 @@ extension OnboardingHighlightTip: View {
               .overlay {
                 if visibleMemoChipLottie {
                   LottieWrapperView(
-                    animationName: "OneTap",
+                    animationName: "oneTap",
                     loopMode: .playOnce,
                     bundle: .module,
                     onComplete: onMemoChipLottieCompleted

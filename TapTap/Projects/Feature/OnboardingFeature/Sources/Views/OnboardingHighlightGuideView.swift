@@ -191,7 +191,7 @@ extension OnboardingHighlightGuideView: View {
             
             if store.state.visibleDoubleTapLottie {
               LottieWrapperView(
-                animationName: "DoubleTap",
+                animationName: "doubleTap",
                 bundle: .module,
                 onComplete: {
                   store.send(.hideDoubleTapLottie)
