@@ -107,7 +107,6 @@ public struct OnboardingHighlightGuideFeature {
         guard state.animationPhase == .onAppear else {
           return .none
         }
-        
         state.animationPhase = .doubleTapGuideEvent
         
         return .run { send in
@@ -120,7 +119,7 @@ public struct OnboardingHighlightGuideFeature {
         guard state.animationPhase == .doubleTapGuideEvent else {
           return .none
         }
-        
+             
         state.visibleFirstTip = false
         state.visibleOverlay = true
         state.visibleSecondTip = true
