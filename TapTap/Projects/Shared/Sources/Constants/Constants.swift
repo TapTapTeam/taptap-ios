@@ -116,4 +116,12 @@ public struct Constants {
     본 약관은 2025년 10월 31일부터 시행합니다.
     """
   }
+  
+  public static let settingFavoriteURL = "https://ufdmncttkcavcwpeysie.supabase.co/storage/v1/object/public/test/SettingFavorite2.mov"
+  
+  public static let settingExtensionURL_light = "https://ufdmncttkcavcwpeysie.supabase.co/storage/v1/object/public/test/ExtensionGuide_Light2.mov"
+  
+  public static let settingExtensionURL_dark = "https://ufdmncttkcavcwpeysie.supabase.co/storage/v1/object/public/test/ExtensionGuide_Dark2.mov"
+  
+  public static let settingShareURL = "https://ufdmncttkcavcwpeysie.supabase.co/storage/v1/object/public/test/SafariShare2.mov"
 }
