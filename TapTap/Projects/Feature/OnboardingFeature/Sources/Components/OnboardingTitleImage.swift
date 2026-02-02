@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import DesignSystem
+
 public struct OnboardingTitleImage {
   let title: OnboardingNamespace
   let description: OnboardingNamespace

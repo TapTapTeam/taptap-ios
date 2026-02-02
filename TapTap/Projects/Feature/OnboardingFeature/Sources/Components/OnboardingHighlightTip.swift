@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import DesignSystem
+
 public struct OnboardingHighlightTip {
   var visiblePinkChipLottie: Bool
   var visibleMemoChipLottie: Bool

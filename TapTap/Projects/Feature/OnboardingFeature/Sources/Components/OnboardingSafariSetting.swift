@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import DesignSystem
+
 public struct OnboardingSafariSetting {
   @Binding var currentPage: Int
   let showPage: Bool = true
