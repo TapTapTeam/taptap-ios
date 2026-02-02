@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import DesignSystem
+
 public struct OnboardingMemoChip {
   public init() {}
 }
