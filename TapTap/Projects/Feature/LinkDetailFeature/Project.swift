@@ -15,12 +15,12 @@ let project = Project.project(
       name: FeatureModule.LinkDetailFeature.rawValue,
       product: .staticFramework,
       sources: .sources,
+      resources: .default,
       dependencies: [
         .TCA(),
         .domain(),
         .LinkNavigator(),
         .Lottie(),
-        .linkDetailClient()
       ]
     ),
     Target.target(
@@ -28,7 +28,6 @@ let project = Project.project(
       product: .app,
       infoPlist: .default,
       sources: ["Example/**"],
-      resources: .default,
       dependencies: [
         .target(name: FeatureModule.LinkDetailFeature.rawValue)
       ]

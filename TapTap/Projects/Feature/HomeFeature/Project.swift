@@ -8,12 +8,12 @@ let project = Project.project(
       name: FeatureModule.HomeFeature.rawValue,
       product: .staticFramework,
       sources: .sources,
+      resources: .default,
       dependencies: [
         .TCA(),
         .domain(),
         .LinkNavigator(),
         .Lottie(),
-        .homeClient()
       ]
     ),
     Target.target(
@@ -21,7 +21,6 @@ let project = Project.project(
       product: .app,
       infoPlist: .default,
       sources: ["Example/**"],
-      resources: .default,
       dependencies: [
         .target(name: FeatureModule.HomeFeature.rawValue)
       ]
