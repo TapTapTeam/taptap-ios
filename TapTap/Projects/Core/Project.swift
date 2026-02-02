@@ -9,10 +9,10 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.project(
-  name: Module.Domain.rawValue,
+  name: Module.Core.rawValue,
   targets: [
     Target.target(
-      name: Module.Domain.rawValue,
+      name: Module.Core.rawValue,
       product: .staticFramework,
       sources: .sources,
       resources: .default,

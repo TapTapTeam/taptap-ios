@@ -12,7 +12,7 @@ import UIKit
 import UniformTypeIdentifiers
 
 import DesignSystem
-import Domain
+import Core
 
 // MARK: - ShareViewController
 final class ShareViewController: UIViewController {

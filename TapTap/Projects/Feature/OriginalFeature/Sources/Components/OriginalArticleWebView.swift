@@ -8,7 +8,7 @@
 import SwiftUI
 import WebKit
 
-import Domain
+import Core
 
 struct OriginalArticleWebView: UIViewRepresentable {
   let articleItem: ArticleItem

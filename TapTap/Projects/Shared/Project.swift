@@ -19,7 +19,7 @@ let project = Project.project(
       dependencies: [
         .TCA(),
         .LinkNavigator(),
-        .domain()
+        .core()
       ]
     )
   ]

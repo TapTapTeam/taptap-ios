@@ -10,7 +10,7 @@ import SwiftUI
 import ComposableArchitecture
 import LinkNavigator
 
-import Domain
+import Core
 import Shared
 
 public struct OriginalArticleRouteBuilder {

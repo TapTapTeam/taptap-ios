@@ -7,7 +7,7 @@
 
 import ComposableArchitecture
 
-import Domain
+import Core
 import OnboardingFeature
 import Shared
 

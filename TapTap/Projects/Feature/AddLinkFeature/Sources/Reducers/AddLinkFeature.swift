@@ -10,7 +10,7 @@ import SwiftUI
 
 import ComposableArchitecture
 
-import Domain
+import Core
 import DesignSystem
 import Shared
 import MyCategoryFeature

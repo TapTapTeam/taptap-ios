@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-import Domain
+import Core
 import DesignSystem
 import LinkNavigator
 

@@ -2,7 +2,7 @@ import SwiftUI
 
 import ComposableArchitecture
 import DesignSystem
-import Domain
+import Core
 
 public struct CategoryIconScrollView {
   @Binding var selectedIcon: CategoryIcon?

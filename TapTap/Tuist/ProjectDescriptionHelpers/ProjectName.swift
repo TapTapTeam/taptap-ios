@@ -11,7 +11,7 @@ public enum Module: String {
   case App
   case Feature
   case DesignSystem
-  case Domain
+  case Core
   case Shared
   case TapTapMac
 }

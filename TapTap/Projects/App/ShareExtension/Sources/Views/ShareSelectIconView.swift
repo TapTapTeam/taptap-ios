@@ -9,7 +9,7 @@ import SwiftData
 import SwiftUI
 
 import DesignSystem
-import Domain
+import Core
 
 // MARK: - Properties
 struct ShareSelectIconView: View {

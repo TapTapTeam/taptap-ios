@@ -10,7 +10,7 @@ import SwiftUI
 import ComposableArchitecture
 
 import DesignSystem
-import Domain
+import Core
 
 public struct LinkDetailView {
   @Environment(\.dismiss) private var dismiss

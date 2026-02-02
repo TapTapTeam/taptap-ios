@@ -9,7 +9,7 @@ import SwiftData
 import SwiftUI
 
 import DesignSystem
-import Domain
+import Core
 
 struct RootWrapperView: View {
   let container: ModelContainer
