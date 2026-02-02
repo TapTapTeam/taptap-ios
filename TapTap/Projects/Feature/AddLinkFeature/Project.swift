@@ -20,7 +20,15 @@ let project = Project.project(
     Target.target(
       name: "\(FeatureModule.AddLinkFeature.rawValue)Example",
       product: .app,
-      infoPlist: .default,
+      infoPlist: .extendingDefault(with: [
+        "UILaunchScreen": [
+          "UIColorName": "",
+          "UIImageName": ""
+        ],
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationPortrait"
+        ]
+      ]),
       sources: ["Example/**"],
       dependencies: [
         .target(name: FeatureModule.AddLinkFeature.rawValue)

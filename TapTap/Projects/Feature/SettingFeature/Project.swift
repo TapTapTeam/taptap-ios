@@ -26,7 +26,15 @@ let project = Project.project(
     Target.target(
       name: "\(FeatureModule.SettingFeature.rawValue)Example",
       product: .app,
-      infoPlist: .default,
+      infoPlist: .extendingDefault(with: [
+        "UILaunchScreen": [
+          "UIColorName": "",
+          "UIImageName": ""
+        ],
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationPortrait"
+        ]
+      ]),
       sources: ["Example/**"],
       dependencies: [
         .target(name: FeatureModule.SettingFeature.rawValue)
