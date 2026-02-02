@@ -20,7 +20,8 @@ let project = Project.project(
         .TCA(),
         .domain(),
         .LinkNavigator(),
-        .shared()
+        .shared(),
+        .onboardingFeature()
       ]
     ),
     Target.target(
