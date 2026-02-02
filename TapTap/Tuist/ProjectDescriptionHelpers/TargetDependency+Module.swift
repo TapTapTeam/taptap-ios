@@ -22,7 +22,7 @@ extension TargetDependency {
 
 extension TargetDependency {
   public static func homeFeature() -> TargetDependency {
-    .project(target: FeatureModule.HomeFeature.rawValue, path: .relativeToRoot("Projects/Feature/homeFeature"))
+    .project(target: FeatureModule.HomeFeature.rawValue, path: .relativeToRoot("Projects/Feature/HomeFeature"))
   }
 }
 
