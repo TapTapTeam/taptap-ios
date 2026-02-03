@@ -12,11 +12,22 @@ import ComposableArchitecture
 
 import Core
 
-struct OriginalEditWebView: UIViewRepresentable {
+public struct OriginalEditWebView: UIViewRepresentable {
   let articleItem: ArticleItem
   let store: StoreOf<OriginalEditFeature>
+  @Binding var progress: Double
   
-  func makeUIView(context: Context) -> WKWebView {
+  public init(
+    articleItem: ArticleItem,
+    store: StoreOf<OriginalEditFeature>,
+    progress: Binding<Double>
+  ) {
+    self.articleItem = articleItem
+    self.store = store
+    self._progress = progress
+  }
+  
+  public func makeUIView(context: Context) -> WKWebView {
     let userContentController = WKUserContentController()
     userContentController.add(context.coordinator, name: "editHandler")
     
@@ -25,33 +36,49 @@ struct OriginalEditWebView: UIViewRepresentable {
     
     let webView = WKWebView(frame: .zero, configuration: configuration)
     webView.navigationDelegate = context.coordinator
+    
+    // progress 관찰을 위한 KVO 등록
+    context.coordinator.observation = webView.observe(\.estimatedProgress, options: [.new]) { webView, change in
+      DispatchQueue.main.async {
+        self.progress = webView.estimatedProgress
+      }
+    }
+    
     return webView
   }
   
-  func updateUIView(_ uiView: WKWebView, context: Context) {
+  public func updateUIView(_ uiView: WKWebView, context: Context) {
     if store.isDataRequestTriggered {
       context.coordinator.getHighlightsData(webView: uiView)
     } else {
       guard let articleURL = URL(string: articleItem.urlString) else {
         return
       }
-      let request = URLRequest(url: articleURL)
-      uiView.load(request)
+      
+      if uiView.url?.absoluteString != articleURL.absoluteString {
+        let request = URLRequest(url: articleURL)
+        uiView.load(request)
+      }
     }
   }
   
-  func makeCoordinator() -> Coordinator {
+  public func makeCoordinator() -> Coordinator {
     Coordinator(self)
   }
   
-  class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
+  public class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     var parent: OriginalEditWebView
+    var observation: NSKeyValueObservation?
     
     init(_ parent: OriginalEditWebView) {
       self.parent = parent
     }
     
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+    deinit {
+      observation?.invalidate()
+    }
+    
+    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
       if message.name == "editHandler", let body = message.body as? [[String: Any]] {
         do {
           let data = try JSONSerialization.data(withJSONObject: body, options: [])
@@ -65,7 +92,7 @@ struct OriginalEditWebView: UIViewRepresentable {
       }
     }
     
-    func getHighlightsData(webView: WKWebView) {
+    public func getHighlightsData(webView: WKWebView) {
       webView.evaluateJavaScript("getAllHighlightsData();") { _, error in
         if let error = error {
           print("getHighlightsData evaluate 에러 \(error)")
@@ -73,7 +100,12 @@ struct OriginalEditWebView: UIViewRepresentable {
       }
     }
     
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+      // 로딩 완료 시 progress를 1.0으로 설정
+      DispatchQueue.main.async {
+        self.parent.progress = 1.0
+      }
+      
       let highlightsJSON = parent.articleItem.highlights.map { item in
         return [
           "id": item.id,

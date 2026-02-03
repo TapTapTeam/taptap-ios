@@ -11,6 +11,7 @@ import ComposableArchitecture
 
 import DesignSystem
 import Core
+import OriginalFeature
 
 public struct LinkDetailView {
   @Environment(\.dismiss) private var dismiss
@@ -18,6 +19,7 @@ public struct LinkDetailView {
   @State private var selectedTab: LinkDetailSegment.Tab = .summary
   @FocusState private var titleFocused: Bool
   @State private var showAlertDialog = false
+  @State private var startWebViewLoading = false
 }
 
 extension LinkDetailView: View {
@@ -79,6 +81,48 @@ extension LinkDetailView: View {
         }
       }
       .animation(.easeInOut, value: store.showToast)
+      
+      if store.isLoadingOriginalArticle {
+        Color.dim.ignoresSafeArea()
+        
+        VStack(spacing: 16) {
+          ProgressView(value: store.originalArticleProgress, total: 1.0)
+            .progressViewStyle(LinearProgressViewStyle(tint: .bl6))
+            .frame(width: 200)
+          
+          Text("원문을 불러오는 중이에요...")
+            .font(.B1_M)
+            .foregroundStyle(.white)
+        }
+        .onAppear {
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            startWebViewLoading = true
+          }
+        }
+        
+        // 숨겨진 웹뷰를 통해 미리 로딩 수행
+        if startWebViewLoading {
+          OriginalArticleWebView(
+            articleItem: store.link,
+            progress: Binding(
+              get: { store.originalArticleProgress },
+              set: { store.send(.originalArticleProgressChanged($0)) }
+            )
+          )
+          .frame(width: 0, height: 0)
+          .opacity(0)
+          .onChange(of: store.originalArticleProgress) { _, newValue in
+            if newValue >= 1.0 {
+              store.send(.originalArticleLoadingCompleted)
+            }
+          }
+        }
+      }
+    }
+    .onChange(of: store.isLoadingOriginalArticle) { _, isLoading in
+      if !isLoading {
+        startWebViewLoading = false
+      }
     }
   }
   

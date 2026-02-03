@@ -10,35 +10,75 @@ import WebKit
 
 import Core
 
-struct OriginalArticleWebView: UIViewRepresentable {
+public struct OriginalArticleWebView: UIViewRepresentable {
   let articleItem: ArticleItem
+  @Binding var progress: Double
+  private static let processPool = WKProcessPool()
   
-  func makeUIView(context: Context) -> WKWebView {
-    let webView = WKWebView()
+  public init(
+    articleItem: ArticleItem,
+    progress: Binding<Double>
+  ) {
+    self.articleItem = articleItem
+    self._progress = progress
+  }
+  
+  public init(
+      articleItem: ArticleItem
+    ) {
+      self.articleItem = articleItem
+      self._progress = .constant(1.0)
+    }
+
+  public func makeUIView(context: Context) -> WKWebView {
+    let configuration = WKWebViewConfiguration()
+    configuration.processPool = Self.processPool
+    let webView = WKWebView(frame: .zero, configuration: configuration)
     webView.navigationDelegate = context.coordinator
+    
+    // progress 관찰을 위한 KVO 등록
+    context.coordinator.observation = webView.observe(\.estimatedProgress, options: [.new]) { webView, change in
+      DispatchQueue.main.async {
+        self.progress = webView.estimatedProgress
+      }
+    }
+    
     return webView
   }
   
-  func updateUIView(_ uiView: WKWebView, context: Context) {
+  public func updateUIView(_ uiView: WKWebView, context: Context) {
     guard let articleURL = URL(string: articleItem.urlString) else {
       return
     }
-    let request = URLRequest(url: articleURL)
-    uiView.load(request)
+    
+    if uiView.url?.absoluteString != articleURL.absoluteString {
+      let request = URLRequest(url: articleURL)
+      uiView.load(request)
+    }
   }
   
-  func makeCoordinator() -> Coordinator {
+  public func makeCoordinator() -> Coordinator {
     Coordinator(self)
   }
   
-  class Coordinator: NSObject, WKNavigationDelegate {
+  public class Coordinator: NSObject, WKNavigationDelegate {
     var parent: OriginalArticleWebView
+    var observation: NSKeyValueObservation?
     
-    init(_ parent: OriginalArticleWebView) {
+    public init(_ parent: OriginalArticleWebView) {
       self.parent = parent
     }
     
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    deinit {
+      observation?.invalidate()
+    }
+    
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+      // 로딩 완료 시 progress를 1.0으로 명시적 설정
+      DispatchQueue.main.async {
+        self.parent.progress = 1.0
+      }
+      
       let highlightsJSON = parent.articleItem.highlights.map { item in
         return [
           "id": item.id,
