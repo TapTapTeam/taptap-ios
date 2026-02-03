@@ -50,7 +50,7 @@ TapTap.tooltip = {
           this.hide();
           return;
         }
-        this.show(range);
+        this.show(range, this.activeHighlightId);
       });
     });
   },
@@ -66,30 +66,47 @@ TapTap.tooltip = {
     const action = target.dataset.action;
     const existingHighlightId = this.activeHighlightId;
 
+    // ✅ iOS에서 hide()하면 selection이 바로 collapse될 수 있어서 먼저 range를 "복사"해둔다
+    let preservedRange = null;
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const r = selection.getRangeAt(0);
+      if (!r.collapsed) preservedRange = r.cloneRange();
+    }
+
+    // ✅ hide는 range 확보 후에
     this.hide();
-     this.activeHighlightId = null;
+    this.activeHighlightId = null;
 
     if (existingHighlightId) {
       if (color) {
-        TapTap.highlight.updateHighlightColor(existingHighlightId, color);
+        // ✅ selection이 살아있을 때 복사한 range를 쓰기
+        if (preservedRange) {
+          TapTap.highlight.replaceHighlight(existingHighlightId, preservedRange, color);
+        } else {
+          TapTap.highlight.updateHighlightColor(existingHighlightId, color);
+        }
       } else if (action === 'memo') {
-        requestAnimationFrame(() => {
-          TapTap.memo.showMemoInput(existingHighlightId);
-        });
+        const currentColor = TapTap.highlight.getHighlightColor(existingHighlightId) || 'yellow';
+        // 영역 업데이트 후 메모 열기
+        const rangeToUse = preservedRange || (window.getSelection().rangeCount > 0 ? window.getSelection().getRangeAt(0) : null);
+        if (rangeToUse) {
+           const updatedId = TapTap.highlight.replaceHighlight(existingHighlightId, rangeToUse, currentColor);
+           requestAnimationFrame(() => {
+             TapTap.memo.showMemoInput(updatedId);
+           });
+        }
       }
       return;
     }
 
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0 || selection.getRangeAt(0).collapsed) {
-      return;
-    }
-    const range = selection.getRangeAt(0);
+    // 새 하이라이트 생성도 preservedRange 우선 사용
+    if (!preservedRange) return;
 
     if (color) {
-      TapTap.highlight.highlightRange(range, color);
+      TapTap.highlight.highlightRange(preservedRange, color);
     } else if (action === 'memo') {
-      const newHighlightId = TapTap.highlight.highlightRange(range, 'rgba(255, 241, 39, 0.2)');
+      const newHighlightId = TapTap.highlight.highlightRange(preservedRange, 'rgba(255, 241, 39, 0.2)');
       if (newHighlightId) {
         requestAnimationFrame(() => {
           TapTap.memo.showMemoInput(newHighlightId);
@@ -106,9 +123,14 @@ TapTap.tooltip = {
 
       const highlightId = wrapper.dataset.highlightId;
       const range = document.createRange();
-      range.selectNode(wrapper);
-      
-      this.isReopening = true;
+      const highlightedSpan = wrapper.querySelector('.taptap-highlighted');
+      if (highlightedSpan) range.selectNodeContents(highlightedSpan);
+      else range.selectNodeContents(wrapper);
+
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+
       this.show(range, highlightId);
       setTimeout(() => { this.isReopening = false; }, 100);
 
