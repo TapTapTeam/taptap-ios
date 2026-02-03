@@ -21,7 +21,8 @@ let project = Project.project(
         .core(),
         .LinkNavigator(),
         .Lottie(),
-        .shared()
+        .shared(),
+        .originalFeature()
       ]
     ),
     Target.target(
