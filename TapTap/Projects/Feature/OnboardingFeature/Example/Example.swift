@@ -7,11 +7,18 @@
 
 import SwiftUI
 
+import ComposableArchitecture
+import OnboardingFeature
+
 @main
 struct Example: App {
+  private let store = Store(initialState: OnboardingFeature.State()) {
+    OnboardingFeature()
+  }
+  
   var body: some Scene {
     WindowGroup {
-      
+      OnboardingView(store: store)
     }
   }
 }

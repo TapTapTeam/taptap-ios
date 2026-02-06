@@ -11,7 +11,8 @@ public enum Module: String {
   case App
   case Feature
   case DesignSystem
-  case Domain
+  case Core
+  case Shared
   case TapTapMac
 }
 
@@ -27,16 +28,5 @@ public enum FeatureModule: String {
   case HomeFeature
 }
 
-public enum ClientModule: String {
-  case AddLinkClient
-  case SearchClient
-  case LinkDetailClient
-  case LinkListClient
-  case MyCategoryClient
-  case OriginalClient
-  case HomeClient
-}
-
 extension Module: CaseIterable {}
 extension FeatureModule: CaseIterable {}
-extension ClientModule: CaseIterable {}

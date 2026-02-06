@@ -15,20 +15,29 @@ let project = Project.project(
       name: FeatureModule.MyCategoryFeature.rawValue,
       product: .staticFramework,
       sources: .sources,
+      resources: .default,
       dependencies: [
         .TCA(),
-        .domain(),
+        .core(),
         .LinkNavigator(),
         .Lottie(),
-        .myCategoryClient()
+        .shared(),
+        .onboardingFeature()
       ]
     ),
     Target.target(
       name: "\(FeatureModule.MyCategoryFeature.rawValue)Example",
       product: .app,
-      infoPlist: .default,
+      infoPlist: .extendingDefault(with: [
+        "UILaunchScreen": [
+          "UIColorName": "",
+          "UIImageName": ""
+        ],
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationPortrait"
+        ]
+      ]),
       sources: ["Example/**"],
-      resources: .default,
       dependencies: [
         .target(name: FeatureModule.MyCategoryFeature.rawValue)
       ]

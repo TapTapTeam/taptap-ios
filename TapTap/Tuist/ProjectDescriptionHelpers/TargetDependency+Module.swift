@@ -22,7 +22,7 @@ extension TargetDependency {
 
 extension TargetDependency {
   public static func homeFeature() -> TargetDependency {
-    .project(target: FeatureModule.HomeFeature.rawValue, path: .relativeToRoot("Projects/Feature/homeFeature"))
+    .project(target: FeatureModule.HomeFeature.rawValue, path: .relativeToRoot("Projects/Feature/HomeFeature"))
   }
 }
 
@@ -68,41 +68,17 @@ extension TargetDependency {
   }
 }
 
-// MARK: - Client
-extension TargetDependency {
-  public static func addLinkClient() -> TargetDependency {
-    .project(target: ClientModule.AddLinkClient.rawValue, path: .relativeToRoot("Projects/Client/AddLinkClient"))
-  }
-  
-  public static func searchClient() -> TargetDependency {
-    .project(target: ClientModule.SearchClient.rawValue, path: .relativeToRoot("Projects/Client/SearchClient"))
-  }
-  
-  public static func linkDetailClient() -> TargetDependency {
-    .project(target: ClientModule.LinkDetailClient.rawValue, path: .relativeToRoot("Projects/Client/LinkDetailClient"))
-  }
-  
-  public static func linkListClient() -> TargetDependency {
-    .project(target: ClientModule.LinkListClient.rawValue, path: .relativeToRoot("Projects/Client/LinkListClient"))
-  }
-  
-  public static func myCategoryClient() -> TargetDependency {
-    .project(target: ClientModule.MyCategoryClient.rawValue, path: .relativeToRoot("Projects/Client/MyCategoryClient"))
-  }
-  
-  public static func originalClient() -> TargetDependency {
-    .project(target: ClientModule.OriginalClient.rawValue, path: .relativeToRoot("Projects/Client/OriginalClient"))
-  }
-  
-  public static func homeClient() -> TargetDependency {
-    .project(target: ClientModule.HomeClient.rawValue, path: .relativeToRoot("Projects/Client/HomeClient"))
-  }
-}
-
 // MARK: - Design
 extension TargetDependency {
   public static func designSystem() -> TargetDependency {
     .project(target: Module.DesignSystem.rawValue, path: .relativeToRoot("Projects/DesignSystem"))
+  }
+}
+
+// MARK: - Shared
+extension TargetDependency {
+  public static func shared() -> TargetDependency {
+    .project(target: Module.Shared.rawValue, path: .relativeToRoot("Projects/Shared"))
   }
 }
 
@@ -120,7 +96,7 @@ extension TargetDependency {
 }
 
 extension TargetDependency {
-  public static func domain() -> TargetDependency {
-    .project(target: Module.Domain.rawValue, path: .relativeToRoot("Projects/Domain"))
+  public static func core() -> TargetDependency {
+    .project(target: Module.Core.rawValue, path: .relativeToRoot("Projects/Core"))
   }
 }

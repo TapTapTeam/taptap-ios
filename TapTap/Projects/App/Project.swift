@@ -70,7 +70,7 @@ let safariTarget = Target.target(
   ],
   entitlements: .file(path: "SafariExtension.entitlements"),
   dependencies: [
-    .domain()
+    .core()
   ]
 )
 
@@ -84,7 +84,7 @@ let shareExtensionTarget = Target.target(
   dependencies: [
     .sdk(name: "UniformTypeIdentifiers", type: .framework),
     .designSystem(),
-    .domain()
+    .core()
   ]
 )
 

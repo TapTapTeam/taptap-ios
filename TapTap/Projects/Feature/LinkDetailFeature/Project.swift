@@ -15,20 +15,29 @@ let project = Project.project(
       name: FeatureModule.LinkDetailFeature.rawValue,
       product: .staticFramework,
       sources: .sources,
+      resources: .default,
       dependencies: [
         .TCA(),
-        .domain(),
+        .core(),
         .LinkNavigator(),
         .Lottie(),
-        .linkDetailClient()
+        .shared(),
+        .originalFeature()
       ]
     ),
     Target.target(
       name: "\(FeatureModule.LinkDetailFeature.rawValue)Example",
       product: .app,
-      infoPlist: .default,
+      infoPlist: .extendingDefault(with: [
+        "UILaunchScreen": [
+          "UIColorName": "",
+          "UIImageName": ""
+        ],
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationPortrait"
+        ]
+      ]),
       sources: ["Example/**"],
-      resources: .default,
       dependencies: [
         .target(name: FeatureModule.LinkDetailFeature.rawValue)
       ]

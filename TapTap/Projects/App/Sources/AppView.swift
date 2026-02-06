@@ -8,10 +8,11 @@
 import SwiftUI
 
 import ComposableArchitecture
-
-import Domain
-import Feature
 import LinkNavigator
+
+import Core
+import OnboardingFeature
+import Shared
 
 struct AppView {
   @Bindable var store: StoreOf<AppFeature>

@@ -1,0 +1,161 @@
+//
+//  OriginalWebView.swift
+//  Feature
+//
+//  Created by 여성일 on 10/31/25.
+//
+
+import SwiftUI
+import WebKit
+
+import Core
+
+public struct OriginalArticleWebView: UIViewRepresentable {
+  let articleItem: ArticleItem
+  @Binding var progress: Double
+  private static let processPool = WKProcessPool()
+  
+  public init(
+    articleItem: ArticleItem,
+    progress: Binding<Double>
+  ) {
+    self.articleItem = articleItem
+    self._progress = progress
+  }
+  
+  public init(
+      articleItem: ArticleItem
+    ) {
+      self.articleItem = articleItem
+      self._progress = .constant(1.0)
+    }
+
+  public func makeUIView(context: Context) -> WKWebView {
+    let configuration = WKWebViewConfiguration()
+    configuration.processPool = Self.processPool
+    let webView = WKWebView(frame: .zero, configuration: configuration)
+    webView.navigationDelegate = context.coordinator
+    
+    // progress 관찰을 위한 KVO 등록
+    context.coordinator.observation = webView.observe(\.estimatedProgress, options: [.new]) { webView, change in
+      DispatchQueue.main.async {
+        self.progress = webView.estimatedProgress
+      }
+    }
+    
+    return webView
+  }
+  
+  public func updateUIView(_ uiView: WKWebView, context: Context) {
+    guard let articleURL = URL(string: articleItem.urlString) else {
+      return
+    }
+    
+    if uiView.url?.absoluteString != articleURL.absoluteString {
+      let request = URLRequest(url: articleURL)
+      uiView.load(request)
+    }
+  }
+  
+  public func makeCoordinator() -> Coordinator {
+    Coordinator(self)
+  }
+  
+  public class Coordinator: NSObject, WKNavigationDelegate {
+    var parent: OriginalArticleWebView
+    var observation: NSKeyValueObservation?
+    
+    public init(_ parent: OriginalArticleWebView) {
+      self.parent = parent
+    }
+    
+    deinit {
+      observation?.invalidate()
+    }
+    
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+      // 로딩 완료 시 progress를 1.0으로 명시적 설정
+      DispatchQueue.main.async {
+        self.parent.progress = 1.0
+      }
+      
+      let highlightsJSON = parent.articleItem.highlights.map { item in
+        return [
+          "id": item.id,
+          "sentence": item.sentence,
+          "type": item.type,
+          "comments": item.comments.map { comment in
+            return [
+              "id": comment.id,
+              "type": comment.type,
+              "text": comment.text
+            ]
+          }
+        ]
+      }
+      
+      guard let jsonData = try? JSONSerialization.data(withJSONObject: highlightsJSON, options: []),
+            let jsonString = String(data: jsonData, encoding: .utf8) else {
+        print("변환 실패")
+        return
+      }
+      
+      injectCss(webView: webView, filename: "OriginalArticleStyle")
+      injectJS(webView: webView, filename: "OriginalArticleScript", jsonString: jsonString)
+    }
+    
+    private func injectCss(webView: WKWebView, filename: String) {
+      let bundle = Bundle.module
+      
+      guard let cssPath = bundle.path(forResource: filename, ofType: "css") else {
+        print("\(filename).css 를 찾지 못함")
+        return
+      }
+      
+      guard let cssString = try? String(contentsOfFile: cssPath)
+        .replacingOccurrences(of: "\n", with: "") else {
+        print("CSS 파일 읽기 실패")
+        return
+      }
+      
+      let javascript = """
+        var style = document.createElement('style');
+        style.innerHTML = `\(cssString)`;
+        document.head.appendChild(style);
+        void 0;
+      """
+      
+      webView.evaluateJavaScript(javascript) { _, error in
+        if let error = error {
+          print("CSS 주입 오류: \(error)")
+        }
+      }
+    }
+    
+    private func injectJS(webView: WKWebView, filename: String, jsonString: String) {
+      let bundle = Bundle.module
+      
+      guard let jsPath = bundle.path(forResource: filename, ofType: "js") else {
+        print("\(filename).js 를 찾지 못함")
+        return
+      }
+      
+      do {
+        let scriptContent = try String(contentsOfFile: jsPath)
+        let fullScript = """
+          \(scriptContent)
+          applyHighlights(\(jsonString));
+          void 0;
+        """
+        
+        webView.evaluateJavaScript(fullScript) { _, error in
+          if let error = error {
+            print("JS 실행 오류: \(error)")
+          }
+        }
+      } catch {
+        print("JS 파일 로드 실패: \(error)")
+      }
+    }
+  }
+}

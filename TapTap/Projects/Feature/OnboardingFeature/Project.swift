@@ -15,19 +15,28 @@ let project = Project.project(
       name: FeatureModule.OnboardingFeature.rawValue,
       product: .staticFramework,
       sources: .sources,
+      resources: .default,
       dependencies: [
         .TCA(),
-        .domain(),
+        .core(),
         .LinkNavigator(),
-        .Lottie()
+        .Lottie(),
+        .shared()
       ]
     ),
     Target.target(
       name: "\(FeatureModule.OnboardingFeature.rawValue)Example",
       product: .app,
-      infoPlist: .default,
+      infoPlist: .extendingDefault(with: [
+        "UILaunchScreen": [
+          "UIColorName": "",
+          "UIImageName": ""
+        ],
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationPortrait"
+        ]
+      ]),
       sources: ["Example/**"],
-      resources: .default,
       dependencies: [
         .target(name: FeatureModule.OnboardingFeature.rawValue)
       ]

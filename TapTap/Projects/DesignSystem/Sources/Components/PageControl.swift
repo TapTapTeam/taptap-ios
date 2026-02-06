@@ -7,12 +7,19 @@
 
 import SwiftUI
 
-struct PageControl: View {
-  
+public struct PageControl: View {
   var numberOfPages: Int
   @Binding var currentPage: Int
   
-  var body: some View {
+  public init(
+    numberOfPages: Int,
+    currentPage: Binding<Int>
+  ) {
+    self.numberOfPages = numberOfPages
+    self._currentPage = currentPage
+  }
+  
+  public var body: some View {
     HStack(spacing: 8) {
       ForEach(0..<numberOfPages, id: \.self) { pagingIndex in
         
@@ -29,8 +36,4 @@ struct PageControl: View {
     }
     .animation(.linear, value: currentPage)
   }
-}
-
-#Preview {
-  PageControl(numberOfPages: 5, currentPage: .constant(3))
 }

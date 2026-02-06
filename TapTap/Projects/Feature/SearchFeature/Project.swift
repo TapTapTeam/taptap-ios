@@ -15,19 +15,27 @@ let project = Project.project(
       name: FeatureModule.SearchFeature.rawValue,
       product: .staticFramework,
       sources: .sources,
+      resources: .default,
       dependencies: [
         .TCA(),
-        .domain(),
+        .core(),
         .LinkNavigator(),
-        .searchClient()
+        .shared()
       ]
     ),
     Target.target(
       name: "\(FeatureModule.SearchFeature.rawValue)Example",
       product: .app,
-      infoPlist: .default,
+      infoPlist: .extendingDefault(with: [
+        "UILaunchScreen": [
+          "UIColorName": "",
+          "UIImageName": ""
+        ],
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationPortrait"
+        ]
+      ]),
       sources: ["Example/**"],
-      resources: .default,
       dependencies: [
         .target(name: FeatureModule.SearchFeature.rawValue)
       ]

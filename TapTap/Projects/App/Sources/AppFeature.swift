@@ -7,8 +7,9 @@
 
 import ComposableArchitecture
 
-import Domain
-import Feature
+import Core
+import OnboardingFeature
+import Shared
 
 @Reducer
 struct AppFeature {
@@ -33,9 +34,11 @@ struct AppFeature {
     case updateCheckResult(Bool)
     case openAppStore
     case splashFinished
+    case loadOnboardingState
+    case onboardingStateLoaded(Bool)
     case onboarding(OnboardingFeature.Action)
     case alert(PresentationAction<Alert>)
-     
+
      @CasePathable
      enum Alert: Equatable {
        case openAppStore
@@ -84,9 +87,20 @@ struct AppFeature {
         return .none
         
       case .splashFinished:
-        let hasCompletedOnboarding = userDefaultsClient.loadOnboardingState()
+        return .send(.loadOnboardingState)
         
-        if hasCompletedOnboarding {
+      case .loadOnboardingState:
+        return .run { send in
+          do {
+            let hasCompleted = try userDefaultsClient.loadOnboardingState()
+            await send(.onboardingStateLoaded(hasCompleted))
+          } catch {
+            await send(.onboardingStateLoaded(false))
+          }
+        }
+        
+      case .onboardingStateLoaded(let hasCompleted):
+        if hasCompleted {
           state.launchState = .home
           state.onboarding = nil
         } else {
@@ -94,7 +108,8 @@ struct AppFeature {
           state.onboarding = OnboardingFeature.State()
         }
         return .none
-      
+
+        
       case .alert(.presented(.openAppStore)):
         return .run { _ in
           await appVersionCheckClient.openAppStore()

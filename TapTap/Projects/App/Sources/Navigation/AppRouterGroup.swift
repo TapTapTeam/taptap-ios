@@ -7,7 +7,14 @@
 
 import LinkNavigator
 
-import Feature
+import HomeFeature
+import MyCategoryFeature
+import AddLinkFeature
+import SearchFeature
+import SettingFeature
+import LinkListFeature
+import LinkDetailFeature
+import OriginalFeature
 
 public struct AppRouterGroup {
   public init() { }

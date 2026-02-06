@@ -1,9 +1,8 @@
 import SwiftUI
 import SwiftData
 
-import Domain
+import Core
 import DesignSystem
-import Feature
 import LinkNavigator
 
 import ComposableArchitecture
