@@ -7,8 +7,35 @@
 
 window.TapTap = window.TapTap || {};
 TapTap.highlight = {
+  _observer: null,
+  _restoreTimeout: null,
+
   init: function() {
     document.body.addEventListener('click', this.handleHighlightClick.bind(this));
+    
+    // 동적으로 추가되는 콘텐츠(AJAX 등)에 대응하기 위한 관찰자 설정
+    if (this._observer) this._observer.disconnect();
+    this._observer = new MutationObserver(this._handleMutation.bind(this));
+    this._observer.observe(document.body, { childList: true, subtree: true });
+  },
+
+  _handleMutation: function(mutations) {
+    // DOM 변화가 잦을 때 성능을 위해 디바운스 처리
+    if (this._restoreTimeout) clearTimeout(this._restoreTimeout);
+    this._restoreTimeout = setTimeout(() => {
+      this.restoreHighlights();
+    }, 1000);
+  },
+
+  _getPageKey: function() {
+    // URL에서 불필요한 해시 등을 제거하여 키 일관성 유지
+    try {
+      const url = new URL(window.location.href);
+      // origin + pathname + search (쿼리 파라미터는 중요할 수 있으므로 포함, 해시는 제외)
+      return 'taptap-highlights-' + url.origin + url.pathname + url.search;
+    } catch (e) {
+      return 'taptap-highlights-' + window.location.href;
+    }
   },
   
   handleHighlightClick: function(event) {
@@ -53,7 +80,7 @@ TapTap.highlight = {
     const wrapper = this._renderHighlight(range, color, highlightId);
     if (!wrapper) return null;
     
-    const pageKey = 'taptap-highlights-' + window.location.href;
+    const pageKey = this._getPageKey();
     const highlights = JSON.parse(localStorage.getItem(pageKey) || '[]');
     
     const newHighlight = {
@@ -119,7 +146,7 @@ TapTap.highlight = {
       highlightedTextSpan.style.backgroundColor = color;
     }
     
-    const pageKey = 'taptap-highlights-' + window.location.href;
+    const pageKey = this._getPageKey();
     const highlights = JSON.parse(localStorage.getItem(pageKey) || '[]');
     const highlight = highlights.find(h => h.id === id);
     if (highlight) {
@@ -131,7 +158,7 @@ TapTap.highlight = {
 
   replaceHighlight: function(id, newRange, newColor) {
     // 1. 기존 데이터(메모 등) 백업
-    const pageKey = 'taptap-highlights-' + window.location.href;
+    const pageKey = this._getPageKey();
     const highlights = JSON.parse(localStorage.getItem(pageKey) || '[]');
     const oldHighlight = highlights.find(h => h.id === id);
     const oldMemos = oldHighlight ? oldHighlight.memos : [];
@@ -238,7 +265,7 @@ TapTap.highlight = {
   },
 
   _removeHighlightData: function(id) {
-    const pageKey = 'taptap-highlights-' + window.location.href;
+    const pageKey = this._getPageKey();
     let highlights = JSON.parse(localStorage.getItem(pageKey) || '[]');
     highlights = highlights.filter(h => h.id !== id);
     localStorage.setItem(pageKey, JSON.stringify(highlights));
@@ -246,44 +273,97 @@ TapTap.highlight = {
   },
   
   restoreHighlights: function() {
-    const pageKey = 'taptap-highlights-' + window.location.href;
+    const pageKey = this._getPageKey();
     const highlights = JSON.parse(localStorage.getItem(pageKey) || '[]');
     this._updateSharedDom(highlights); // DOM에 데이터 저장
     if (highlights.length === 0) return;
     
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+    // 1. 모든 가시적 텍스트 노드 수집 및 오프셋 매핑
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: function(node) {
+        if (['STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.parentNode.tagName)) return NodeFilter.FILTER_REJECT;
+        if (node.nodeValue.trim() === '') return NodeFilter.FILTER_SKIP;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    }, false);
+
     let textNodes = [];
+    let fullText = "";
     while(walker.nextNode()) {
       const node = walker.currentNode;
-      if (node.nodeValue.trim() !== '' && !['STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.parentNode.tagName)) {
-        textNodes.push(node);
-      }
+      textNodes.push({
+        node: node,
+        start: fullText.length,
+        end: fullText.length + node.nodeValue.length
+      });
+      fullText += node.nodeValue;
     }
     
+    // 2. 각 하이라이트 복원 (중복 텍스트 고려)
+    let usedRanges = [];
+
     highlights.forEach(h => {
-      for (const node of textNodes) {
-        const index = node.nodeValue.indexOf(h.text);
-        if (index !== -1) {
-          try {
-            const range = document.createRange();
-            range.setStart(node, index);
-            range.setEnd(node, index + h.text.length);
-            
+      // 이미 화면에 존재하는 하이라이트는 스킵
+      if (this.getHighlightElementById(h.id)) {
+        return;
+      }
+
+      let searchStart = 0;
+      while (true) {
+        const index = fullText.indexOf(h.text, searchStart);
+        if (index === -1) break;
+
+        const rangeEnd = index + h.text.length;
+        
+        // 이미 하이라이트된 영역과 겹치는지 확인
+        const isOverlap = usedRanges.some(r => (index < r.end && rangeEnd > r.start));
+        
+        if (!isOverlap) {
+          // 정확한 범위의 Range 객체 생성
+          const range = this._createRangeFromFullTextOffsets(index, rangeEnd, textNodes);
+          if (range) {
             this._renderHighlight(range, h.color, h.id);
-            
             if (h.memos && h.memos.length > 0) {
               h.memos.forEach(memo => {
                 TapTap.memo.renderMemoCapsule(h.id, memo);
               });
             }
-            
-            break;
-          } catch (e) {
-            console.error("하이라이트 복원 중 오류:", e);
+            usedRanges.push({start: index, end: rangeEnd});
           }
+          break;
         }
+        searchStart = index + 1;
       }
     });
+  },
+
+  _createRangeFromFullTextOffsets: function(start, end, textNodes) {
+    try {
+      const range = document.createRange();
+      let startNode = null, startOffset = 0;
+      let endNode = null, endOffset = 0;
+
+      for (const entry of textNodes) {
+        if (startNode === null && start >= entry.start && start < entry.end) {
+          startNode = entry.node;
+          startOffset = start - entry.start;
+        }
+        if (end > entry.start && end <= entry.end) {
+          endNode = entry.node;
+          endOffset = end - entry.start;
+          break;
+        }
+      }
+
+      if (startNode && endNode) {
+        range.setStart(startNode, startOffset);
+        range.setEnd(endNode, endOffset);
+        return range;
+      }
+    } catch (e) {
+      console.error("Range 생성 중 오류:", e);
+    }
+    return null;
   },
   
   _updateSharedDom: function(highlights) {
