@@ -153,7 +153,7 @@ TapTap.memo = {
   },
 
   saveMemo: function(highlightId, memoText, memoId = null) {
-    const pageKey = 'taptap-highlights-' + window.location.href;
+    const pageKey = TapTap.highlight._getPageKey();
     const highlights = JSON.parse(localStorage.getItem(pageKey) || '[]');
     const highlight = highlights.find(h => h.id === highlightId);
 
@@ -184,7 +184,7 @@ TapTap.memo = {
   },
   
   deleteMemo: function(highlightId, memoId) {
-      const pageKey = 'taptap-highlights-' + window.location.href;
+      const pageKey = TapTap.highlight._getPageKey();
       const highlights = JSON.parse(localStorage.getItem(pageKey) || '[]');
       const highlight = highlights.find(h => h.id === highlightId);
 
