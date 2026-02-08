@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "탭탭",
-  "description": "Safari에서 읽는 기사에 바로 하이라이트와 메모를 남겨보세요",
+  "description": "Safari에서 글을 읽으며 바로 하이라이트와 메모를 남겨보세요",
   "version": "1.0",
   
   "icons": {
