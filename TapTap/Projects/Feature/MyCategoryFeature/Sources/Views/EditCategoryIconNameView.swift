@@ -21,6 +21,7 @@ public struct EditCategoryIconNameView {
   let columns = [
     GridItem(.flexible(), spacing: 16),
     GridItem(.flexible(), spacing: 16),
+    GridItem(.flexible(), spacing: 16),
     GridItem(.flexible(), spacing: 16)
   ]
 }

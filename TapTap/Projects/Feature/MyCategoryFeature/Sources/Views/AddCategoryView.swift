@@ -13,6 +13,7 @@ public struct AddCategoryView {
   let columns = [
     GridItem(.flexible(), spacing: 16),
     GridItem(.flexible(), spacing: 16),
+    GridItem(.flexible(), spacing: 16),
     GridItem(.flexible(), spacing: 16)
   ]
 }
@@ -44,7 +45,7 @@ extension AddCategoryView: View {
         //TODO: 컴포넌트 대체하기
         ScrollView {
           LazyVGrid(columns: columns, spacing: 16) {
-            ForEach(1..<16, id: \.self) { index in
+            ForEach(1..<25, id: \.self) { index in
               let isSelected = store.selectedIcon.number == index
               Button {
                 store.selectedIcon = .init(number: index)

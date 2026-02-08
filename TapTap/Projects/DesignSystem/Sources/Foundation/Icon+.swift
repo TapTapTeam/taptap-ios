@@ -26,7 +26,16 @@ public extension DesignSystemAsset {
     case 14: return DesignSystemAsset.categoryIcon14.swiftUIImage
     case 15: return DesignSystemAsset.categoryIcon15.swiftUIImage
     case 16: return DesignSystemAsset.categoryIcon16.swiftUIImage
-    default: return DesignSystemAsset.categoryIcon1.swiftUIImage
+    case 17: return DesignSystemAsset.categoryIcon17.swiftUIImage
+    case 18: return DesignSystemAsset.categoryIcon18.swiftUIImage
+    case 19: return DesignSystemAsset.categoryIcon19.swiftUIImage
+    case 20: return DesignSystemAsset.categoryIcon20.swiftUIImage
+    case 21: return DesignSystemAsset.categoryIcon21.swiftUIImage
+    case 22: return DesignSystemAsset.categoryIcon22.swiftUIImage
+    case 23: return DesignSystemAsset.categoryIcon23.swiftUIImage
+    case 24: return DesignSystemAsset.categoryIcon24.swiftUIImage
+    default:
+      return DesignSystemAsset.categoryIcon1.swiftUIImage
     }
   }
 }
@@ -50,7 +59,16 @@ public extension DesignSystemAsset {
     case 14: return DesignSystemAsset.primaryCategoryIcon14.swiftUIImage
     case 15: return DesignSystemAsset.primaryCategoryIcon15.swiftUIImage
     case 16: return DesignSystemAsset.primaryCategoryIcon16.swiftUIImage
-    default: return DesignSystemAsset.primaryCategoryIcon15.swiftUIImage
+    case 17: return DesignSystemAsset.primaryCategoryIcon17.swiftUIImage
+    case 18: return DesignSystemAsset.primaryCategoryIcon18.swiftUIImage
+    case 19: return DesignSystemAsset.primaryCategoryIcon19.swiftUIImage
+    case 20: return DesignSystemAsset.primaryCategoryIcon20.swiftUIImage
+    case 21: return DesignSystemAsset.primaryCategoryIcon21.swiftUIImage
+    case 22: return DesignSystemAsset.primaryCategoryIcon22.swiftUIImage
+    case 23: return DesignSystemAsset.primaryCategoryIcon23.swiftUIImage
+    case 24: return DesignSystemAsset.primaryCategoryIcon24.swiftUIImage
+    default:
+      return DesignSystemAsset.primaryCategoryIcon1.swiftUIImage
     }
   }
 }
