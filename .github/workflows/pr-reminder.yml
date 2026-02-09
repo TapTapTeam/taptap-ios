@@ -163,7 +163,7 @@ jobs:
           server_port: ${{ secrets.SMTP_PORT }}
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "[TapTap]PR 리뷰 요청: ${{ github.event.pull_request.title }}"
+          subject: "[TapTap]PR 리뷰 요청: ${{ github.event.issue.title }}"
           to: ${{ steps.get_emails.outputs.emails }}
           from: ${{ secrets.SMTP_USER }}
           html_body: |
