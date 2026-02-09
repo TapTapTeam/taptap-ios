@@ -19,7 +19,7 @@ jobs:
     steps:
       # 첫번째 단계 : PR 생성 후 시간 대기 (리뷰 대기 시간)
       - name: Wait for 5 minutes
-        run: sleep 10
+        run: sleep 86400
       
       # 두번째 단계 : 리뷰 확인
       - name: Check for reviews
