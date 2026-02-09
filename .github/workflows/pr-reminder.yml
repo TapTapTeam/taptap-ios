@@ -1,0 +1,220 @@
+# 깃 액션 워크플로우 이름 : TapTap PR Reminder
+name: TapTap PR Reminder
+
+# 언제 실행 되는가를 결정
+# pull_request가 새로 생성 되거나(opened) 다시 열릴 때(reopened)
+# PR에 댓글이 달릴 때(issue_comment -> created)
+on:
+  pull_request:
+    types: [opened, reopened]
+  issue_comment:
+    types: [created]
+
+# 작업 관련 코드
+jobs:
+  # 작업1. 자동 리마인더
+  pr-review-reminder:
+    if: github.event_name == 'pull_request' # PR 이벤트 일 때만 실행
+    runs-on: ubuntu-latest
+    steps:
+      # 첫번째 단계 : PR 생성 후 시간 대기 (리뷰 대기 시간)
+      - name: Wait for 5 minutes
+        run: sleep 10
+      
+      # 두번째 단계 : 리뷰 확인
+      - name: Check for reviews
+        id: check_reviews
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Github API로 PR의 리뷰 목록 가져오기
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            
+            // 리뷰가 없으면 true 반환
+            // 결과는 steps.check_reviews.outputs.result에 저장됨
+            return reviews.length === 0;
+
+      # 세번째 단계 : 디코 알림
+      - name: Send Discord notification
+        # 위에서 저장한 값(리뷰 있는지 없는지?) 확인
+        # 만약 리뷰가 없으면, 디스코드 웹훅 호출하여 리마인더 전송
+        if: steps.check_reviews.outputs.result == 'true'
+        run: |
+          curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "content": "리마인더: **PR 리뷰 요청**\n\n**제목:** ${{ github.event.pull_request.title }}\n**작성자:** ${{ github.event.pull_request.user.login }}\n**링크:** ${{ github.event.pull_request.html_url }}\n\n리뷰 부탁드립니다."
+            }'
+      
+      # 네번째 단계 : 이메일 알림
+      - name: Send email notification
+        if: steps.check_reviews.outputs.result == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }} # SMTP 서버 주소, 탭탭 리마인더는 구글 SMTP 사용
+          server_port: ${{ secrets.SMTP_PORT }} # SMTP 서버 포트, 탭탭 리마인더는 587포트 사용
+          username: ${{ secrets.SMTP_USER }} # 발송자 이메일, 탭탭 공용 구글 Email
+          password: ${{ secrets.SMTP_PASSWORD }} # 구글 앱 비밀번호
+          subject: "[TapTap]PR 리뷰 요청: ${{ github.event.pull_request.title }}" # 이메일 제목
+          to: ${{ secrets.TEAM_EMAILS }} # 수신자 목록
+          from: ${{ secrets.SMTP_USER }} # 발송자 이메일
+          # 아래는 이메일 본문
+          body: |
+            [TapTap PR 리뷰 리마인더]
+            
+            제목: ${{ github.event.pull_request.title }}
+            작성자: ${{ github.event.pull_request.user.login }}
+            링크: ${{ github.event.pull_request.html_url }}
+            
+            리뷰 부탁드립니다!
+
+  # 작업 2. 수동 리마인더
+  handle-reminder-command:
+    # 세가지 조건이 모두 충족해야함
+    # 1. 댓글이 작성 되어있어야함
+    # 2. 그 댓글이 PR에 달려있어야 하고
+    # 3. 댓글이 /리마인더 로 시작해야함
+    if: |
+      github.event_name == 'issue_comment' && 
+      github.event.issue.pull_request && 
+      startsWith(github.event.comment.body, '/리마인더')
+    runs-on: ubuntu-latest
+    steps:
+      # 명령어 파싱
+      - name: Parse command
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // 댓글 내용 가져오기
+            const comment = context.payload.comment.body;
+            
+            // /리마인더 이름1, 이름2, 이름3 형식 지원
+            const match = comment.match(/\/리마인더\s+(.+)/);
+
+            // 매칭 실패하면 false 출력 후 종료
+            if (!match) {
+              core.setOutput('valid', 'false');
+              return;
+            }
+            
+            // 쉼표로 구분된 이름들 파싱
+            const namesString = match[1].trim();
+            const names = namesString.split(',').map(name => name.trim().replace(/"/g, ''));
+            
+            core.setOutput('valid', 'true');
+            core.setOutput('target_names', JSON.stringify(names));
+            core.setOutput('target_names_display', names.join(', '));
+
+      # 이메일 주소 찾기 
+      - name: Get target emails
+        id: get_emails
+        if: steps.parse.outputs.valid == 'true'
+        uses: actions/github-script@v7
+        env:
+          EMAIL_MAPPING: ${{ secrets.EMAIL_MAPPING }}
+        with:
+          script: |
+            const targetNames = JSON.parse('${{ steps.parse.outputs.target_names }}');
+            const emailMapping = JSON.parse(process.env.EMAIL_MAPPING || '{}');
+            
+            const emails = [];
+            const notFound = [];
+            
+            // 각 이름마다 이메일 찾기
+            for (const name of targetNames) {
+              const email = emailMapping[name];
+              if (email) {
+                emails.push(email);
+              } else {
+                notFound.push(name);
+              }
+            }
+            
+            // 하나도 못 찾으면 종료
+            if (emails.length === 0) {
+              core.setOutput('found', 'false');
+              core.setOutput('not_found_names', notFound.join(', '));
+              return;
+            }
+            
+            // 결과 저장
+            core.setOutput('found', 'true');
+            core.setOutput('emails', emails.join(','));
+            core.setOutput('found_count', emails.length.toString());
+            
+            if (notFound.length > 0) {
+              core.setOutput('has_not_found', 'true');
+              core.setOutput('not_found_names', notFound.join(', '));
+            } else {
+              core.setOutput('has_not_found', 'false');
+            }
+
+      # 리마인더 이메일 발송
+      - name: Send reminder email
+        if: steps.get_emails.outputs.found == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "[TapTap]PR 리뷰 요청: ${{ github.event.pull_request.title }}"
+          to: ${{ steps.get_emails.outputs.emails }}
+          from: ${{ secrets.SMTP_USER }}
+          html_body: |
+            <h2>PR 리뷰 요청</h2>
+            <p><strong>${{ github.event.comment.user.login }}</strong>님이 리뷰를 요청했습니다.</p>
+            <ul>
+              <li><strong>PR 제목:</strong> ${{ github.event.issue.title }}</li>
+              <li><strong>링크:</strong> <a href="${{ github.event.issue.html_url }}">${{ github.event.issue.html_url }}</a></li>
+            </ul>
+            <p>리뷰 부탁드립니다!</p>
+
+      # 성공 댓글
+      - name: Post success comment
+        if: steps.get_emails.outputs.found == 'true' 
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const foundCount = '${{ steps.get_emails.outputs.found_count }}';
+            const hasNotFound = '${{ steps.get_emails.outputs.has_not_found }}' === 'true';
+            const notFoundNames = '${{ steps.get_emails.outputs.not_found_names }}';
+            const targetNamesDisplay = '${{ steps.parse.outputs.target_names_display }}';
+            
+            let message = `${targetNamesDisplay}님에게 리마인더를 전송했습니다.`;
+            
+            if (hasNotFound) {
+              message += `\n다음 이름의 이메일을 찾을 수 없습니다: ${notFoundNames}`;
+            }
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: message
+            });
+
+      # 에러 댓글
+      - name: Post error comment
+        if: steps.parse.outputs.valid == 'false' || steps.get_emails.outputs.found == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let message;
+            if ('${{ steps.parse.outputs.valid }}' === 'false') {
+              message = '올바른 형식으로 입력해주세요:\n`/리마인더 이름1, 이름2, 이름3`';
+            } else {
+              message = '다음 이름들의 이메일을 찾을 수 없습니다: ${{ steps.get_emails.outputs.not_found_names }}';
+            }
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: message
+            });
