@@ -3,6 +3,16 @@
     {
       "filename" : "calendar.png",
       "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "calendar 1.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {

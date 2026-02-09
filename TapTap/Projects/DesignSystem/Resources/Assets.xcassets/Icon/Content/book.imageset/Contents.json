@@ -3,6 +3,16 @@
     {
       "filename" : "book.png",
       "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "book 1.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {
