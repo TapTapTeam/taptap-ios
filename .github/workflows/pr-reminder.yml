@@ -1,0 +1,217 @@
+name: TapTap PR Reminder
+
+on:
+  pull_request:
+    types: [opened, reopened]
+  issue_comment:
+    types: [created]
+  schedule:
+    # 1분마다 체크 (중복 방지 label로 실제 알림은 24시간 이후)
+    - cron: "* * * * *"
+  workflow_dispatch:
+
+jobs:
+  # 작업 1. 자동 PR 리뷰 리마인더
+  auto-pr-review-reminder:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check PRs older than 24 hours without reviews
+        id: check_prs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const allPRs = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open'
+            }).then(res => res.data);
+
+            const now = new Date();
+            const TARGET_SECONDS = 24 * 60 * 60; // 24시간
+            const WINDOW_SECONDS = 60 * 60; 
+            const prsToNotify = [];
+
+            for (const pr of allPRs) {
+              // 중복 알림 방지: 이미 label 붙은 PR 제외
+              if (pr.labels.some(l => l.name === 'review-reminder-sent')) continue;
+
+              const createdAt = new Date(pr.created_at);
+              const secondsPassed = (now - createdAt) / 1000;
+
+              if (secondsPassed < TARGET_SECONDS || secondsPassed > TARGET_SECONDS + WINDOW_SECONDS) continue;
+
+              const reviews = await github.rest.pulls.listReviews({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number
+              }).then(res => res.data);
+
+              if (reviews.length === 0) {
+                prsToNotify.push(pr);
+              }
+            }
+
+            if (prsToNotify.length > 0) {
+              core.setOutput('has_prs', 'true');
+              core.setOutput('pr_list', JSON.stringify(prsToNotify));
+            } else {
+              core.setOutput('has_prs', 'false')
+            }
+
+      - name: Send Discord notifications
+        if: steps.check_prs.outputs.has_prs == 'true'
+        uses: actions/github-script@v7
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        with:
+          script: |
+            const prList = JSON.parse('${{ steps.check_prs.outputs.pr_list }}');
+            const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+
+            for (const pr of prList) {
+              const message =
+                `**PR 리뷰 리마인더**\n\n` +
+                `**제목:** ${pr.title}\n` +
+                `**작성자:** ${pr.user.login}\n` +
+                `**링크:** ${pr.html_url}\n\n` +
+                `리뷰 부탁드립니다!`;
+
+              await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: message })
+              });
+
+              // 중복 알림 방지를 위해 label 추가
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: ['review-reminder-sent']
+              });
+            }
+
+      - name: Prepare email
+        id: prepare_email
+        if: steps.check_prs.outputs.has_prs == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prList = JSON.parse('${{ steps.check_prs.outputs.pr_list }}');
+
+            let body = '[TapTap PR 리뷰 리마인더]\n\n';
+            body += '다음 PR들이 아직 리뷰가 없습니다:\n\n';
+
+            for (const pr of prList) {
+              body += `• ${pr.title}\n`;
+              body += `  작성자: ${pr.user.login}\n`;
+              body += `  링크: ${pr.html_url}\n\n`;
+            }
+
+            body += '리뷰 부탁드립니다!';
+
+            // PR 제목 기반 메일 제목
+            const subject = prList.map(pr => pr.title).join(', ');
+            core.setOutput('subject', `[TapTap 리마인더] PR 리뷰 요청: ${subject}`);
+            core.setOutput('body', body);
+
+      - name: Send email
+        if: steps.check_prs.outputs.has_prs == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: ${{ steps.prepare_email.outputs.subject }}
+          to: ${{ secrets.TEAM_EMAILS }}
+          from: ${{ secrets.SMTP_USER }}
+          body: ${{ steps.prepare_email.outputs.body }}
+
+  # 작업 2. 수동 리마인더
+  handle-reminder-command:
+    if: |
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, '/리마인더')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Parse command
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = context.payload.comment.body;
+            const match = comment.match(/\/리마인더\s+(.+)/);
+            if (!match) { core.setOutput('valid', 'false'); return; }
+            const names = match[1].split(',').map(n => n.trim().replace(/"/g, ''));
+            core.setOutput('valid', 'true');
+            core.setOutput('names', JSON.stringify(names));
+            core.setOutput('display', names.join(','));
+
+      - name: Get emails
+        id: get_emails
+        if: steps.parse.outputs.valid == 'true'
+        uses: actions/github-script@v7
+        env:
+          EMAIL_MAPPING: ${{ secrets.EMAIL_MAPPING }}
+        with:
+          script: |
+            const names = JSON.parse('${{ steps.parse.outputs.names }}');
+            const mapping = JSON.parse(process.env.EMAIL_MAPPING || '{}');
+            const emails = [], notFound = [];
+            for (const name of names) {
+              if (mapping[name]) emails.push(mapping[name]);
+              else notFound.push(name);
+            }
+            if (emails.length === 0) {
+              core.setOutput('found', 'false');
+              core.setOutput('not_found', notFound.join(','));
+              return;
+            }
+            core.setOutput('found', 'true');
+            core.setOutput('emails', emails.join(','));
+            core.setOutput('not_found', notFound.join(','));
+
+      - name: Send reminder email
+        if: steps.get_emails.outputs.found == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "[TapTap 리마인더] PR 리뷰 요청: ${{ github.event.issue.title }}"
+          to: ${{ steps.get_emails.outputs.emails }}
+          from: ${{ secrets.SMTP_USER }}
+          body: |
+            요청자: ${{ github.event.comment.user.login }}
+            PR 제목: ${{ github.event.issue.title }}
+            링크: ${{ github.event.issue.html_url }}
+
+            리뷰 부탁드립니다!
+
+      - name: Post result comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let msg;
+            if ('${{ steps.parse.outputs.valid }}' === 'false') {
+              msg = '형식 오류입니다.\n`/리마인더 이름1, 이름2`';
+            } else if ('${{ steps.get_emails.outputs.found }}' === 'false') {
+              msg = '이메일을 찾을 수 없습니다: ${{ steps.get_emails.outputs.not_found }}';
+            } else {
+              msg = `${{ steps.parse.outputs.display }} 님에게 리마인더를 전송했습니다.`;
+              if ('${{ steps.get_emails.outputs.not_found }}') {
+                msg += `\n이메일을 찾지 못한 이름: ${{ steps.get_emails.outputs.not_found }}`;
+              }
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: msg
+            });
