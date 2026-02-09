@@ -57,7 +57,7 @@ jobs:
               core.setOutput('has_prs', 'true');
               core.setOutput('pr_list', JSON.stringify(prsToNotify));
             } else {
-              core.setOutput('has_prs', 'false'
+              core.setOutput('has_prs', 'false')
             }
 
       - name: Send Discord notifications
