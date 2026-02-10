@@ -11,15 +11,12 @@ on:
 jobs:
   ios:
     runs-on: macos-latest
-
     steps:
     - uses: actions/checkout@v4
-
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.2'
         bundler-cache: true
-
     - name: Set up App Store Connect API
       env:
         ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
@@ -27,7 +24,6 @@ jobs:
         mkdir -p ~/.appstoreconnect/private_keys
         echo "$ASC_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8
         echo "ASC_KEY_FILEPATH=$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8" >> $GITHUB_ENV
-
     - name: Fastlane
       env:
         ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
@@ -38,7 +34,8 @@ jobs:
         MATCH_GIT_BASIC_AUTH: ${{ secrets.MATCH_GIT_BASIC_AUTH }}
       run: |
         if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-          bundle exec fastlane ios ci_release
+          VERSION=${GITHUB_REF#refs/tag/v}
+          bundle exec fastlane ios ci_release version:$VERSION --path TapTap/fastlane
         else
-          bundle exec fastlane ios ci_beta
+          bundle exec fastlane ios ci_beta TapTap/fastlane
         fi
