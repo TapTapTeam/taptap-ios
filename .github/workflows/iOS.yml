@@ -24,9 +24,9 @@ jobs:
         mkdir -p ~/.appstoreconnect/private_keys
         echo "$ASC_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8
         echo "ASC_KEY_FILEPATH=$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8" >> $GITHUB_ENV
-   - name: Setup Git Auth
-   run: |
-    git config --global url."https://${{ secrets.MATCH_GIT_BASIC_AUTH}}@github.com/".insteadOf "https://github.com/"
+    - name: Setup Git Auth
+      run: |
+      git config --global url."https://${{ secrets.MATCH_GIT_BASIC_AUTH}}@github.com/".insteadOf "https://github.com/"
    
     - name: Fastlane
       working-directory: TapTap
