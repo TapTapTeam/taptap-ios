@@ -103,6 +103,7 @@ platform :ios do
 
   desc "CI용 TestFlight 업로드 (빌드 번호만 자동 업데이트)"
   lane :ci_beta do
+    setup_ci
     app_identifier = "com.Nbs.dev.ADA.app"
     
     api_key = app_store_connect_api_key(
@@ -130,6 +131,7 @@ platform :ios do
 
   desc "CI용 App Store 배포 (태그 버전 사용)"
   lane :ci_release do |options|
+    setup_ci
     version = options[:version] || UI.user_error!("버전 정보가 필요합니다.")
     app_identifier = "com.Nbs.dev.ADA.app"
 
