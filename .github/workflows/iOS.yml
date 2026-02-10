@@ -32,7 +32,15 @@ jobs:
     - name: Setup Git Auth
       run: |
         git config --global url."https://${{ secrets.MATCH_GIT_BASIC_AUTH}}@github.com/".insteadOf "https://github.com/"
-   
+        
+    - name: Install Tuist
+      run: curl -Ls https://install.tuist.io | bash
+      
+    - name: Tuist Generate
+      working-directory: TapTap
+      run: |
+        tuist install
+        tuist generate --no-open
     - name: Fastlane
       working-directory: TapTap
       env:
