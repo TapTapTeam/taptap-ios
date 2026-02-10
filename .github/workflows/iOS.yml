@@ -11,8 +11,14 @@ on:
 jobs:
   ios:
     runs-on: macos-latest
+    env:
+      TUIST_VERSION: 4.57.1
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Mise
+      uses: jdx/mise=action@v2
+      
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.2'
@@ -34,7 +40,10 @@ jobs:
         git config --global url."https://${{ secrets.MATCH_GIT_BASIC_AUTH}}@github.com/".insteadOf "https://github.com/"
         
     - name: Install Tuist
-      run: curl -Ls https://install.tuist.io | bash
+      run: mise install tuist@${{ env.TUIST_VERSION }}
+      
+    - name: Tuist version
+      run: mise use -g tuist@${{ env.TUIST_VERSION }}
       
     - name: Tuist Generate
       working-directory: TapTap
