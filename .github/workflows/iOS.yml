@@ -1,0 +1,44 @@
+name: iOS CI/CD
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+jobs:
+  ios:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: true
+
+    - name: Set up App Store Connect API
+      env:
+        ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+      run: |
+        mkdir -p ~/.appstoreconnect/private_keys
+        echo "$ASC_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8
+        echo "ASC_KEY_FILEPATH=$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8" >> $GITHUB_ENV
+
+    - name: Fastlane
+      env:
+        ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+        ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        ASC_KEY_FILEPATH: ${{ env.ASC_KEY_FILEPATH }}
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GIT_BASIC_AUTH: ${{ secrets.MATCH_GIT_BASIC_AUTH }}
+      run: |
+        if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+          bundle exec fastlane ios ci_release
+        else
+          bundle exec fastlane ios ci_beta
+        fi
