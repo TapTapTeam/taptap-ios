@@ -62,7 +62,7 @@ jobs:
         MATCH_GIT_BASIC_AUTH: ${{ secrets.MATCH_GIT_BASIC_AUTH }}
       run: |
         if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-          VERSION=${GITHUB_REF#refs/tag/v}
+          VERSION=${GITHUB_REF#refs/tagas/v}
           bundle exec fastlane ios ci_release version:$VERSION
         else
           bundle exec fastlane ios ci_beta
