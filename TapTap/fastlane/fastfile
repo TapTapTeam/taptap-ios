@@ -34,7 +34,7 @@ platform :ios do
   app_identifier = "com.Nbs.dev.ADA.app"
   next_build = latest_testflight_build_number(app_identifier: app_identifier).to_i + 1
 
-  xcconfig_path = "../Tuist/Config/Project.xcconfig"
+  xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
   content = File.read(xcconfig_path)
 
   content = content.gsub(/^MARKETING_VERSION\s*=\s*.*$/, "MARKETING_VERSION = #{version}")
@@ -69,7 +69,7 @@ platform :ios do
     app_identifier = "com.Nbs.dev.ADA.app"
     next_build = latest_testflight_build_number(app_identifier: app_identifier).to_i + 1
 
-    xcconfig_path = "../Tuist/Config/Project.xcconfig"
+    xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
     content = File.read(xcconfig_path)
 
     content = content.gsub(/^MARKETING_VERSION\s*=\s*.*$/, "MARKETING_VERSION = #{version}")
@@ -118,7 +118,7 @@ platform :ios do
       api_key: api_key
     ).to_i + 1
 
-    xcconfig_path = "../Tuist/Config/Project.xcconfig"
+    xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
     content = File.read(xcconfig_path)
     content = content.gsub(/^CURRENT_PROJECT_VERSION\s*=\s*.*$/, "CURRENT_PROJECT_VERSION = #{next_build}")
     File.write(xcconfig_path, content)
@@ -146,7 +146,7 @@ platform :ios do
       api_key: api_key
     ).to_i + 1
 
-    xcconfig_path = "../Tuist/Config/Project.xcconfig"
+    xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
     content = File.read(xcconfig_path)
     content = content.gsub(/^MARKETING_VERSION\s*=\s*.*$/, "MARKETING_VERSION = #{version}")
     content = content.gsub(/^CURRENT_PROJECT_VERSION\s*=\s*.*$/, "CURRENT_PROJECT_VERSION = #{next_build}")
