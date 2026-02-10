@@ -1,0 +1,71 @@
+name: iOS CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+jobs:
+  ios:
+    runs-on: macos-latest
+    env:
+      TUIST_VERSION: 4.57.1
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Mise
+      uses: jdx/mise-action@v2
+      
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: true
+        
+    - name: Create xcconfig file
+      run: |
+        mkdir -p TapTap/Tuist/Config
+        echo "${{ secrets.PROJECT_XCCONFIG_CONTENT }}" >TapTap/Tuist/Config/Project.xcconfig
+    - name: Set up App Store Connect API
+      env:
+        ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+      run: |
+        mkdir -p ~/.appstoreconnect/private_keys
+        echo "$ASC_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8
+        echo "ASC_KEY_FILEPATH=$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8" >> $GITHUB_ENV
+    - name: Setup Git Auth
+      run: |
+        git config --global url."https://${{ secrets.MATCH_GIT_BASIC_AUTH}}@github.com/".insteadOf "https://github.com/"
+        
+    - name: Install Tuist
+      run: mise install tuist@${{ env.TUIST_VERSION }}
+      
+    - name: Tuist version
+      run: mise use -g tuist@${{ env.TUIST_VERSION }}
+      
+    - name: Tuist Generate
+      working-directory: TapTap
+      run: |
+        tuist install
+        tuist generate --no-open
+    - name: Fastlane
+      working-directory: TapTap
+      env:
+        ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+        ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        BUNDLE_GEMFILE: ../Gemfile
+        ASC_KEY_FILEPATH: ${{ env.ASC_KEY_FILEPATH }}
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GIT_BASIC_AUTH: ${{ secrets.MATCH_GIT_BASIC_AUTH }}
+      run: |
+        if [[ ${GITHUB_REF} == refs/tags/v* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/v}
+          bundle exec fastlane ios ci_release version:$VERSION
+        else
+          bundle exec fastlane ios ci_beta
+        fi

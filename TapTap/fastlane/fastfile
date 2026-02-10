@@ -34,7 +34,7 @@ platform :ios do
   app_identifier = "com.Nbs.dev.ADA.app"
   next_build = latest_testflight_build_number(app_identifier: app_identifier).to_i + 1
 
-  xcconfig_path = "../Tuist/Config/Project.xcconfig"
+  xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
   content = File.read(xcconfig_path)
 
   content = content.gsub(/^MARKETING_VERSION\s*=\s*.*$/, "MARKETING_VERSION = #{version}")
@@ -69,7 +69,7 @@ platform :ios do
     app_identifier = "com.Nbs.dev.ADA.app"
     next_build = latest_testflight_build_number(app_identifier: app_identifier).to_i + 1
 
-    xcconfig_path = "../Tuist/Config/Project.xcconfig"
+    xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
     content = File.read(xcconfig_path)
 
     content = content.gsub(/^MARKETING_VERSION\s*=\s*.*$/, "MARKETING_VERSION = #{version}")
@@ -96,6 +96,74 @@ platform :ios do
       force: true,
       skip_metadata: false,
       skip_screenshots: false,
+      submit_for_review: false,
+      run_precheck_before_submit: false
+    )
+  end
+
+  desc "CI용 TestFlight 업로드 (빌드 번호만 자동 업데이트)"
+  lane :ci_beta do
+    setup_ci
+    app_identifier = "com.Nbs.dev.ADA.app"
+    
+    api_key = app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_FILEPATH"]
+    )
+
+    match(type: "appstore", readonly: true, app_identifier: ["com.Nbs.dev.ADA.app", "com.Nbs.dev.ADA.app.safariExtension", "com.Nbs.dev.ADA.app.actionExtension"])
+
+    next_build = latest_testflight_build_number(
+      app_identifier: app_identifier,
+      api_key: api_key
+    ).to_i + 1
+
+    xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
+    content = File.read(xcconfig_path)
+    content = content.gsub(/^CURRENT_PROJECT_VERSION\s*=\s*.*$/, "CURRENT_PROJECT_VERSION = #{next_build}")
+    File.write(xcconfig_path, content)
+
+    build_app(workspace: "../TapTap/TapTap.xcworkspace", scheme: "TapTap", export_method: "app-store")
+    
+    upload_to_testflight(api_key: api_key, skip_waiting_for_build_processing: true)
+  end
+
+  desc "CI용 App Store 배포 (태그 버전 사용)"
+  lane :ci_release do |options|
+    setup_ci
+    version = options[:version] || UI.user_error!("버전 정보가 필요합니다.")
+    app_identifier = "com.Nbs.dev.ADA.app"
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_FILEPATH"]
+    )
+
+    match(type: "appstore", readonly: true, app_identifier: ["com.Nbs.dev.ADA.app", "com.Nbs.dev.ADA.app.safariExtension", "com.Nbs.dev.ADA.app.actionExtension"])
+
+    next_build = latest_testflight_build_number(
+      app_identifier: app_identifier,
+      api_key: api_key
+    ).to_i + 1
+
+    xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
+    content = File.read(xcconfig_path)
+    content = content.gsub(/^MARKETING_VERSION\s*=\s*.*$/, "MARKETING_VERSION = #{version}")
+    content = content.gsub(/^CURRENT_PROJECT_VERSION\s*=\s*.*$/, "CURRENT_PROJECT_VERSION = #{next_build}")
+    File.write(xcconfig_path, content)
+
+    build_app(workspace: "../TapTap/TapTap.xcworkspace", scheme: "TapTap", export_method: "app-store")
+    
+    upload_to_app_store(
+      api_key: api_key,
+      app_identifier: app_identifier,
+      app_version: version,
+      force: true,
+      skip_metadata: false,
+      skip_screenshots: false,
+      skip_app_version_update: true,
       submit_for_review: false,
       run_precheck_before_submit: false
     )
