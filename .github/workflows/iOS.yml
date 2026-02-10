@@ -25,9 +25,11 @@ jobs:
         echo "$ASC_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8
         echo "ASC_KEY_FILEPATH=$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8" >> $GITHUB_ENV
     - name: Fastlane
+    working-directory: TapTap
       env:
         ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
         ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        BUNDLE_GEMFILE: ../Gemfile
         ASC_KEY_FILEPATH: ${{ env.ASC_KEY_FILEPATH }}
         APPLE_ID: ${{ secrets.APPLE_ID }}
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
@@ -35,7 +37,7 @@ jobs:
       run: |
         if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
           VERSION=${GITHUB_REF#refs/tag/v}
-          bundle exec fastlane ios ci_release version:$VERSION --path TapTap/fastlane
+          bundle exec fastlane ios ci_release version:$VERSION
         else
-          bundle exec fastlane ios ci_beta TapTap/fastlane
+          bundle exec fastlane ios ci_beta
         fi
