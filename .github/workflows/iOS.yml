@@ -25,7 +25,7 @@ jobs:
         echo "$ASC_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8
         echo "ASC_KEY_FILEPATH=$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8" >> $GITHUB_ENV
     - name: Fastlane
-    working-directory: TapTap
+      working-directory: TapTap
       env:
         ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
         ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
