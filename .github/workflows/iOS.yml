@@ -17,6 +17,11 @@ jobs:
       with:
         ruby-version: '3.2'
         bundler-cache: true
+        
+    - name: Create xcconfig file
+      run: |
+        mkdir -p TapTap/Tuist/Config
+        echo "${{ secrets.PROJECT_XCCONFIG_CONTENT }}" >TapTap/Tuist/Config/Project.xcconfig
     - name: Set up App Store Connect API
       env:
         ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
