@@ -1,3 +1,5 @@
+require 'json'
+
 default_platform(:ios)
 
 platform :ios do
@@ -27,36 +29,42 @@ platform :ios do
   
   desc "TesetFlight 업로드(버전을 입력해주세요.)"
   lane :beta do |options|
-  version = options[:version] || prompt(text: "버전을 입력해주세요. (예: 1.10.0): ")
+    version = options[:version] || prompt(text: "버전을 입력해주세요. (예: 1.10.0): ")
 
-  release
+    release
 
-  app_identifier = "com.Nbs.dev.ADA.app"
-  next_build = latest_testflight_build_number(app_identifier: app_identifier).to_i + 1
+    app_identifier = "com.Nbs.dev.ADA.app"
+    next_build = latest_testflight_build_number(app_identifier: app_identifier, version: version).to_i + 1
 
-  xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
-  content = File.read(xcconfig_path)
+    xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
+    content = File.read(xcconfig_path)
 
-  content = content.gsub(/^MARKETING_VERSION\s*=\s*.*$/, "MARKETING_VERSION = #{version}")
-  content = content.gsub(/^CURRENT_PROJECT_VERSION\s*=\s*.*$/, "CURRENT_PROJECT_VERSION = #{next_build}")
+    content = content.gsub(/^MARKETING_VERSION\s*=\s*.*$/, "MARKETING_VERSION = #{version}")
+    content = content.gsub(/^CURRENT_PROJECT_VERSION\s*=\s*.*$/, "CURRENT_PROJECT_VERSION = #{next_build}")
 
-  File.write(xcconfig_path, content)
+    File.write(xcconfig_path, content)
 
-  build_app(
-    workspace: "../TapTap/TapTap.xcworkspace",
-    scheme: "TapTap",
-    export_method: "app-store"
-  )
+    build_app(
+      workspace: "../TapTap/TapTap.xcworkspace",
+      scheme: "TapTap",
+      export_method: "app-store"
+    )
 
-  app_store_connect_api_key(
-    key_id: ENV["ASC_KEY_ID"],
-    issuer_id: ENV["ASC_ISSUER_ID"],
-    key_filepath: ENV["ASC_KEY_FILEPATH"]
-  )
+    app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_FILEPATH"]
+    )
 
-  upload_to_testflight(
-    skip_waiting_for_build_processing: true,
-    username: ENV["APPLE_ID"]
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      username: ENV["APPLE_ID"]
+    )
+
+    notify_discord(
+      title: "🚀 TestFlight 업로드 완료",
+      message: "새로운 베타 빌드가 성공적으로 업로드되었습니다.\n버전: #{version} (#{next_build})",
+      color: 377472
     )
   end
 
@@ -67,7 +75,7 @@ platform :ios do
     release
 
     app_identifier = "com.Nbs.dev.ADA.app"
-    next_build = latest_testflight_build_number(app_identifier: app_identifier).to_i + 1
+    next_build = latest_testflight_build_number(app_identifier: app_identifier, version: version).to_i + 1
 
     xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
     content = File.read(xcconfig_path)
@@ -99,6 +107,12 @@ platform :ios do
       submit_for_review: false,
       run_precheck_before_submit: false
     )
+
+    notify_discord(
+      title: "📦 App Store 제출 완료",
+      message: "앱이 성공적으로 App Store Connect에 제출되었습니다.\n버전: #{version} (#{next_build})",
+      color: 6377978
+    )
   end
 
   desc "CI용 TestFlight 업로드 (빌드 번호만 자동 업데이트)"
@@ -127,6 +141,12 @@ platform :ios do
     build_app(workspace: "../TapTap/TapTap.xcworkspace", scheme: "TapTap", export_method: "app-store")
     
     upload_to_testflight(api_key: api_key, skip_waiting_for_build_processing: true)
+
+    notify_discord(
+      title: "🚀 [CI] TestFlight 업로드 완료",
+      message: "CI를 통한 베타 빌드 업로드가 성공했습니다.\n빌드 번호: #{next_build}",
+      color: 377472
+    )
   end
 
   desc "CI용 App Store 배포 (태그 버전 사용)"
@@ -145,7 +165,8 @@ platform :ios do
 
     next_build = latest_testflight_build_number(
       app_identifier: app_identifier,
-      api_key: api_key
+      api_key: api_key,
+      version: version
     ).to_i + 1
 
     xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
@@ -167,6 +188,31 @@ platform :ios do
       submit_for_review: false,
       run_precheck_before_submit: false
     )
+
+    notify_discord(
+      title: "📦 [CI] App Store 제출 완료",
+      message: "CI를 통한 앱 제출이 성공했습니다.\n버전: #{version} (#{next_build})",
+      color: 6377978
+    )
+  end
+
+  # Discord 알림 함수
+  def notify_discord(params)
+    webhook_url = ENV["DISCORD_WEBHOOK_URL"]
+    return unless webhook_url
+
+    payload = {
+      embeds: [
+        {
+          title: params[:title],
+          description: params[:message],
+          color: params[:color] || 3447003,
+          timestamp: Time.now.iso8601
+        }
+      ]
+    }
+
+    sh("curl -H 'Content-Type: application/json' -d '#{payload.to_json}' #{webhook_url}")
   end
 end
 
