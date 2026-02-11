@@ -15,29 +15,13 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
-### ios dev
-
-```sh
-[bundle exec] fastlane ios dev
-```
-
-
-
-### ios release
-
-```sh
-[bundle exec] fastlane ios release
-```
-
-
-
 ### ios beta
 
 ```sh
 [bundle exec] fastlane ios beta
 ```
 
-TesetFlight 업로드(버전을 입력해주세요.)
+TestFlight 업로드
 
 ### ios appstore
 
@@ -45,28 +29,23 @@ TesetFlight 업로드(버전을 입력해주세요.)
 [bundle exec] fastlane ios appstore
 ```
 
-App Store 배포 (버전을 입력해주세요.)
+App Store 배포
 
-----
-
-
-## macos
-
-### macos dev
+### ios ci_beta
 
 ```sh
-[bundle exec] fastlane macos dev
+[bundle exec] fastlane ios ci_beta
 ```
 
-탭탭 macOS Development 인증서/프로비저닝
+CI용 TestFlight 업로드
 
-### macos release
+### ios ci_release
 
 ```sh
-[bundle exec] fastlane macos release
+[bundle exec] fastlane ios ci_release
 ```
 
-탭탭 macOS AppStore 인증서/프로비저닝
+CI용 App Store 배포
 
 ----
 
