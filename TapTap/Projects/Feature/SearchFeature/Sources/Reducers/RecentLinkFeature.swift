@@ -31,7 +31,7 @@ struct RecentLinkFeature {
       switch action {
       case .onAppear:
         return .run { send in
-          let links = try swiftDataClient.fetchRecentLinks()
+          let links = try swiftDataClient.link.fetchRecentLinks()
           await send(.recentLinkResponse(links))
         }
       

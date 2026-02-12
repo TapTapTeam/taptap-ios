@@ -143,7 +143,7 @@ public struct HomeFeature {
         
       case .fetchArticles:
         return .run { send in
-          await send(.articlesResponse(Result { try swiftDataClient.fetchLinks() }))
+          await send(.articlesResponse(Result { try swiftDataClient.link.fetchLinks() }))
         }
         
       case let .articlesResponse(.success(linkItems)):

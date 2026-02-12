@@ -80,7 +80,7 @@ public struct SummaryFeature {
         let newText = state.editedCommentText
         
         return .run { _ in
-          try swiftDataClient.editComment(editingId, newText, highlightId)
+          try swiftDataClient.highlight.updateComment(commentId: editingId, newText: newText, highlightId: highlightId)
         }
         .cancellable(id: "edit-comment-\(editingId)")
       
@@ -109,7 +109,7 @@ public struct SummaryFeature {
         state.addingCommentToHighlightId = nil
         
         return .run { _ in
-          try swiftDataClient.addComment(newComment, highlightId)
+          try swiftDataClient.highlight.addComment(newComment, to: highlightId)
         }
         .cancellable(id: "add-comment-\(newComment.id)")
         
@@ -144,7 +144,7 @@ public struct SummaryFeature {
           state.article.highlights[highlightIndex].comments.removeAll { $0.id == comment.id }
           
           return .run { _ in
-            try swiftDataClient.deleteComment(commentId, highlightId)
+            try swiftDataClient.highlight.deleteComment(commentId: commentId, highlightId: highlightId)
           }
           .cancellable(id: "delete-comment-\(commentId)")
           
@@ -158,7 +158,7 @@ public struct SummaryFeature {
           let highlightId = highlight.id
           
           return .run { _ in
-            try self.swiftDataClient.deleteHighlight(highlightId)
+            try self.swiftDataClient.highlight.deleteHighlight(highlightId)
           }
         }
         

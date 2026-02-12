@@ -70,7 +70,7 @@ public struct MyCategoryCollectionFeature {
       case .onAppear:
         return .run { send in
           await send(.fetchArticleResponse(Result {
-            try swiftDataClient.fetchLinks()
+            try swiftDataClient.link.fetchLinks()
           }))
         }
       case .settingModal(.dismissButtonTapped):

@@ -91,7 +91,7 @@ struct MoveLinkFeature {
         /// 카테고리 로드
       case .fetchCategories:
         return .run { send in
-          let items = try swiftDataClient.fetchCategories()
+          let items = try swiftDataClient.category.fetchCategories()
           await send(.fetchCategoriesResponse(items))
         }
         
@@ -124,7 +124,7 @@ struct MoveLinkFeature {
         
         return .run { send in
           do {
-            try swiftDataClient.moveLinks(selected, target)
+            try swiftDataClient.link.moveLinks(selected, to: target)
           } catch {
             print("❌ moveLinks failed:", error)
           }

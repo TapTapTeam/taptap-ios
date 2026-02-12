@@ -69,7 +69,7 @@ public struct EditCategoryIconNameFeature {
         return .none
       case .compeleteButtonTapped:
         return .run { [category = state.category, name = state.categoryName] send in
-          let categories = try swiftDataClient.fetchCategories()
+          let categories = try swiftDataClient.category.fetchCategories()
           let isDuplicate = categories.contains { $0.categoryName.lowercased() == name.lowercased() && $0.id != category?.id } || name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "전체"
           
           await send(.setDuplicate(isDuplicate))
@@ -84,7 +84,7 @@ public struct EditCategoryIconNameFeature {
             guard let id, let icon else { return }
             await MainActor.run {
               do {
-                try swiftDataClient.updateCategoryItem(id, name, icon)
+                try swiftDataClient.category.updateCategoryItem(id: id, name: name, icon: icon)
                 NotificationCenter.default.post(name: .categoryEdited, object: nil)
               } catch {
                 print("카테고리 업데이트 실패 \(error)")

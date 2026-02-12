@@ -90,7 +90,7 @@ public struct LinkDetailFeature {
         state.editedMemo  = state.link.userMemo
         return .merge(
           .run { [linkID = state.link.id] send in
-            let linkItem = try swiftDataClient.fetchLink(linkID)
+            let linkItem = try swiftDataClient.link.fetchLink(id: linkID)
             await send(.refreshed(linkItem))
           },
           .run { send in
@@ -129,7 +129,7 @@ public struct LinkDetailFeature {
         guard !newTitle.isEmpty, newTitle != state.link.title else { return .none }
         return .run { send in
           await send(.saveResponse(TaskResult {
-            try swiftDataClient.editLinkTitle(id, newTitle)
+            try swiftDataClient.link.updateLinkTitle(id, newTitle)
           }))
         }
         
@@ -158,7 +158,7 @@ public struct LinkDetailFeature {
         let id = state.link.id
         return .run { send in
           await send(.saveMemoResponse(TaskResult {
-            try swiftDataClient.updateLinkMemo(id, next)
+            try swiftDataClient.link.updateLinkMemo(id, next)
           }))
         }
         
@@ -175,7 +175,7 @@ public struct LinkDetailFeature {
         let id = state.link.id
         return .run { send in
           await send(.deleteResponse(TaskResult {
-            try swiftDataClient.deleteLinkById(id)
+            try swiftDataClient.link.deleteLinkById(id)
           }))
         }
         

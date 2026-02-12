@@ -46,7 +46,7 @@ struct SearchResultFeature {
       case .loadSearchResult(let query):
         state.query = query
         return .run { send in
-          let response = try swiftDataClient.searchLinks(query)
+          let response = try swiftDataClient.link.searchLinks(query: query)
           await send(.searchResponse(response))
         }
         

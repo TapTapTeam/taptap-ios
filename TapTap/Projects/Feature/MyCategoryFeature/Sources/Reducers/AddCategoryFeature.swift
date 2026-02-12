@@ -50,7 +50,7 @@ public struct AddCategoryFeature {
         
       case .saveButtonTapped:
         return .run { [name = state.categoryName] send in
-          let categories = try swiftDataClient.fetchCategories()
+          let categories = try swiftDataClient.category.fetchCategories()
           let isDuplicate = categories.contains { $0.categoryName.lowercased() == name.lowercased() } ||
             name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "전체"
           await send(.setDuplicate(isDuplicate))
@@ -66,7 +66,7 @@ public struct AddCategoryFeature {
             icon: state.selectedIcon
           )
           return .run { _ in
-            try swiftDataClient.addCategory(newCategory)
+            try swiftDataClient.category.addCategory(newCategory)
             NotificationCenter.default.post(name: .categoryAdded, object: nil)
             await linkNavigator.pop()
           }

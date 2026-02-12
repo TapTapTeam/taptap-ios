@@ -49,7 +49,7 @@ public struct OriginalEditFeature {
                 comments: payload.comments
               )
             }
-            try swiftDataClient.updateHighlightsForLink(linkID, highlights)
+            try swiftDataClient.highlight.updateHighlightsForLink(linkID: linkID, highlights: highlights)
 
             await linkNavigator.pop()
             
