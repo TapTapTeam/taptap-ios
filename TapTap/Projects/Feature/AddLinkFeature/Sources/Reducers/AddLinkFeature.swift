@@ -80,7 +80,7 @@ public struct AddLinkFeature {
           return .send(.setSheetPresented(true))
         }
         return .run { send in
-          await send(.didFetchArticleItems(Result { try swiftDataClient.fetchLinks() }))
+          await send(.didFetchArticleItems(Result { try swiftDataClient.link.fetchLinks() }))
         }
       case let .setTextFieldStyle(style):
         state.textFieldStyle = style
@@ -140,7 +140,7 @@ public struct AddLinkFeature {
             } else {
               newLink.category = selectedCategory
             }
-            try swiftDataClient.addLink(newLink)
+            try swiftDataClient.link.addLink(newLink)
             await send(.saveLinkResponse(.success(newLink)))
           } catch {
             await send(.saveLinkResponse(.failure(error)))

@@ -264,7 +264,7 @@ private extension LinkListFeature {
     case .fetchLinks:
       return .run { (send: Send<Action>) in
         let result: TaskResult<[ArticleItem]> = await TaskResult {
-          try swiftDataClient.fetchLinks()
+          try swiftDataClient.link.fetchLinks()
         }
         switch result {
         case let .success(items):
@@ -309,7 +309,7 @@ private extension LinkListFeature {
       /// 카테고리 목록 불러오기
     case .fetchCategories:
       return .run { (send: Send<Action>) in
-        let items = try swiftDataClient.fetchCategories()
+        let items = try swiftDataClient.category.fetchCategories()
         await send(.responseCategoryItems(items))
       }
       
