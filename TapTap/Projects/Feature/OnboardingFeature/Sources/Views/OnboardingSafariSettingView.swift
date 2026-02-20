@@ -65,7 +65,7 @@ extension OnboardingSafariSettingView: View {
     }
     .onChange(of: scenePhase) { _, newValue in
       if newValue == .active && store.hasOpenedSettings {
-        store.send(.moveToOnboardingHighlightMemo)
+        store.send(.route(.onboardingHighlightMemo))
       }
     }
     .onAppear {

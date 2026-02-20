@@ -24,7 +24,10 @@ public struct OnboardingSafariSettingFeature {
     case alertConfirmButtonTapped
     case settingsOpened
     
-    case moveToOnboardingHighlightMemo
+    case route(Route)
+    public enum Route: Equatable {
+      case onboardingHighlightMemo
+    }
   }
   
   public var body: some ReducerOf<Self> {
@@ -43,7 +46,7 @@ public struct OnboardingSafariSettingFeature {
           state.isAlert = true
           return .none
         }
-        return .send(.moveToOnboardingHighlightMemo)
+        return .send(.route(.onboardingHighlightMemo))
         
       case .alertCancelButtonTapped:
         state.isAlert = false
@@ -51,9 +54,9 @@ public struct OnboardingSafariSettingFeature {
         
       case .alertConfirmButtonTapped:
         state.isAlert = false
-        return .send(.moveToOnboardingHighlightMemo)
+        return .send(.route(.onboardingHighlightMemo))
         
-      case .moveToOnboardingHighlightMemo:
+      case .route:
         return .none
       }
     }

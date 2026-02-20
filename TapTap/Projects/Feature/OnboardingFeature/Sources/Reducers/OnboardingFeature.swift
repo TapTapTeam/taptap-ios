@@ -19,11 +19,10 @@ public struct OnboardingFeature {
   }
   
   public enum Action: Equatable {
-    case startButtonTapped
     case path(StackActionOf<Path>)
+    case startButtonTapped
     
     case delegate(Delegate)
-    
     public enum Delegate: Equatable {
         case onboardingCompleted
     }
@@ -35,61 +34,15 @@ public struct OnboardingFeature {
       case .startButtonTapped:
         state.path.append(.onboardingSafariSetting(.init()))
         return .none
-      
-      case .path(.element(id: _, action: .onboardingSafariSetting(.moveToOnboardingHighlightMemo))):
-        state.path.append(.onboardingHighlightMemo(.init()))
-        return .none
-      
-      case .path(.element(id: _, action: .onboardingHighlightMemo(.moveToOnboardingHighlightGuide))):
-        state.path.append(.onboardingHighlightGuide(.init()))
-        return .none
-        
-      case .path(.element(id: _, action: .onboardingHighlightMemo(.moveToOnboardingShare))):
-        state.path.append(.onboardingShare(.init()))
-        return .none
-        
-      case .path(.element(id: _, action: .onboardingHighlightGuide(.moveToOnboardingShare))):
-        state.path.append(.onboardingShare(.init()))
-        return .none
-      
-      case .path(.element(id: _, action: .onboardingHighlightGuide(.backButtonTapped))):
-        state.path.removeLast()
-        return .none
-        
-      case .path(.element(id: _, action: .onboardingShare(.moveToOnboardingShareGuide))):
-        state.path.append(.onboardingShareGuide(.init()))
-        return .none
-        
-      case .path(.element(id: _, action: .onboardingShare(.moveToOnboardingFinish))):
-        state.path.append(.onboardingFinish(.init()))
-        return .none
-        
-      case .path(.element(id: _, action: .onboardingShareGuide(.moveToOnboardingFinish))):
-        state.path.append(.onboardingFinish(.init()))
-        return .none
-        
-      case .path(.element(id: _, action: .onboardingFinish(.moveToHome))):
-        return .send(.delegate(.onboardingCompleted))
-      
-      case .path:
-        return .none
-        
-      case .delegate:
+
+      case .delegate, .path:
         return .none
       }
     }
     .forEach(\.path, action: \.path)
+    
+    OnboardingNavigationReducer()
   }
 
   public init() {}
-  
-  @Reducer(state: .equatable, action: .equatable)
-  public enum Path {
-    case onboardingSafariSetting(OnboardingSafariSettingFeature)
-    case onboardingHighlightMemo(OnboardingHighlightMemoFeature)
-    case onboardingHighlightGuide(OnboardingHighlightGuideFeature)
-    case onboardingShare(OnboardingShareFeature)
-    case onboardingShareGuide(OnboardingShareGuideFeature)
-    case onboardingFinish(OnboardingFinishFeature)
-  }
 }

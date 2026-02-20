@@ -19,30 +19,27 @@ public struct OnboardingShareFeature {
     case nextButtonTapped
     case skipButtonTapped
     
-    case moveToOnboardingShareGuide
-    case moveToOnboardingFinish
+    case route(Route)
+    public enum Route: Equatable {
+      case back
+      case onboardingShareGuide
+      case onboardingFinish
+    }
   }
-  
-  @Dependency(\.dismiss) var dismiss
   
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .run { _ in
-          await dismiss()
-        }
+        return .send(.route(.back))
         
       case .nextButtonTapped:
-        return .send(.moveToOnboardingShareGuide)
+        return .send(.route(.onboardingShareGuide))
         
       case .skipButtonTapped:
-        return .send(.moveToOnboardingFinish)
-        
-      case .moveToOnboardingShareGuide:
-        return .none
-        
-      case .moveToOnboardingFinish:
+        return .send(.route(.onboardingFinish))
+      
+      case .route:
         return .none
       }
     }

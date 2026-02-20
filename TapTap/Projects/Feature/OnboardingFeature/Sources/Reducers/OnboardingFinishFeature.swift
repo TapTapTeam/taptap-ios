@@ -16,7 +16,10 @@ public struct OnboardingFinishFeature {
   public enum Action: Equatable {
     case startButtonTapped
     
-    case moveToHome
+    case route(Route)
+    public enum Route {
+      case home
+    }
   }
   
   @Dependency(\.userDefaultsClient) var userDefaultsClient
@@ -27,10 +30,10 @@ public struct OnboardingFinishFeature {
       case .startButtonTapped:
         return .run { send in
           try userDefaultsClient.saveOnboardingState()
-          await send(.moveToHome)
+          await send(.route(.home))
         }
-      
-      case .moveToHome:
+        
+      case .route:
         return .none
       }
     }

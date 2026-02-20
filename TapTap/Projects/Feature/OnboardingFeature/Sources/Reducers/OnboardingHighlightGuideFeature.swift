@@ -88,7 +88,11 @@ public struct OnboardingHighlightGuideFeature {
     case memoEvent
     case finishEvent
     
-    case moveToOnboardingShare
+    case route(Route)
+    public enum Route: Equatable {
+      case back
+      case onboardingShare
+    }
   }
   
   @Dependency(\.continuousClock) var clock
@@ -279,6 +283,7 @@ public struct OnboardingHighlightGuideFeature {
           .cancel(id: CancelID.dragAnimation),
           .cancel(id: CancelID.colorAnimation),
           .cancel(id: CancelID.memoAnimation),
+          .send(.route(.back))
         )
         
       case .nextButtonTapped:
@@ -287,10 +292,10 @@ public struct OnboardingHighlightGuideFeature {
           .cancel(id: CancelID.dragAnimation),
           .cancel(id: CancelID.colorAnimation),
           .cancel(id: CancelID.memoAnimation),
-          .send(.moveToOnboardingShare)
+          .send(.route(.onboardingShare))
         )
         
-      case .moveToOnboardingShare:
+      case .route:
         return .none
       }
     }

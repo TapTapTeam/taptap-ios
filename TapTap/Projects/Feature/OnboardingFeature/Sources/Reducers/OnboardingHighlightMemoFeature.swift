@@ -19,30 +19,27 @@ public struct OnboardingHighlightMemoFeature {
     case nextButtonTapped
     case skipButtonTapped
     
-    case moveToOnboardingHighlightGuide
-    case moveToOnboardingShare
+    case route(Route)
+    public enum Route: Equatable {
+      case back
+      case onboardingHighlightGuide
+      case onboardingShare
+    }
   }
-  
-  @Dependency(\.dismiss) var dismiss
   
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .run { _ in
-          await dismiss()
-        }
+        return .send(.route(.back))
         
       case .nextButtonTapped:
-        return .send(.moveToOnboardingHighlightGuide)
+        return .send(.route(.onboardingHighlightGuide))
         
       case .skipButtonTapped:
-        return .send(.moveToOnboardingShare)
+        return .send(.route(.onboardingShare))
         
-      case .moveToOnboardingHighlightGuide:
-        return .none
-        
-      case .moveToOnboardingShare:
+      case .route:
         return .none
       }
     }
