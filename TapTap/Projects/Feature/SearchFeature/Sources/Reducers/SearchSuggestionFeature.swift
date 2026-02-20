@@ -36,7 +36,7 @@ struct SearchSuggestionFeature {
           return .none
         }
         return .run { send in
-          let response = try swiftDataClient.searchLinks(query)
+          let response = try swiftDataClient.link.searchLinks(query: query)
           await send(.suggestionResponse(response))
         }
         

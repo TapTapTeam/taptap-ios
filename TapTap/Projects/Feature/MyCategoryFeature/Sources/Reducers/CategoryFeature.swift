@@ -38,7 +38,7 @@ public struct CategoryListFeature {
       switch action {
       case .onAppear:
         return .run {
-          send in await send(.categoriesResponse(Result{ try swiftDataClient.fetchCategories() }))
+          send in await send(.categoriesResponse(Result{ try swiftDataClient.category.fetchCategories() }))
         }
       case let .categoriesResponse(.success(categories)):
         state.categories = categories

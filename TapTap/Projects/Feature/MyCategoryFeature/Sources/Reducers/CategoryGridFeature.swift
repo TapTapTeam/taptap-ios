@@ -47,7 +47,7 @@ public struct CategoryGridFeature {
         state.selectedCategories = []
         return .run { send in
           await send(.fetchCategoriesResponse(Result {
-            try swiftDataClient.fetchCategories()
+            try swiftDataClient.category.fetchCategories()
           }))
         }
       case let .fetchCategoriesResponse(.success(categories)):

@@ -68,7 +68,7 @@ public struct DeleteCategoryFeature {
         return .run { [selectedCategories = state.selectedCategories] _ in
           let deletedCount = selectedCategories.count
           for category in selectedCategories {
-            try swiftDataClient.deleteCategory(category)
+            try swiftDataClient.category.deleteCategory(category)
           }
           NotificationCenter.default.post(
             name: .categoryDeleted,

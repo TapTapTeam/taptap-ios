@@ -89,7 +89,7 @@ struct DeleteLinkFeature {
         return .run { _ in
           do {
             for id in selectedIDs {
-              try swiftDataClient.deleteLinkById(id)
+              try swiftDataClient.link.deleteLinkById(id)
             }
             
             NotificationCenter.default.post(
