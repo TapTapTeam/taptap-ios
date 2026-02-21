@@ -18,23 +18,35 @@ public struct OriginalArticleFeature {
   
   @ObservableState
   public struct State: Equatable {
+    var path: StackState<Path.State> = .init()
+    
     var articleItem: ArticleItem
   }
   
   public enum Action: Equatable {
+    case path(StackActionOf<Path>)
+    
     case editButtonTapped
+    case backButtonTapped
   }
   
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .editButtonTapped:
-        let payload = OriginalPayload(articleItem: state.articleItem)
-        linkNavigator.push(.originalEdit, payload)
-        linkNavigator.remove(.originalArticle)
+        state.path.append(.originalEdit(.init(articleItem: state.articleItem)))
+        return .none
+              
+      case .backButtonTapped:
+        return .none
+        
+      case .path:
         return .none
       }
     }
+    .forEach(\.path, action: \.path)
+    
+    OriginalNavigationReducer()
   }
   
   public init() {}

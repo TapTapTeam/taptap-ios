@@ -24,9 +24,11 @@ extension OriginalEditView {
     ZStack(alignment: .topLeading) {
       Color.background.ignoresSafeArea()
       VStack(spacing: 0) {
-        OriginalHeaderView(headerType: .edit, onCompleteTapped:  {
-          store.send(.completeButtonTapped)
-        })
+        OriginalHeaderView(
+          headerType: .edit,
+          onCompleteTapped: { store.send(.completeButtonTapped)},
+          onBackButtonTapped: { store.send(.backButtonTapped) }
+        )
         
         if progress < 1.0 {
           ProgressView(value: progress, total: 1.0)
@@ -42,6 +44,7 @@ extension OriginalEditView {
         }
       }
     }
+    .toolbar(.hidden)
     .task {
       try? await Task.sleep(for: .seconds(0.1))
       isWebViewLoaded = true

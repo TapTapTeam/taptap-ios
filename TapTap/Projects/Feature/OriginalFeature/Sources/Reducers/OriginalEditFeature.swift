@@ -25,7 +25,13 @@ public struct OriginalEditFeature {
   
   public enum Action: Equatable {
     case completeButtonTapped
+    case backButtonTapped
     case highlightsDataResponse([HighlightPayload])
+    
+    case route(Route)
+    public enum Route {
+      case back
+    }
   }
   
   public var body: some ReducerOf<Self> {
@@ -37,8 +43,11 @@ public struct OriginalEditFeature {
         state.isDataRequestTriggered = true
         return .none
         
+      case .backButtonTapped:
+        return .send(.route(.back))
+        
       case .highlightsDataResponse(let highlights):
-        return .run { [linkID = state.articleItem.id] _ in
+        return .run { [linkID = state.articleItem.id] send in
           do {
             let highlights = highlights.map { payload in
               HighlightItem(
@@ -59,6 +68,9 @@ public struct OriginalEditFeature {
             print("저장 실패")
           }
         }
+        
+      case .route:
+        return .none
       }
     }
   }
