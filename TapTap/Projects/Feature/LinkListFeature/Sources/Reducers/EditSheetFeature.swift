@@ -13,26 +13,26 @@ import Core
 import Shared
 
 @Reducer
-struct EditSheetFeature {
+public struct EditSheetFeature {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var link: ArticleItem?
   }
   
-  enum Action {
+  public enum Action: Equatable {
     case dismissButtonTapped
     case moveButtonTapped
     case deleteButtonTapped
     case delegate(Delegate)
     
-    enum Delegate {
+    public enum Delegate: Equatable {
       case dismissSheet
       case moveLink(ArticleItem?)
       case deleteLink(ArticleItem?)
     }
   }
 
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .dismissButtonTapped:

@@ -15,13 +15,13 @@ import Core
 import Shared
 
 @Reducer
-struct MoveLinkFeature {
+public struct MoveLinkFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
   @Dependency(\.uuid) var uuid
   @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var allLinks: [ArticleItem] = []
     var categoryName: String = "전체"
     var selectedLinks: Set<String> = []
@@ -30,9 +30,17 @@ struct MoveLinkFeature {
     var targetCategory: CategoryItem? = nil
     
     @Presents var selectBottomSheet: SelectBottomSheetFeature.State?
+    
+    public init(
+      allLinks: [ArticleItem],
+      categoryName: String
+    ) {
+      self.allLinks = allLinks
+      self.categoryName = categoryName
+    }
   }
   
-  enum Action: BindableAction {
+  public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case onAppear
     case toggleSelect(ArticleItem)
@@ -43,9 +51,14 @@ struct MoveLinkFeature {
     case fetchCategoriesResponse([CategoryItem])
     case selectBottomSheet(PresentationAction<SelectBottomSheetFeature.Action>)
     case moveDone(count: Int)
+    
+    case route(Route)
+    public enum Route {
+      case back
+    }
   }
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     BindingReducer()
     Reduce {
       state,
@@ -74,9 +87,7 @@ struct MoveLinkFeature {
         return .none
         
       case .backButtonTapped:
-        return .run { _ in
-          await linkNavigator.pop()
-        }
+        return .send(.route(.back))
         
         /// 이동 버튼
       case .confirmMoveTapped:
@@ -154,7 +165,7 @@ struct MoveLinkFeature {
         state.selectBottomSheet = nil
         return .none
         
-      case .selectBottomSheet, .binding:
+      case .selectBottomSheet, .binding, .route:
         return .none
       }
     }

@@ -15,7 +15,7 @@ import Core
 import Shared
 
 @Reducer
-struct LinkListFeature {
+public struct LinkListFeature {
   // MARK: - Dependencies
   @Dependency(\.swiftDataClient) var swiftDataClient
   @Dependency(\.uuid) var uuid
@@ -23,7 +23,9 @@ struct LinkListFeature {
   
   // MARK: - State
   @ObservableState
-  struct State {
+  public struct State: Equatable {
+    var path: StackState<Path.State> = .init()
+    
     // 자식 Feature 상태
     var categoryChipList = CategoryChipFeature.State()
     var articleList = ArticleFilterFeature.State()
@@ -39,15 +41,17 @@ struct LinkListFeature {
     @Presents var selectBottomSheet: SelectBottomSheetFeature.State?
   }
   
-  struct AlertBannerState: Equatable {
+  public struct AlertBannerState: Equatable {
     let title: String
     let icon: Image
     let tint: Tint
-    enum Tint: Equatable { case danger, info, alert }
+    public enum Tint: Equatable { case danger, info, alert }
   }
   
   // MARK: - Action
-  enum Action {
+  public enum Action {
+    case path(StackActionOf<Path>)
+    
     /// 라이프사이클
     case onAppear
     
@@ -80,7 +84,7 @@ struct LinkListFeature {
   }
   
   // MARK: - Body
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     /// 자식 리듀서 연결
     Scope(state: \.categoryChipList, action: \.categoryChipList) {
       CategoryChipFeature()
@@ -94,9 +98,12 @@ struct LinkListFeature {
     Reduce(self.uiReducer)
       .ifLet(\.$editSheet, action: \.editSheet) { EditSheetFeature() }
       .ifLet(\.$selectBottomSheet, action: \.selectBottomSheet) { SelectBottomSheetFeature() }
+      .forEach(\.path, action: \.path)
     
     /// 데이터 로드 전용 Reducer
     Reduce(self.dataReducer)
+    
+    LinkListNavigationReducer()
   }
 }
 
@@ -163,13 +170,8 @@ private extension LinkListFeature {
       if state.articleList.link.isEmpty {
         return .send(.showAlert(title: "이 카테고리에 이동할 링크가 없어요", tint: .alert))
       }
-      let payload = LinkListPayload(
-        links: state.articleList.link,
-        categoryName: state.selectedCategory?.categoryName ?? "전체"
-      )
-      return .run { _ in
-        linkNavigator.push(.moveLink, payload)
-      }
+      state.path.append(.moveLink(.init(allLinks: state.articleList.link, categoryName: state.selectedCategory?.categoryName ?? "전체")))
+      return .none
       
     case let .moveToCategoryName(name):
       if let match = state.categoryChipList.categories.first(where: { $0.categoryName == name }) {
@@ -192,13 +194,8 @@ private extension LinkListFeature {
       if state.articleList.link.isEmpty {
         return .send(.showAlert(title: "이 카테고리에 삭제할 링크가 없어요", tint: .alert))
       }
-      let payload = LinkListPayload(
-        links: state.articleList.link,
-        categoryName: state.selectedCategory?.categoryName ?? "전체"
-      )
-      return .run { _ in
-        linkNavigator.push(.deleteLink, payload)
-      }
+      state.path.append(.deleteLink(.init(allLinks: state.articleList.link, categoryName: state.selectedCategory?.categoryName ?? "전체")))
+      return .none
       
       /// 알럿 띄우기
     case let .showAlert(title, tint):

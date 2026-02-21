@@ -11,33 +11,34 @@ import Core
 import Shared
 
 @Reducer
-struct ArticleFilterFeature {
+public struct ArticleFilterFeature {
   @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
-  struct State {
+  public struct State: Equatable {
     var link: [ArticleItem] = []
     var sortOrder: SortOrder = .latest
     var selectedLink: ArticleItem? = nil
   }
   
-  enum SortOrder: Equatable {
+  public enum SortOrder: Equatable {
     case latest
     case oldest
   }
   
-  enum Action {
+  public enum Action: Equatable {
     case listCellTapped(ArticleItem)
     case listCellLongPressed(ArticleItem)
     case sortOrderChanged(SortOrder)
+    
     case delegate(Delegate)
-    enum Delegate {
+    public enum Delegate: Equatable {
       case openLinkDetail(ArticleItem)
       case longPressed(ArticleItem)
     }
   }
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .listCellTapped(let article):

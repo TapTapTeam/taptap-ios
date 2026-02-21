@@ -14,35 +14,47 @@ import Core
 import Shared
 
 @Reducer
-struct DeleteLinkFeature {
+public struct DeleteLinkFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
   @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var allLinks: [ArticleItem] = []
     var categoryName: String = "전체"
     var selectedLinks: Set<String> = []
     var isSelectAll: Bool = false
     var hideSelectControls: Bool = false
+    
+    public init(
+      allLinks: [ArticleItem],
+      categoryName: String
+    ) {
+      self.allLinks = allLinks
+      self.categoryName = categoryName
+    }
   }
   
-  enum Action: BindableAction {
+  public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case onAppear
     case toggleSelect(ArticleItem)
     case backButtonTapped
     case confirmDeleteTapped
-    case delegate(Delegate)
     case deleteDone(Int)
     
-    enum Delegate {
-      case dismiss
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
       case confirmDelete(selected: [ArticleItem])
+    }
+    
+    case route(Route)
+    public enum Route {
+      case back
     }
   }
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     BindingReducer()
     Reduce { state, action in
       switch action {
@@ -73,9 +85,7 @@ struct DeleteLinkFeature {
         return .none
         
       case .backButtonTapped:
-        return .run { _ in
-          await linkNavigator.pop()
-        }
+        return .send(.route(.back))
         
       case .confirmDeleteTapped:
         let selectedIDs = state.allLinks
@@ -110,7 +120,7 @@ struct DeleteLinkFeature {
           await linkNavigator.pop()
         }
         
-      case .binding, .delegate:
+      case .binding, .delegate, .route:
         return .none
       }
     }

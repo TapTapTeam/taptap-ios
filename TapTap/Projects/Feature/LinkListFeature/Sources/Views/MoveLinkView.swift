@@ -57,6 +57,7 @@ extension MoveLinkView {
         }
       }
     }
+    .toolbar(.hidden)
   }
   
   /// 링크 이동하기 네비게이션바
