@@ -11,84 +11,64 @@ import ComposableArchitecture
 
 import Core
 import Shared
-import OnboardingFeature
 
 @Reducer
-struct SettingFeature {
+public struct SettingFeature {
   @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var path: StackState<Path.State> = .init()
   }
   
-  enum Action: Equatable {
+  public enum Action: Equatable {
     case path(StackActionOf<Path>)
     
     case backButtonTapped
-    case privacyPolicyTapped
-    case termsOfServiceTapped
-    case openSourceTapped
-    case safariTipTapped
+    case safariExtensionTipTapped
     case highlightTipTapped
     case shareTipTapped
     case favoriteTipTapped
-    case openLinkTapped
+    case privacyPolicyTapped
+    case termsOfServiceTapped
+    case openSourceTapped
+    case serviceOpenLinkTapped
   }
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .run { _ in
-          await linkNavigator.pop()
-        }
-        
-      case .privacyPolicyTapped:
-        linkNavigator.push(
-          .policyDetail,
-          PolicyDetailPayload(
-            title: "개인정보 처리방침",
-            text: Constants.AppInfo.privacyPolicy
-          )
-        )
         return .none
         
-      case .termsOfServiceTapped:
-        linkNavigator.push(
-          .policyDetail,
-          PolicyDetailPayload(
-            title: "서비스 이용약관",
-            text: Constants.AppInfo.termsOfService
-          )
-        )
-        return .none
-        
-      case .openSourceTapped:
-        linkNavigator.push(.openSourceList, nil)
-        return .none
-        
-      case .safariTipTapped:
-        linkNavigator.push(.extensionSetting, nil)
+      case .safariExtensionTipTapped:
+        state.path.append(.extensionSetting(.init()))
         return .none
         
       case .highlightTipTapped:
-        state.path.append(.onboardingHighlightGuide(.init()))
-        return .none
-      
-      case .path(.element(id: _, action: .onboardingHighlightGuide(.backButtonTapped))):
-        state.path.removeLast()
         return .none
         
       case .shareTipTapped:
-        linkNavigator.push(.shareSetting, nil)
+        state.path.append(.shareSetting(.init()))
         return .none
         
       case .favoriteTipTapped:
-        linkNavigator.push(.favoriteSetting, nil)
+        state.path.append(.favoriteSetting(.init()))
         return .none
         
-      case .openLinkTapped:
+      case .privacyPolicyTapped:
+        state.path.append(.policyDetail(.init(title: "개인정보 처리방침", text: Constants.AppInfo.privacyPolicy)))
+        return .none
+        
+      case .termsOfServiceTapped:
+        state.path.append(.policyDetail(.init(title: "서비스 이용약관", text: Constants.AppInfo.privacyPolicy)))
+        return .none
+        
+      case .openSourceTapped:
+        state.path.append(.openSourceList(.init()))
+        return .none
+        
+      case .serviceOpenLinkTapped:
         return .none
         
       case .path:
@@ -96,10 +76,7 @@ struct SettingFeature {
       }
     }
     .forEach(\.path, action: \.path)
-  }
-  
-  @Reducer(state: .equatable, action: .equatable)
-  enum Path {
-    case onboardingHighlightGuide(OnboardingHighlightGuideFeature)
+    
+    SettingNavigationReducer()
   }
 }

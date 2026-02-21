@@ -60,6 +60,7 @@ extension FavoriteSettingView {
         .padding(.horizontal, 52)
       }
     }
+    .toolbar(.hidden)
   }
 }
 

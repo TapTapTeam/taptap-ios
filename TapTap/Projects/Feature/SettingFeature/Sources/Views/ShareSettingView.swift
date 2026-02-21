@@ -82,6 +82,7 @@ extension ShareSettingView {
         }
       }
     }
+    .toolbar(.hidden)
   }
 }
 

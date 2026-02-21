@@ -30,18 +30,23 @@ public struct PolicyDetailFeature {
   
   public enum Action: Equatable {
     case backButtonTapped
+    
+    case route(Route)
+    public enum Route {
+      case back
+    }
   }
-  
-  public init() {}
   
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .run { _ in
-          await linkNavigator.pop()
-        }
+        return .send(.route(.back))
+      case .route:
+        return .none
       }
     }
   }
+  
+  public init() {}
 }

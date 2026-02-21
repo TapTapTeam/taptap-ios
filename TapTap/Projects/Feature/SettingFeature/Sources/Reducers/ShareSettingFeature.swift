@@ -12,26 +12,31 @@ import Core
 import Shared
 
 @Reducer
-struct ShareSettingFeature {
+public struct ShareSettingFeature {
   @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
-  struct State { }
+  public struct State: Equatable { }
   
-  enum Action: Equatable {
+  public enum Action: Equatable {
     case backButtonTapped
+    
+    case route(Route)
+    public enum Route {
+      case back
+    }
   }
-  
-  init() {}
-  
-  var body: some ReducerOf<Self> {
+    
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .run { _ in
-          await linkNavigator.pop()
-        }
+        return .send(.route(.back))
+      case .route:
+        return .none
       }
     }
   }
+  
+  public init() {}
 }

@@ -24,7 +24,9 @@ struct SettingView {
 // MARK: View
 extension SettingView: View {
   var body: some View {
-    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+    NavigationStack(
+      path: $store.scope(state: \.path, action: \.path)
+    ) {
       ZStack {
         Color.background.ignoresSafeArea()
         
@@ -36,8 +38,18 @@ extension SettingView: View {
       .toolbar(.hidden)
     } destination: { store in
       switch store.case {
-      case let .onboardingHighlightGuide(store):
-        OnboardingHighlightGuideView(store: store)
+      case let .extensionSetting(store):
+        ExtensionSettingView(store: store)
+      case let .shareSetting(store):
+        ShareSettingView(store: store)
+      case let .favoriteSetting(store):
+        FavoriteSettingView(store: store)
+      case let .policyDetail(store):
+        PolicyDetailView(store: store)
+      case let .termsOfService(store):
+        PolicyDetailView(store: store)
+      case let .openSourceList(store):
+        OpenSourceListView(store: store)
       }
     }
   }
@@ -86,7 +98,7 @@ extension SettingView: View {
         icon: DesignSystemAsset.settingSafari.swiftUIImage,
         title: "Safari extension 허용하기"
       ) {
-        store.send(.safariTipTapped)
+        store.send(.safariExtensionTipTapped)
       }
       
       SettingTipCard(
@@ -166,7 +178,7 @@ extension SettingView: View {
           openURL(url)
         }
         
-        store.send(.openLinkTapped)
+        store.send(.serviceOpenLinkTapped)
       }
     }
   }

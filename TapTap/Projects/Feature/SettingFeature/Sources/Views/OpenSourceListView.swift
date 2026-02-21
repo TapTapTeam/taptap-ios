@@ -26,6 +26,7 @@ extension OpenSourceListView {
         Spacer()
       }
     }
+    .toolbar(.hidden)
   }
   
   private var naivgationBar: some View {

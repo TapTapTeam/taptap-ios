@@ -12,32 +12,39 @@ import Core
 import Shared
 
 @Reducer
-struct ExtensionSettingFeature {
+public struct ExtensionSettingFeature {
   @Dependency(\.linkNavigator) var navigation
   
   @ObservableState
-  struct State {
+  public struct State: Equatable {
     var currentPage: Int = 1
   }
   
-  enum Action {
+  public enum Action: Equatable {
     case settingButtonTapped
     case backButtonTapped
     case naviPush
+    
+    case route(Route)
+    public enum Route {
+      case back
+    }
   }
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .run { send in
-          await navigation.pop()
-        }
+        return .send(.route(.back))
       case .settingButtonTapped:
         return .none
       case .naviPush:
         return .none
+      case .route:
+        return .none
       }
     }
   }
+  
+  public init() {}
 }

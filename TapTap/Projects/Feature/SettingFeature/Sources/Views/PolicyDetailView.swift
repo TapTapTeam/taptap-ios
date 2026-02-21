@@ -33,5 +33,6 @@ extension PolicyDetailView {
         }
       }
     }
+    .toolbar(.hidden)
   }
 }
