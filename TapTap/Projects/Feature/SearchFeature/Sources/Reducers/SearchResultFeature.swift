@@ -14,9 +14,9 @@ import Core
 import Shared
 
 @Reducer
-struct SearchResultFeature {
+public struct SearchResultFeature {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var searchResult: [ArticleItem] = []
     var filteredSearchResult: [ArticleItem] = []
     var query: String = ""
@@ -27,7 +27,7 @@ struct SearchResultFeature {
     @Presents var selectBottomSheet: SelectBottomSheetFeature.State?
   }
   
-  enum Action: Equatable {
+  public enum Action: Equatable {
     case loadSearchResult(String)
     case searchResponse([ArticleItem])
     case linkCardTapped(ArticleItem)
@@ -40,7 +40,7 @@ struct SearchResultFeature {
   @Dependency(\.linkNavigator) var linkNavigator
   @Dependency(\.uuid) var uuid
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .loadSearchResult(let query):
@@ -103,5 +103,7 @@ struct SearchResultFeature {
       SelectBottomSheetFeature()
     }
   }
+  
+  public init() {}
 }
 

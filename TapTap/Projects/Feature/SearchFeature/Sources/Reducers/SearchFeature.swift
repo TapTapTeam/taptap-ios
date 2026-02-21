@@ -13,11 +13,11 @@ import Core
 import Shared
 
 @Reducer
-struct SearchFeature {
+public struct SearchFeature {
   @Dependency(\.linkNavigator) var linkNavigator
 
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var searchQuery: String = ""
     var isSearchFieldFocused: Bool = false
     var isSearchSubmitted: Bool = false
@@ -28,7 +28,7 @@ struct SearchFeature {
     var searchSuggestion: SearchSuggestionFeature.State = .init()
   }
 
-  enum Action: BindableAction, Equatable {
+  public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
 
     case onAppear
@@ -43,9 +43,9 @@ struct SearchFeature {
     case searchSuggestion(SearchSuggestionFeature.Action)
   }
 
-  enum CancelID { case searchDebounce }
+  public enum CancelID { case searchDebounce }
 
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Scope(state: \.recentSearch, action: \.recentSearch) { RecentSearchFeature() }
     Scope(state: \.recentLink, action: \.recentLink) { RecentLinkFeature() }
     Scope(state: \.searchResult, action: \.searchResult) { SearchResultFeature() }
@@ -123,4 +123,6 @@ struct SearchFeature {
       }
     }
   }
+  
+  public init() {}
 }

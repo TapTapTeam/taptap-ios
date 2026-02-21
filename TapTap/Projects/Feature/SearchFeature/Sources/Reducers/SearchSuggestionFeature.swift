@@ -11,14 +11,14 @@ import Core
 import Shared
 
 @Reducer
-struct SearchSuggestionFeature {
+public struct SearchSuggestionFeature {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var suggestionItem: [ArticleItem] = []
     var searchText: String = ""
   }
   
-  enum Action: Equatable {
+  public enum Action: Equatable {
     case loadSuggestionItem(String)
     case suggestionResponse([ArticleItem])
     case suggestionTapped(ArticleItem)
@@ -27,7 +27,7 @@ struct SearchSuggestionFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
   @Dependency(\.linkNavigator) var linkNavigator
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .loadSuggestionItem(let query):
@@ -50,4 +50,6 @@ struct SearchSuggestionFeature {
       }
     }
   }
+  
+  public init() {}
 }

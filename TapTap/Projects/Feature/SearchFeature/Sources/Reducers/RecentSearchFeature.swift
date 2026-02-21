@@ -12,13 +12,13 @@ import ComposableArchitecture
 import Shared
 
 @Reducer
-struct RecentSearchFeature {
+public struct RecentSearchFeature {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var searches: IdentifiedArrayOf<SearchTerm> = []
   }
   
-  enum Action: Equatable {
+  public enum Action: Equatable {
     case onAppear
     case loadRecentSearches([String]) // 최근 검색어 불러오기
     case add(String) // 최근 검색어 저장하기
@@ -26,17 +26,16 @@ struct RecentSearchFeature {
     case clear // 모든 최근 검색어 삭제하기
     case chipTapped(String)
     
-    case delegate(DelegateAction)
-  }
-  
-  enum DelegateAction: Equatable {
-    case chipTapped(String)
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case chipTapped(String)
+    }
   }
   
   @Dependency(\.recentSearchClient) var recentSearchClient
   @Dependency(\.uuid) var uuid
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .onAppear:
@@ -76,4 +75,6 @@ struct RecentSearchFeature {
       }
     }
   }
+  
+  public init() {}
 }

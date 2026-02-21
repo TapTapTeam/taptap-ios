@@ -11,13 +11,13 @@ import Core
 import Shared
 
 @Reducer
-struct RecentLinkFeature {
+public struct RecentLinkFeature {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var recentLinkItem: [ArticleItem] = []
   }
   
-  enum Action: Equatable {
+  public enum Action: Equatable {
     case onAppear
     case recentLinkResponse([ArticleItem])
     case recentLinkTapped(ArticleItem)
@@ -26,7 +26,7 @@ struct RecentLinkFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
   @Dependency(\.linkNavigator) var linkNavigator
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .onAppear:
@@ -45,4 +45,6 @@ struct RecentLinkFeature {
       }
     }
   }
+  
+  public init() {}
 }
