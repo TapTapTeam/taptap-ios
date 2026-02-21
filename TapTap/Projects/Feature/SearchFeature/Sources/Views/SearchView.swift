@@ -16,7 +16,8 @@ import Shared
 
 // MARK: - Properties
 struct SearchView: View {
-  let store: StoreOf<SearchFeature>
+  @Bindable var store: StoreOf<SearchFeature>
+  @FocusState private var isSearchFieldFocused: Bool
 }
 
 // MARK: - View
@@ -25,13 +26,17 @@ extension SearchView {
     ZStack(alignment: .topLeading) {
       Color.background.ignoresSafeArea()
       VStack(alignment: .leading, spacing: .zero) {
-        TopAppBarSearchView(
-          store: store.scope(state: \.topAppBar, action: \.topAppBar)
+        TopAppBarSearch(
+          text: $store.searchQuery,
+          isFocused: $isSearchFieldFocused,
+          onBack: { store.send(.backButtonTapped) },
+          onSubmit: { store.send(.submit) },
+          onClear: { store.send(.clearButtonTapped) }
         )
         
         ScrollView(.vertical, showsIndicators: false) {
           VStack(alignment: .leading, spacing: .zero) {
-            if store.topAppBar.searchText.isEmpty {
+            if store.searchQuery.isEmpty {
               let recentSearchesExist = !store.recentSearch.searches.isEmpty
               let recentLinksExist = !store.recentLink.recentLinkItem.isEmpty
               
@@ -74,6 +79,7 @@ extension SearchView {
       }
       .onAppear {
         store.send(.onAppear)
+        isSearchFieldFocused = true
       }
     }
   }
