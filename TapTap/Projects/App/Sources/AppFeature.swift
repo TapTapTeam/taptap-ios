@@ -17,6 +17,7 @@ struct AppFeature {
   struct State: Equatable {
     var launchState: LaunchState = .splash
     var onboarding: OnboardingFeature.State?
+    var appCoordinator: AppCoordinator.State?
     
     init() {}
     
@@ -38,11 +39,12 @@ struct AppFeature {
     case onboardingStateLoaded(Bool)
     case onboarding(OnboardingFeature.Action)
     case alert(PresentationAction<Alert>)
-
-     @CasePathable
-     enum Alert: Equatable {
-       case openAppStore
-     }
+    case appCoordinator(AppCoordinator.Action)
+    
+    @CasePathable
+    enum Alert: Equatable {
+      case openAppStore
+    }
   }
   
   @Dependency(\.userDefaultsClient) var userDefaultsClient
@@ -66,10 +68,10 @@ struct AppFeature {
             await send(.updateCheckResult(false))
           }
         }
-      
+        
       case .updateCheckResult(let result):
         if result {
-          state.alert = AlertState { 
+          state.alert = AlertState {
             TextState("업데이트 필요")
           } actions: {
             ButtonState(action: .openAppStore) {
@@ -99,37 +101,45 @@ struct AppFeature {
           }
         }
         
+      case .onboarding(.delegate(.onboardingCompleted)):
+        state.onboarding = nil
+        if state.appCoordinator == nil {
+          state.appCoordinator = .init()
+        }
+        state.launchState = .home
+        return .none
+        
       case .onboardingStateLoaded(let hasCompleted):
         if hasCompleted {
-          state.launchState = .home
           state.onboarding = nil
+          if state.appCoordinator == nil {
+            state.appCoordinator = .init()
+          }
+          state.launchState = .home
         } else {
+          state.appCoordinator = nil
           state.launchState = .onboarding
-          state.onboarding = OnboardingFeature.State()
+          state.onboarding = .init()
         }
         return .none
-
         
       case .alert(.presented(.openAppStore)):
         return .run { _ in
           await appVersionCheckClient.openAppStore()
         }
         
-      case .onboarding(.delegate(.onboardingCompleted)):
-        state.onboarding = nil
-        state.launchState = .home
-        return .none
-        
       case .onboarding:
         return .none
         
       case .alert:
         return .none
+        
+      case .appCoordinator:
+        return .none
       }
     }
     .ifLet(\.$alert, action: \.alert)
-    .ifLet(\.onboarding, action: \.onboarding) {
-      OnboardingFeature()
-    }
+    .ifLet(\.onboarding, action: \.onboarding) { OnboardingFeature() }
+    .ifLet(\.appCoordinator, action: \.appCoordinator) { AppCoordinator() }
   }
 }

@@ -23,14 +23,15 @@ extension AppView: View {
   var body: some View {
     ZStack {
       switch store.state.launchState {
-      case .home:
-        LinkNavigationView(
-          linkNavigator: singleNavigator,
-          item: .init(path: Route.home.rawValue)
-        )
-        .ignoresSafeArea()
       case .splash:
         SplashView()
+        
+      case .home:
+        if let coordinatorStore = store.scope(state: \.appCoordinator, action: \.appCoordinator) {
+          AppCoordinatorView(store: coordinatorStore)
+            .ignoresSafeArea()
+        }
+
       case .onboarding:
         if let onboardingStore = store.scope(state: \.onboarding, action: \.onboarding) {
           OnboardingView(store: onboardingStore)
