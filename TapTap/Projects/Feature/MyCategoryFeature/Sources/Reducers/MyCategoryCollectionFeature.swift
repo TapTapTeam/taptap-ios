@@ -17,7 +17,8 @@ public struct MyCategoryCollectionFeature {
   
   @ObservableState
   public struct State: Equatable {
-    var topAppBar = TopAppBarDefaultNoSearchFeature.State(title: CategoryNamespace.myCategoryCollection)
+    var path: StackState<Path.State> = .init()
+    
     var categoryGrid = CategoryGridFeature.State()
     var selectedCategory: CategoryItem?
     var settingModal: CategorySettingFeature.State?
@@ -29,13 +30,17 @@ public struct MyCategoryCollectionFeature {
     public init() {}
   }
   
-  public enum Action {
-    case topAppBar(TopAppBarDefaultNoSearchFeature.Action)
+  public enum Action: Equatable {
+    case path(StackActionOf<Path>)
+    
+    case backButtonTapped
+    case settingButtonTapped
     case categoryGrid(CategoryGridFeature.Action)
     case settingModal(CategorySettingFeature.Action)
     case totalLinkTapped
     case myCategoryGrid(MyCategoryGridFeature.Action)
-    case fetchArticleResponse(Result<[ArticleItem], Error>)
+    case fetchArticleResponse([ArticleItem])
+    case fetchArticleFailed(String)
     case onAppear
     case showToast(String)
     case hideToast
@@ -44,57 +49,70 @@ public struct MyCategoryCollectionFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
   
   public var body: some ReducerOf<Self> {
-    Scope(state: \.topAppBar, action: \.topAppBar) {
-      TopAppBarDefaultNoSearchFeature()
-    }
-    
     Scope(state: \.categoryGrid, action: \.categoryGrid) {
       CategoryGridFeature()
     }
     
     Scope(state: \.myCategoryGrid, action: \.myCategoryGrid) {
          MyCategoryGridFeature()
-       }
+    }
+    
     Reduce { state, action in
       switch action {
+      case .backButtonTapped:
+        print("back")
+        return .none
+        
       case .totalLinkTapped:
         linkNavigator.push(.linkList, nil)
         return .none
-      case .topAppBar(.tapBackButton):
-        return .run { _ in await linkNavigator.pop() }
-      case .topAppBar(.tapSettingButton):
+        
+      case .settingButtonTapped:
         state.settingModal = CategorySettingFeature.State()
         return .none
+        
       case .categoryGrid(_):
         return .none
+        
       case .onAppear:
         return .run { send in
-          await send(.fetchArticleResponse(Result {
-            try swiftDataClient.link.fetchLinks()
-          }))
+          do {
+            let links = try swiftDataClient.link.fetchLinks()
+            await send(.fetchArticleResponse(links))
+          } catch {
+            await send(.fetchArticleFailed(error.localizedDescription))
+          }
         }
+        
       case .settingModal(.dismissButtonTapped):
         state.settingModal = nil
         return .none
+        
       case .settingModal(.addButtonTapped):
-        linkNavigator.push(.addCategory, nil)
+        state.path.append(.addCategory(.init()))
         state.settingModal = nil
         return .none
+        
       case .settingModal(.editButtonTapped):
-        linkNavigator.push(.editCategory, nil)
+        state.path.append(.editCategory(.init()))
         state.settingModal = nil
         return .none
+        
       case .settingModal(.deleteButtonTapped):
-        linkNavigator.push(.deleteCategory, nil)
+        state.path.append(.deleteCategory(.init()))
         state.settingModal = nil
         return .none
+        
       case .myCategoryGrid(_):
         return .none
-      case let .fetchArticleResponse(.success(article)):
-        state.allLinksCount = article.count
+        
+      case let .fetchArticleResponse(articles):
+        state.allLinksCount = articles.count
         return .none
-      case .fetchArticleResponse(.failure(_)):
+
+      case .fetchArticleFailed:
         return .none
+        
       case .showToast(let message):
         state.showToast = true
         state.toastMessage = message
@@ -102,12 +120,18 @@ public struct MyCategoryCollectionFeature {
           try await Task.sleep(for: .seconds(2))
           await send(.hideToast)
         }
+        
       case .hideToast:
         state.showToast = false
         state.toastMessage = ""
         return .none
+        
+      case .path:
+        return .none
       }
-    }
+    }.forEach(\.path, action: \.path) 
+    
+    MyCateogryNavigationReducer()
   }
   
   public init() {}

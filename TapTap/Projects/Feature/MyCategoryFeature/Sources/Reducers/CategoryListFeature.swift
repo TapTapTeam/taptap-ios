@@ -25,9 +25,10 @@ public struct CategoryListFeature {
     public init() {}
   }
   
-  public enum Action {
+  public enum Action: Equatable {
     case onAppear
-    case categoriesResponse(Result<[CategoryItem], Error>)
+    case categoriesResponse([CategoryItem])
+    case categoriesResponseFailed(String)
     case moreCategoryButtonTapped
     case categoryTapped(CategoryItem)
     case addCategoryButtonTapped
@@ -37,22 +38,32 @@ public struct CategoryListFeature {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        return .run {
-          send in await send(.categoriesResponse(Result{ try swiftDataClient.category.fetchCategories() }))
+        return .run { send in
+          do {
+            let categories = try swiftDataClient.category.fetchCategories()
+            await send(.categoriesResponse(categories))
+          } catch {
+            await send(.categoriesResponseFailed(error.localizedDescription))
+          }
         }
-      case let .categoriesResponse(.success(categories)):
+        
+      case let .categoriesResponse(categories):
         state.categories = categories
         state.selectedCategory = categories.first
         return .none
-      case .categoriesResponse(.failure):
+        
+      case .categoriesResponseFailed:
         return .none
+        
       case .moreCategoryButtonTapped:
         linkNavigator.push(.myCategory, nil)
         return .none
+        
       case let .categoryTapped(category):
         let payload = LinkListPayload(links: [], categoryName: category.categoryName)
         linkNavigator.push(.linkList, payload)
         return .none
+        
       case .addCategoryButtonTapped:
         linkNavigator.push(.addCategory, nil)
         return .none

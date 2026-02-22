@@ -19,11 +19,9 @@ public struct DeleteCategoryView {
 extension DeleteCategoryView: View {
   public var body: some View {
     VStack(spacing: 15) {
-      TopAppBarDefaultRightIconxFeatureView(
-        store: store.scope(
-          state: \.topAppBar,
-          action: \.topAppBar
-        )
+      TopAppBarDefaultRightIconx(
+        title: "카테고리 삭제하기",
+        onTapBackButton: { store.send(.backButtonTapped) }
       )
       CategoryGridView(
         store: store.scope(

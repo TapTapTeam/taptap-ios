@@ -14,15 +14,12 @@ import Shared
 
 @Reducer
 public struct CategorySettingFeature {
-  
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   @ObservableState
   public struct State: Equatable {
     
   }
 
-  public enum Action {
+  public enum Action: Equatable {
     case dismissButtonTapped
     case addButtonTapped
     case editButtonTapped
@@ -36,10 +33,13 @@ public struct CategorySettingFeature {
       switch action {
       case .dismissButtonTapped:
         return .none
+        
       case .addButtonTapped:
         return .none
+        
       case .editButtonTapped:
         return .none
+        
       case .deleteButtonTapped:
         return .none
       }

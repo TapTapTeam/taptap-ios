@@ -31,7 +31,7 @@ extension EditCategoryIconNameView: View {
     ZStack(alignment: .leading) {
       VStack(spacing: 0) {
         TopAppBarDefaultRightIconx(title: "카테고리 수정하기") {
-          store.send(.topAppBar(.tapBackButton))
+          store.send(.backButtonTapped)
         }
         
         JNTextField(

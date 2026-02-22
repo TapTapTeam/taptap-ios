@@ -18,9 +18,10 @@ public struct MyCategoryGridFeature {
     var categories: [CategoryItem] = []
   }
   
-  public enum Action {
+  public enum Action: Equatable {
     case onAppear
-    case fetchCategoriesResponse(Result<[CategoryItem], Error>)
+    case fetchCategoriesResponse([CategoryItem])
+    case fetchCategoriesResponseFailed(String)
     case categoryTapped(CategoryItem)
   }
   
@@ -34,16 +35,22 @@ public struct MyCategoryGridFeature {
         let payload = LinkListPayload(links: [], categoryName: category.categoryName)
         linkNavigator.push(.linkList, payload)
         return .none
+        
       case .onAppear:
         return .run { send in
-          await send(.fetchCategoriesResponse(Result {
-            try swiftDataClient.category.fetchCategories()
-          }))
+          do {
+            let categories = try swiftDataClient.category.fetchCategories()
+            await send(.fetchCategoriesResponse(categories))
+          } catch {
+            await send(.fetchCategoriesResponseFailed(error.localizedDescription))
+          }
         }
-      case let .fetchCategoriesResponse(.success(categories)):
+        
+      case let .fetchCategoriesResponse(categories):
         state.categories = categories
         return .none
-      case .fetchCategoriesResponse(.failure(_)):
+        
+      case .fetchCategoriesResponseFailed:
         return .none
       }
     }
