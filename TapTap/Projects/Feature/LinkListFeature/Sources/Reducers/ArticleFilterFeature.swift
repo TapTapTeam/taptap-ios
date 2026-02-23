@@ -12,8 +12,6 @@ import Shared
 
 @Reducer
 public struct ArticleFilterFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   @ObservableState
   public struct State: Equatable {
     var link: [ArticleItem] = []
@@ -35,6 +33,7 @@ public struct ArticleFilterFeature {
     public enum Delegate: Equatable {
       case openLinkDetail(ArticleItem)
       case longPressed(ArticleItem)
+      case route(AppRoute)
     }
   }
   
@@ -42,8 +41,7 @@ public struct ArticleFilterFeature {
     Reduce { state, action in
       switch action {
       case .listCellTapped(let article):
-        linkNavigator.push(.linkDetail, article)
-        return .none
+        return .send(.delegate(.route(.linkDetail(article))))
         
       case let .listCellLongPressed(link):
         return .send(.delegate(.longPressed(link)))

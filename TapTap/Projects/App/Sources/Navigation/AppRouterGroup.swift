@@ -33,9 +33,6 @@ extension AppRouterGroup {
       DeleteCategoryRouteBuilder().generate(),
       CategorySettingRouteBuilder().generate(),
       EditCategoryIconNameRouteBuilder().generate(),
-      LinkListRouteBuilder().generate(),
-      MoveLinkRouteBuilder().generate(),
-      DeleteLinkRouteBuilder().generate(),
     ]
   }
 }

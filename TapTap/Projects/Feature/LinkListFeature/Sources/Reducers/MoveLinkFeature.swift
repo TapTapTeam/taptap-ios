@@ -8,7 +8,6 @@
 import SwiftUI
 
 import ComposableArchitecture
-import LinkNavigator
 
 import DesignSystem
 import Core
@@ -18,7 +17,6 @@ import Shared
 public struct MoveLinkFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
   @Dependency(\.uuid) var uuid
-  @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
   public struct State: Equatable {
@@ -52,9 +50,9 @@ public struct MoveLinkFeature {
     case selectBottomSheet(PresentationAction<SelectBottomSheetFeature.Action>)
     case moveDone(count: Int)
     
-    case route(Route)
-    public enum Route {
-      case back
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
     }
   }
   
@@ -87,7 +85,7 @@ public struct MoveLinkFeature {
         return .none
         
       case .backButtonTapped:
-        return .send(.route(.back))
+        return .send(.delegate(.route(.back)))
         
         /// 이동 버튼
       case .confirmMoveTapped:
@@ -144,7 +142,7 @@ public struct MoveLinkFeature {
         
       case let .moveDone(count):
         let moveCategoryName = state.targetCategory?.categoryName ?? "전체"
-        return .run { _ in
+        return .run { send in
           try? await Task
             .sleep(
               nanoseconds: 500_000_000
@@ -157,7 +155,7 @@ public struct MoveLinkFeature {
                 "categoryName": moveCategoryName
               ]
             )
-          await linkNavigator.pop()
+          await send(.delegate(.route(.back)))
         }
         
         /// 시트에서 닫기
@@ -165,7 +163,7 @@ public struct MoveLinkFeature {
         state.selectBottomSheet = nil
         return .none
         
-      case .selectBottomSheet, .binding, .route:
+      case .selectBottomSheet, .binding, .delegate:
         return .none
       }
     }
@@ -173,4 +171,6 @@ public struct MoveLinkFeature {
       SelectBottomSheetFeature()
     }
   }
+  
+  public init() {}
 }

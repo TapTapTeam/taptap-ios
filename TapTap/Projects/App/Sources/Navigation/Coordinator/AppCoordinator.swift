@@ -42,6 +42,7 @@ public struct AppCoordinator {
         return .none
         
       case .home(.delegate(.route(.linkList))):
+        state.path.append(.linkList(.init()))
         return .none
         
       case .home, .path:
@@ -54,6 +55,7 @@ public struct AppCoordinator {
     SettingCoordinatorReducer()
     SearchCoordinator()
     LinkDetailCoordinator()
+    LinkListCoordinator()
     OriginalCoordinator()
   }
 

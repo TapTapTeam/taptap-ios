@@ -16,7 +16,6 @@ import Shared
 @Reducer
 public struct DeleteLinkFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
-  @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
   public struct State: Equatable {
@@ -46,11 +45,7 @@ public struct DeleteLinkFeature {
     case delegate(Delegate)
     public enum Delegate: Equatable {
       case confirmDelete(selected: [ArticleItem])
-    }
-    
-    case route(Route)
-    public enum Route {
-      case back
+      case route(AppRoute)
     }
   }
   
@@ -85,7 +80,7 @@ public struct DeleteLinkFeature {
         return .none
         
       case .backButtonTapped:
-        return .send(.route(.back))
+        return .send(.delegate(.route(.back)))
         
       case .confirmDeleteTapped:
         let selectedIDs = state.allLinks
@@ -96,7 +91,7 @@ public struct DeleteLinkFeature {
           return .none
         }
         
-        return .run { _ in
+        return .run { send in
           do {
             for id in selectedIDs {
               try swiftDataClient.link.deleteLinkById(id)
@@ -108,7 +103,7 @@ public struct DeleteLinkFeature {
             )
             
             try? await Task.sleep(nanoseconds: 400_000_000)
-            await linkNavigator.pop()
+            await send(.delegate(.route(.back)))
             
           } catch {
             print("delete by ids failed:", error)
@@ -116,13 +111,13 @@ public struct DeleteLinkFeature {
         }
         
       case .deleteDone:
-        return .run { _ in
-          await linkNavigator.pop()
-        }
+        return .send(.delegate(.route(.back)))
         
-      case .binding, .delegate, .route:
+      case .binding, .delegate:
         return .none
       }
     }
   }
+  
+  public init() {}
 }

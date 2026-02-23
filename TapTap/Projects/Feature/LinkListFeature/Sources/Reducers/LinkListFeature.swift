@@ -8,7 +8,6 @@
 import SwiftUI
 
 import ComposableArchitecture
-import LinkNavigator
 
 import DesignSystem
 import Core
@@ -19,13 +18,10 @@ public struct LinkListFeature {
   // MARK: - Dependencies
   @Dependency(\.swiftDataClient) var swiftDataClient
   @Dependency(\.uuid) var uuid
-  @Dependency(\.linkNavigator) var linkNavigator
   
   // MARK: - State
   @ObservableState
   public struct State: Equatable {
-    var path: StackState<Path.State> = .init()
-    
     // 자식 Feature 상태
     var categoryChipList = CategoryChipFeature.State()
     var articleList = ArticleFilterFeature.State()
@@ -39,6 +35,8 @@ public struct LinkListFeature {
     // 시트 상태 관리
     @Presents var editSheet: EditSheetFeature.State?
     @Presents var selectBottomSheet: SelectBottomSheetFeature.State?
+    
+    public init() {} 
   }
   
   public struct AlertBannerState: Equatable {
@@ -49,9 +47,7 @@ public struct LinkListFeature {
   }
   
   // MARK: - Action
-  public enum Action {
-    case path(StackActionOf<Path>)
-    
+  public enum Action: Equatable {
     /// 라이프사이클
     case onAppear
     
@@ -78,9 +74,15 @@ public struct LinkListFeature {
     
     /// 데이터 로드 관련
     case fetchLinks
-    case fetchLinksResponse(Result<[ArticleItem], Error>)
+    case fetchLinksResponse([ArticleItem])
+    case fetchLinksResponseFailed(String)
     case fetchCategories
     case responseCategoryItems([CategoryItem])
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   // MARK: - Body
@@ -98,13 +100,12 @@ public struct LinkListFeature {
     Reduce(self.uiReducer)
       .ifLet(\.$editSheet, action: \.editSheet) { EditSheetFeature() }
       .ifLet(\.$selectBottomSheet, action: \.selectBottomSheet) { SelectBottomSheetFeature() }
-      .forEach(\.path, action: \.path)
     
     /// 데이터 로드 전용 Reducer
     Reduce(self.dataReducer)
-    
-    LinkListNavigationReducer()
   }
+  
+  public init() {}
 }
 
 // MARK: - UI Reducer
@@ -120,13 +121,10 @@ private extension LinkListFeature {
       return .send(.fetchLinks)
       
     case .backButtonTapped:
-      return .run { _ in
-        await linkNavigator.pop()
-      }
+      return .send(.delegate(.route(.back)))
       
     case .searchButtonTapped:
-      linkNavigator.push(.search, nil)
-      return .none
+      return .send(.delegate(.route(.search)))
       
       /// 편집 버튼 탭 -> 편집 시트 표시
     case .editButtonTapped:
@@ -170,8 +168,7 @@ private extension LinkListFeature {
       if state.articleList.link.isEmpty {
         return .send(.showAlert(title: "이 카테고리에 이동할 링크가 없어요", tint: .alert))
       }
-      state.path.append(.moveLink(.init(allLinks: state.articleList.link, categoryName: state.selectedCategory?.categoryName ?? "전체")))
-      return .none
+      return .send(.delegate(.route(.moveLink(allLinks: state.articleList.link, categoryName: state.selectedCategory?.categoryName ?? "전체"))))
       
     case let .moveToCategoryName(name):
       if let match = state.categoryChipList.categories.first(where: { $0.categoryName == name }) {
@@ -194,8 +191,7 @@ private extension LinkListFeature {
       if state.articleList.link.isEmpty {
         return .send(.showAlert(title: "이 카테고리에 삭제할 링크가 없어요", tint: .alert))
       }
-      state.path.append(.deleteLink(.init(allLinks: state.articleList.link, categoryName: state.selectedCategory?.categoryName ?? "전체")))
-      return .none
+      return .send(.delegate(.route(.deleteLink(allLinks: state.articleList.link, categoryName: state.selectedCategory?.categoryName ?? "전체"))))
       
       /// 알럿 띄우기
     case let .showAlert(title, tint):
@@ -242,9 +238,15 @@ private extension LinkListFeature {
       /// 링크 롱프레스 -> 편집 시트 표시로 연결
     case let .articleList(.delegate(.longPressed(link))):
       return .send(.linkLongPressed(link))
+    
+    case let .articleList(.delegate(.route(route))):
+      return .send(.delegate(.route(route)))
       
     case .refresh:
       return .send(.fetchLinks)
+  
+    case .delegate:
+      return .none
       
     default:
       return .none
@@ -259,20 +261,17 @@ private extension LinkListFeature {
       
       /// 링크 데이터 불러오기
     case .fetchLinks:
-      return .run { (send: Send<Action>) in
-        let result: TaskResult<[ArticleItem]> = await TaskResult {
-          try swiftDataClient.link.fetchLinks()
-        }
-        switch result {
-        case let .success(items):
-          await send(.fetchLinksResponse(.success(items)))
-        case let .failure(error):
-          await send(.fetchLinksResponse(.failure(error)))
+      return .run { send in
+        do {
+          let items = try swiftDataClient.link.fetchLinks()
+          await send(.fetchLinksResponse(items))
+        } catch {
+          await send(.fetchLinksResponseFailed(error.localizedDescription))
         }
       }
       
       /// 링크 데이터 성공적으로 로드됨
-    case let .fetchLinksResponse(.success(items)):
+    case let .fetchLinksResponse(items):
       // 받은 데이터 정렬
       let sorted = items.sorted { $0.createAt > $1.createAt }
       state.allLinks = sorted
@@ -299,7 +298,7 @@ private extension LinkListFeature {
       return .none
       
       /// 데이터 로드 실패
-    case let .fetchLinksResponse(.failure(error)):
+    case let .fetchLinksResponseFailed(error):
       print("LinkList fetch failed:", error)
       return .none
       
@@ -345,4 +344,6 @@ private extension LinkListFeature {
       return .none
     }
   }
+  
+
 }

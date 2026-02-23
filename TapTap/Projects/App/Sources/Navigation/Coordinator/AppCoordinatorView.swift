@@ -11,6 +11,7 @@ import ComposableArchitecture
 import AddLinkFeature
 import HomeFeature
 import LinkDetailFeature
+import LinkListFeature
 import MyCategoryFeature
 import OnboardingFeature
 import OriginalFeature
@@ -39,6 +40,12 @@ public struct AppCoordinatorView: View {
         LinkDetailView(store: store)
         
       // LinkListFeature
+      case let .linkList(store):
+        LinkListView(store: store)
+      case let .movieLink(store):
+        MoveLinkView(store: store)
+      case let .deleteLink(store):
+        DeleteLinkView(store: store)
         
       // MyCategoryFeature
       case let .addCategory(store):

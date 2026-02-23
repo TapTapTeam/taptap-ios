@@ -124,7 +124,6 @@ public struct HomeFeature {
         state.alertBanner = nil
         return .none
         
-        
       case .showToast(let message):
         state.showToast = true
         state.toastMessage = message
@@ -183,6 +182,9 @@ public struct HomeFeature {
       case .logoButtonTapped:
         linkNavigator.replace([.onboardingService], nil)
         return .none
+      
+      case .articleList(.delegate(.route(let route))):
+        return .send(.delegate(.route(route)))
         
       case .categoryList, .articleList:
         return .none

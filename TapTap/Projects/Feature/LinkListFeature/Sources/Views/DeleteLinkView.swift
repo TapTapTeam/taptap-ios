@@ -12,14 +12,19 @@ import ComposableArchitecture
 import DesignSystem
 import Core
 
-struct DeleteLinkView: View {
+public struct DeleteLinkView: View {
   @Bindable var store: StoreOf<DeleteLinkFeature>
+  
+  public init(store: StoreOf<DeleteLinkFeature>) {
+    self.store = store
+  }
+  
   @State private var showScrollToTopButton = false
   @State private var showAlertDialog = false
 }
 
 extension DeleteLinkView {
-  var body: some View {
+  public var body: some View {
     ScrollViewReader { proxy in
       ZStack(alignment: .bottomTrailing) {
         Color.background.ignoresSafeArea()

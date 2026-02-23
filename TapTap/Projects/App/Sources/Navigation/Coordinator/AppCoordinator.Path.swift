@@ -9,6 +9,7 @@ import ComposableArchitecture
 
 import AddLinkFeature
 import LinkDetailFeature
+import LinkListFeature
 import MyCategoryFeature
 import OnboardingFeature
 import OriginalFeature
@@ -25,6 +26,9 @@ extension AppCoordinator {
     case linkDetail(LinkDetailFeature)
     
     // LinkList
+    case linkList(LinkListFeature)
+    case deleteLink(DeleteLinkFeature)
+    case movieLink(MoveLinkFeature)
     
     // MyCategory
     case addCategory(AddCategoryFeature)

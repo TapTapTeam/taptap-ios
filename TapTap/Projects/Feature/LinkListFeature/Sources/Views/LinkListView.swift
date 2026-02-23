@@ -14,110 +14,104 @@ import Core
 import Shared
 
 /// 링크 리스트 뷰
-struct LinkListView {
+public struct LinkListView {
   @Bindable var store: StoreOf<LinkListFeature>
+  
+  public init(store: StoreOf<LinkListFeature>) {
+    self.store = store
+  }
+  
   @State private var showScrollToTopButton: Bool = false
   @State private var initialOffsetY: CGFloat? = nil
 }
 
 // MARK: - View
 extension LinkListView: View {
-  var body: some View {
-    NavigationStack(
-      path: $store.scope(state: \.path, action: \.path)
-    ) {
-      ZStack {
-        Color.background
-          .ignoresSafeArea()
-        ScrollViewReader { proxy in
-          ZStack(alignment: .bottomTrailing) {
-            mainContents
-            
-            ScrollFloatingButton(
-              isVisible: $showScrollToTopButton,
-              proxy: proxy,
-              targetID: "top"
-            )
-          }
-        }
-        .toolbar(.hidden)
-        .task { store.send(.onAppear) }
-        .sheet(item: $store.scope(state: \.selectBottomSheet, action: \.selectBottomSheet)
-        ) { selectStore in
-          TCASelectBottomSheet(
-            title: "카테고리 선택",
-            buttonTitle: "선택하기",
-            store: selectStore)
-          .presentationDetents([.medium])
-          .presentationCornerRadius(16)
-        }
-        .task {
-          NotificationCenter.default.addObserver(
-            forName: .linkMoved,
-            object: nil,
-            queue: .main
-          ) { notification in
-            guard
-              let info = notification.object as? [String: Any]
-            else { return }
-            
-            let count = info["movedCount"] as? Int ?? 0
-            store.send(.showAlert(title: "\(count)개의 링크를 이동했어요", tint: .info))
-            
-            if let name = info["categoryName"] as? String {
-              store.send(.moveToCategoryName(name))
-            }
-            store.send(.fetchLinks)
-          }
-        }
-        .toolbar(.hidden)
-        .task {
-          NotificationCenter.default.addObserver(
-            forName: .linkDeleted,
-            object: nil,
-            queue: .main
-          ) { notification in
-            let count = (notification.object as? [String: Int])?["deletedCount"] ?? 0
-            let message = count == 1 ? "링크를 삭제했어요" : "\(count)개의 링크를 삭제했어요"
-            store.send(.showAlert(title: message, tint: .danger))
-            store.send(.fetchLinks)
-          }
-        }
-        .onDisappear {
-          NotificationCenter.default.removeObserver(self, name: .linkMoved, object: nil)
-          NotificationCenter.default.removeObserver(self, name: .linkDeleted, object: nil)
-        }
-      }
-      .overlay {
-        IfLetStore(
-          store.scope(state: \.$editSheet, action: \.editSheet)
-        ) { editStore in
-          ActionBottomSheet(onDismiss: {
-            // 닫기 버튼이나 배경 탭 시
-            store.send(.editSheet(.dismiss))
-          }) {
-            LinkEditSheetView(store: editStore)
-          }
-          .zIndex(2)
-        }
-      }
-      .overlay(alignment: .bottom) {
-        if let alert = store.alert {
-          AlertIconBanner(
-            icon: alert.icon,
-            title: alert.title,
-            iconColor: bannerColor(alert.tint)
+  public var body: some View {
+    ZStack {
+      Color.background
+        .ignoresSafeArea()
+      ScrollViewReader { proxy in
+        ZStack(alignment: .bottomTrailing) {
+          mainContents
+          
+          ScrollFloatingButton(
+            isVisible: $showScrollToTopButton,
+            proxy: proxy,
+            targetID: "top"
           )
-          .padding(.horizontal, 20)
-          .padding(.bottom, 12)
         }
       }
-    } destination: { store in
-      switch store.case {
-      case let .moveLink(store):
-        MoveLinkView(store: store)
-      case let .deleteLink(store):
-        DeleteLinkView(store: store)
+      .toolbar(.hidden)
+      .task { store.send(.onAppear) }
+      .sheet(item: $store.scope(state: \.selectBottomSheet, action: \.selectBottomSheet)
+      ) { selectStore in
+        TCASelectBottomSheet(
+          title: "카테고리 선택",
+          buttonTitle: "선택하기",
+          store: selectStore)
+        .presentationDetents([.medium])
+        .presentationCornerRadius(16)
+      }
+      .task {
+        NotificationCenter.default.addObserver(
+          forName: .linkMoved,
+          object: nil,
+          queue: .main
+        ) { notification in
+          guard
+            let info = notification.object as? [String: Any]
+          else { return }
+          
+          let count = info["movedCount"] as? Int ?? 0
+          store.send(.showAlert(title: "\(count)개의 링크를 이동했어요", tint: .info))
+          
+          if let name = info["categoryName"] as? String {
+            store.send(.moveToCategoryName(name))
+          }
+          store.send(.fetchLinks)
+        }
+      }
+      .toolbar(.hidden)
+      .task {
+        NotificationCenter.default.addObserver(
+          forName: .linkDeleted,
+          object: nil,
+          queue: .main
+        ) { notification in
+          let count = (notification.object as? [String: Int])?["deletedCount"] ?? 0
+          let message = count == 1 ? "링크를 삭제했어요" : "\(count)개의 링크를 삭제했어요"
+          store.send(.showAlert(title: message, tint: .danger))
+          store.send(.fetchLinks)
+        }
+      }
+      .onDisappear {
+        NotificationCenter.default.removeObserver(self, name: .linkMoved, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .linkDeleted, object: nil)
+      }
+    }
+    .overlay {
+      IfLetStore(
+        store.scope(state: \.$editSheet, action: \.editSheet)
+      ) { editStore in
+        ActionBottomSheet(onDismiss: {
+          // 닫기 버튼이나 배경 탭 시
+          store.send(.editSheet(.dismiss))
+        }) {
+          LinkEditSheetView(store: editStore)
+        }
+        .zIndex(2)
+      }
+    }
+    .overlay(alignment: .bottom) {
+      if let alert = store.alert {
+        AlertIconBanner(
+          icon: alert.icon,
+          title: alert.title,
+          iconColor: bannerColor(alert.tint)
+        )
+        .padding(.horizontal, 20)
+        .padding(.bottom, 12)
       }
     }
   }

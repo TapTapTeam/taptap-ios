@@ -28,15 +28,18 @@ public struct ArticleListFeature {
     case listCellTapped(ArticleItem)
     case toggleTipCard
     case tipCardTapped
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .moreLinkButtonTapped:
-        return .run { _ in
-          linkNavigator.push(.linkList, nil)
-        }
+        return .send(.delegate(.route(.linkList)))
         
       case .listCellTapped(let article):
         linkNavigator.push(.linkDetail, article)
@@ -49,6 +52,9 @@ public struct ArticleListFeature {
         
       case .toggleTipCard:
         state.showTipCard = false
+        return .none
+        
+      case .delegate:
         return .none
       }
     }

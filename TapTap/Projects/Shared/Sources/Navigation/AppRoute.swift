@@ -12,6 +12,8 @@ import Core
 public enum AppRoute: Equatable {
   case back
   
+  // AddLinkFeature
+  case addLink(CopiedLink?)
   // SettingFeature
   case setting
   case extensionSetting
@@ -25,10 +27,18 @@ public enum AppRoute: Equatable {
   case originalArticle(ArticleItem)
   case originalEdit(ArticleItem)
   
-  case addLink(CopiedLink?)
-  case addCategory
+  // LinkDetailFeature
   case linkDetail(ArticleItem)
+  
+  // LinkListFeature
   case linkList
+  case moveLink(allLinks: [ArticleItem], categoryName: String)
+  case deleteLink(allLinks: [ArticleItem], categoryName: String)
+  
+  // MyCategoryFeature
+  case addCategory
+
+
   case search
   
 
