@@ -7,9 +7,12 @@
 
 import Foundation
 
+import Core
+
 public enum AppRoute: Equatable {
   case setting
-  case addLink
+  case addLink(CopiedLink?)
   case addCategory
   case linkDetail
+  case search
 }

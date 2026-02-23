@@ -14,8 +14,6 @@ import Shared
 
 @Reducer
 public struct SearchFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-
   @ObservableState
   public struct State: Equatable {
     var searchQuery: String = ""
@@ -26,6 +24,8 @@ public struct SearchFeature {
     var recentLink: RecentLinkFeature.State = .init()
     var searchResult: SearchResultFeature.State = .init()
     var searchSuggestion: SearchSuggestionFeature.State = .init()
+    
+    public init() {}
   }
 
   public enum Action: BindableAction, Equatable {
@@ -41,6 +41,17 @@ public struct SearchFeature {
     case recentLink(RecentLinkFeature.Action)
     case searchResult(SearchResultFeature.Action)
     case searchSuggestion(SearchSuggestionFeature.Action)
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(Route)
+    }
+    
+    case route(Route)
+    public enum Route: Equatable {
+      case back
+      case linkDetail(ArticleItem)
+    }
   }
 
   public enum CancelID { case searchDebounce }
@@ -85,9 +96,7 @@ public struct SearchFeature {
         return .none
 
       case .backButtonTapped:
-        return .run { _ in
-          await linkNavigator.pop()
-        }
+        return .send(.delegate(.route(.back)))
 
       case .clearButtonTapped:
         state.searchQuery = ""
@@ -118,10 +127,12 @@ public struct SearchFeature {
           }
         }
 
-      case .recentSearch, .recentLink, .searchResult, .searchSuggestion, .binding:
+      case .recentSearch, .recentLink, .searchResult, .searchSuggestion, .binding, .route, .delegate:
         return .none
       }
     }
+    
+    SearchNavigationReducer()
   }
   
   public init() {}

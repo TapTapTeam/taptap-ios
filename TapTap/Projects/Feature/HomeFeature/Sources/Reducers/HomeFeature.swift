@@ -118,10 +118,12 @@ public struct HomeFeature {
         
       case .alertBannerTapped:
         if let link = state.copiedLink {
-          linkNavigator.push(.addLink, CopiedLink(url: link))
+          print(link)
+          return .send(.delegate(.route(.addLink(CopiedLink(url: link)))))
         }
         state.alertBanner = nil
         return .none
+        
         
       case .showToast(let message):
         state.showToast = true
@@ -170,14 +172,10 @@ public struct HomeFeature {
         }
         
       case .floatingButtonTapped:
-//        return .run { _ in
-//          linkNavigator.push(.addLink, nil)
-//        }
-        return .send(.delegate(.route(.addLink)))
+        return .send(.delegate(.route(.addLink(nil))))
         
       case .searchButtonTapped:
-        linkNavigator.push(.search, nil)
-        return .none
+        return .send(.delegate(.route(.search)))
         
       case .settingButtonTapped:
         //linkNavigator.push(.setting, nil)

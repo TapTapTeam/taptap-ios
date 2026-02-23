@@ -32,18 +32,23 @@ public struct AppCoordinator {
         state.path.append(.setting(.init()))
         return .none
         
-      case .home(.delegate(.route(.addLink))):
-        state.path.append(.addLink(.init()))
+      case .home(.delegate(.route(.addLink(let copiedLink)))):
+        state.path.append(.addLink(.init(linkURL: copiedLink?.url ?? "")))
         return .none
-
+        
+      case .home(.delegate(.route(.search))):
+        state.path.append(.search(.init()))
+        return .none
+        
       case .home, .path:
         return .none
       }
     }
     .forEach(\.path, action: \.path)
     
-    SettingCoordinatorReducer()
     AddLinkCoordinatorReducer()
+    SettingCoordinatorReducer()
+    SearchCoordinator()
   }
 
   public init() {}

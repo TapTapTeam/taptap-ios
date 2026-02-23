@@ -8,12 +8,13 @@
 import SwiftUI
 import ComposableArchitecture
 
-import HomeFeature
-import OnboardingFeature
 import AddLinkFeature
-import SettingFeature
-import MyCategoryFeature
+import HomeFeature
 import LinkDetailFeature
+import MyCategoryFeature
+import OnboardingFeature
+import SearchFeature
+import SettingFeature
 
 public struct AppCoordinatorView: View {
   let store: StoreOf<AppCoordinator>
@@ -28,6 +29,31 @@ public struct AppCoordinatorView: View {
         .toolbar(.hidden)
     } destination: { store in
       switch store.case {
+      // AddLinkFeature
+      case let .addLink(store):
+        AddLinkView(store: store)
+        
+      // LinkDetailFeature
+      case let .linkDetail(store):
+        LinkDetailView(store: store)
+        
+      // LinkListFeature
+        
+      // MyCategoryFeature
+      case let .addCategory(store):
+        AddCategoryView(store: store)
+        
+      // OnboardingFeature
+      case let .onboardingHighlightGuide(store):
+        OnboardingHighlightGuideView(store: store)
+        
+      // OriginalFeature
+        
+      // SearchFeature
+      case let .search(store):
+        SearchView(store: store)
+        
+      // SettingFeature
       case let .setting(store):
         SettingView(store: store)
       case let .extensionSetting(store):
@@ -40,14 +66,6 @@ public struct AppCoordinatorView: View {
         PolicyDetailView(store: store)
       case let .openSourceList(store):
         OpenSourceListView(store: store)
-      case let .onboardingHighlightGuide(store):
-        OnboardingHighlightGuideView(store: store)
-      case let .addLink(store):
-        AddLinkView(store: store)
-      case let .addCategory(store):
-        AddCategoryView(store: store)
-      case let .linkDetail(store):
-        LinkDetailView(store: store)
       }
     }
   }

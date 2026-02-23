@@ -34,10 +34,18 @@ public struct SearchResultFeature {
     case categoryButtonTapped
     
     case selectBottomSheet(PresentationAction<SelectBottomSheetFeature.Action>)
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(Route)
+    }
+    
+    public enum Route: Equatable {
+      case linkDetail(ArticleItem)
+    }
   }
   
   @Dependency(\.swiftDataClient) var swiftDataClient
-  @Dependency(\.linkNavigator) var linkNavigator
   @Dependency(\.uuid) var uuid
   
   public var body: some ReducerOf<Self> {
@@ -57,8 +65,7 @@ public struct SearchResultFeature {
         return .none
         
       case .linkCardTapped(let item):
-        linkNavigator.push(.linkDetail, item)
-        return .none
+        return .send(.delegate(.route(.linkDetail(item))))
         
       case .categoryButtonTapped:
         let categoriesFromResults = state.searchResult.compactMap { $0.category }
@@ -96,6 +103,9 @@ public struct SearchResultFeature {
         return .none
         
       case .selectBottomSheet:
+        return .none
+        
+      case .delegate:
         return .none
       }
     }

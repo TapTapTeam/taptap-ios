@@ -15,14 +15,19 @@ import Core
 import Shared
 
 // MARK: - Properties
-struct SearchView: View {
+public struct SearchView: View {
   @Bindable var store: StoreOf<SearchFeature>
+  
+  public init(store: StoreOf<SearchFeature>) {
+    self.store = store
+  }
+  
   @FocusState private var isSearchFieldFocused: Bool
 }
 
 // MARK: - View
 extension SearchView {
-  var body: some View {
+  public var body: some View {
     ZStack(alignment: .topLeading) {
       Color.background.ignoresSafeArea()
       VStack(alignment: .leading, spacing: .zero) {

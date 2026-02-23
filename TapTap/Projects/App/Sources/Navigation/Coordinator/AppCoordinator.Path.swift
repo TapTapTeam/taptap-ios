@@ -7,17 +7,34 @@
 
 import ComposableArchitecture
 
-import MyCategoryFeature
 import AddLinkFeature
-import OnboardingFeature
-import SettingFeature
 import LinkDetailFeature
+import MyCategoryFeature
+import OnboardingFeature
+import SearchFeature
+import SettingFeature
 
 extension AppCoordinator {
   @Reducer(state: .equatable, action: .equatable)
   public enum Path {
     // AddLink
     case addLink(AddLinkFeature)
+    
+    // LinkDetail
+    case linkDetail(LinkDetailFeature)
+    
+    // LinkList
+    
+    // MyCategory
+    case addCategory(AddCategoryFeature)
+    
+    // Onboarding
+    case onboardingHighlightGuide(OnboardingHighlightGuideFeature)
+    
+    // Original
+    
+    // Search
+    case search(SearchFeature)
     
     // Setting
     case setting(SettingFeature)
@@ -26,14 +43,5 @@ extension AppCoordinator {
     case favoriteSetting(FavoriteSettingFeature)
     case policyDetail(PolicyDetailFeature)
     case openSourceList(OpenSourceListFeature)
-    
-    // Onboarding
-    case onboardingHighlightGuide(OnboardingHighlightGuideFeature)
-    
-    // MyCategory
-    case addCategory(AddCategoryFeature)
-    
-    // LinkDetail
-    case linkDetail(LinkDetailFeature)
   }
 }

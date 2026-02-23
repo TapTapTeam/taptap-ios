@@ -13,7 +13,16 @@ struct SearchNavigationReducer: Reducer {
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
-      switch action {        
+      switch action {
+      case .recentLink(.delegate(.route(.linkDetail(let item)))):
+        return .send(.delegate(.route(.linkDetail(item))))
+        
+      case .searchResult(.delegate(.route(.linkDetail(let item)))):
+        return .send(.delegate(.route(.linkDetail(item))))
+                
+      case .searchSuggestion(.delegate(.route(.linkDetail(let item)))):
+        return .send(.delegate(.route(.linkDetail(item))))
+        
       default:
         return .none
       }
