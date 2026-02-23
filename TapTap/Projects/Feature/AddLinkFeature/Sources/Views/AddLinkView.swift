@@ -16,6 +16,10 @@ public struct AddLinkView {
   @Bindable var store: StoreOf<AddLinkFeature>
   @FocusState private var isFocused: Bool
   @State private var isValidURL: Bool = true
+  
+  public init(store: StoreOf<AddLinkFeature>) {
+    self.store = store
+  }
 }
 
 extension AddLinkView: View {

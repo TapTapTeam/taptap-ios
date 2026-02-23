@@ -21,7 +21,7 @@ public struct LinkDetailFeature {
   private enum CancelID { case editNotification }
   
   @ObservableState
-  public struct State {
+  public struct State: Equatable {
     var link: ArticleItem
     var isEditingTitle = false
     var editedTitle = ""
@@ -44,7 +44,7 @@ public struct LinkDetailFeature {
     }
   }
   
-  public enum Action {
+  public enum Action: Equatable {
     case onAppear
     
     /// 제목
@@ -52,17 +52,20 @@ public struct LinkDetailFeature {
     case titleChanged(String)
     case titleFocusChanged(Bool)
     case saveIfNeeded
-    case saveResponse(TaskResult<Void>)
+    case saveSucceeded
+    case saveFailed(String)
     
     /// 메모
     case memoChanged(String)
     case memoFocusChanged(Bool)
     case saveMemoIfNeeded
-    case saveMemoResponse(TaskResult<Void>)
+    case saveMemoSucceeded
+    case saveMemoFailed(String)
     
     /// 삭제
     case deleteTapped
-    case deleteResponse(TaskResult<Void>)
+    case deleteSucceeded
+    case deleteFailed(String)
     
     /// 원문보기
     case originalArticleTapped
@@ -128,16 +131,19 @@ public struct LinkDetailFeature {
         let newTitle = state.editedTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !newTitle.isEmpty, newTitle != state.link.title else { return .none }
         return .run { send in
-          await send(.saveResponse(TaskResult {
+          do {
             try swiftDataClient.link.updateLinkTitle(id, newTitle)
-          }))
+            await send(.saveSucceeded)
+          } catch {
+            await send(.saveFailed(error.localizedDescription))
+          }
         }
         
-      case .saveResponse(.success):
+      case .saveSucceeded:
         state.link.title = state.editedTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         return .none
         
-      case .saveResponse(.failure(let error)):
+      case .saveFailed(let error):
         print("제목 수정 실패:", error)
         return .none
         
@@ -156,17 +162,21 @@ public struct LinkDetailFeature {
         let next = state.editedMemo.trimmingCharacters(in: .whitespacesAndNewlines)
         guard next != state.link.userMemo else { return .none }
         let id = state.link.id
+        
         return .run { send in
-          await send(.saveMemoResponse(TaskResult {
+          do {
             try swiftDataClient.link.updateLinkMemo(id, next)
-          }))
+            await send(.saveMemoSucceeded)
+          } catch {
+            await send(.saveMemoFailed(error.localizedDescription))
+          }
         }
         
-      case .saveMemoResponse(.success):
+      case .saveMemoSucceeded:
         state.link.userMemo = state.editedMemo.trimmingCharacters(in: .whitespacesAndNewlines)
         return .none
         
-      case .saveMemoResponse(.failure(let error)):
+      case .saveMemoFailed(let error):
         print("save memo failed:", error)
         return .none
         
@@ -174,12 +184,15 @@ public struct LinkDetailFeature {
       case .deleteTapped:
         let id = state.link.id
         return .run { send in
-          await send(.deleteResponse(TaskResult {
+          do {
             try swiftDataClient.link.deleteLinkById(id)
-          }))
+            await send(.deleteSucceeded)
+          } catch {
+            await send(.deleteFailed(error.localizedDescription))
+          }
         }
         
-      case .deleteResponse(.success):
+      case .deleteSucceeded:
         state.isDeleted = true
         NotificationCenter.default.post(
           name: .linkDeleted,
@@ -187,8 +200,7 @@ public struct LinkDetailFeature {
         )
         return .none
         
-        
-      case .deleteResponse(.failure(let error)):
+      case .deleteFailed(let error):
         print("링크 삭제 실패:", error)
         return .none
         

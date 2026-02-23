@@ -11,17 +11,17 @@ import ComposableArchitecture
 
 import DesignSystem
 
-public struct OnboardingView {
+public struct OnboardingView: View {
   @Bindable public var store: StoreOf<OnboardingFeature>
   
   public init(store: StoreOf<OnboardingFeature>) {
     self.store = store
   }
-}
-
-extension OnboardingView: View {
+  
   public var body: some View {
-    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+    NavigationStackStore(
+      store.scope(state: \.path, action: \.path)
+    ) {
       VStack {
         OnboardingTitleImage(
           title: .introTitle,
@@ -42,18 +42,23 @@ extension OnboardingView: View {
       }
       .background(Color.background)
       .toolbar(.hidden)
-    } destination: { store in
-      switch store.case {
+    } destination: { pathStore in
+      switch pathStore.case {
       case let .onboardingSafariSetting(store):
         OnboardingSafariSettingView(store: store)
+        
       case let .onboardingHighlightMemo(store):
         OnboardingHighlightMemoView(store: store)
+        
       case let .onboardingHighlightGuide(store):
         OnboardingHighlightGuideView(store: store)
+        
       case let .onboardingShare(store):
         OnboardingShareView(store: store)
+        
       case let .onboardingShareGuide(store):
         OnboardingShareGuideView(store: store)
+        
       case let .onboardingFinish(store):
         OnboardingFinishView(store: store)
       }

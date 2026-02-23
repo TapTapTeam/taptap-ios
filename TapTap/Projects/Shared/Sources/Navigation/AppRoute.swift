@@ -10,4 +10,6 @@ import Foundation
 public enum AppRoute: Equatable {
   case setting
   case addLink
+  case addCategory
+  case linkDetail
 }

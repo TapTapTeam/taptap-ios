@@ -32,9 +32,9 @@ public struct AppCoordinator {
         state.path.append(.setting(.init()))
         return .none
         
-//      case .home(.delegate(.route(.addLink))):
-//        state.path.append(.addLink(.init()))
-//        return .none
+      case .home(.delegate(.route(.addLink))):
+        state.path.append(.addLink(.init()))
+        return .none
 
       case .home, .path:
         return .none
@@ -43,6 +43,7 @@ public struct AppCoordinator {
     .forEach(\.path, action: \.path)
     
     SettingCoordinatorReducer()
+    AddLinkCoordinatorReducer()
   }
 
   public init() {}

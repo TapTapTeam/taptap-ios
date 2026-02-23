@@ -12,6 +12,8 @@ import HomeFeature
 import OnboardingFeature
 import AddLinkFeature
 import SettingFeature
+import MyCategoryFeature
+import LinkDetailFeature
 
 public struct AppCoordinatorView: View {
   let store: StoreOf<AppCoordinator>
@@ -40,6 +42,12 @@ public struct AppCoordinatorView: View {
         OpenSourceListView(store: store)
       case let .onboardingHighlightGuide(store):
         OnboardingHighlightGuideView(store: store)
+      case let .addLink(store):
+        AddLinkView(store: store)
+      case let .addCategory(store):
+        AddCategoryView(store: store)
+      case let .linkDetail(store):
+        LinkDetailView(store: store)
       }
     }
   }

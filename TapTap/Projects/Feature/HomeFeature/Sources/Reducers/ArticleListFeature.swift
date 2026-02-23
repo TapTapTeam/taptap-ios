@@ -16,14 +16,14 @@ public struct ArticleListFeature {
   @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
-  public struct State {
+  public struct State: Equatable {
     var articles: [ArticleItem] = []
     var showMoreLink: Bool = false
     var showLinkDetail: Bool = false
     var showTipCard: Bool = true
   }
   
-  public enum Action {
+  public enum Action: Equatable {
     case moreLinkButtonTapped
     case listCellTapped(ArticleItem)
     case toggleTipCard

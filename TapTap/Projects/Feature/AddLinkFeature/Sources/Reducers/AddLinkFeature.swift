@@ -17,8 +17,6 @@ import MyCategoryFeature
 
 @Reducer
 public struct AddLinkFeature {
-  
-  @Dependency(\.linkNavigator) var linkNavigator
   @Dependency(\.swiftDataClient) var swiftDataClient
   
   @ObservableState
@@ -46,7 +44,7 @@ public struct AddLinkFeature {
     }
   }
   
-  public enum Action {
+  public enum Action: Equatable {
     case onAppear
     case backGestureSwiped
     case setLinkURL(String)
@@ -56,16 +54,29 @@ public struct AddLinkFeature {
     case categoryGrid(CategoryGridFeature.Action)
     case confirmAlertDismissed
     case confirmAlertConfirmButtonTapped
-    case saveLinkResponse(Result<ArticleItem, Error>)
+    case saveLinkResponse(ArticleItem)
+    case saveLinkResponseFailed(String)
     case checkURLExists(String)
     case didCheckURLExists(Bool)
     case showToast(String)
     case hideToast
     case fetchArticleItem
-    case didFetchArticleItems(Result<[ArticleItem], Error>)
+    case didFetchArticleItems([ArticleItem])
+    case didFetchArticleItemsFailed(String)
     case navigateToLinkDetail(ArticleItem)
     case showArticleButtonTapped
     case setSheetPresented(Bool)
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(Route)
+    }
+    
+    public enum Route: Equatable {
+      case back
+      case addCategory
+      case linkDetail(ArticleItem)
+    }
   }
   
   public var body: some ReducerOf<Self> {
@@ -80,31 +91,36 @@ public struct AddLinkFeature {
           return .send(.setSheetPresented(true))
         }
         return .run { send in
-          await send(.didFetchArticleItems(Result { try swiftDataClient.link.fetchLinks() }))
+          do {
+            let articles = try swiftDataClient.link.fetchLinks()
+            await send(.didFetchArticleItems(articles))
+          } catch {
+            await send(.didFetchArticleItemsFailed(error.localizedDescription))
+          }
         }
+        
       case let .setTextFieldStyle(style):
         state.textFieldStyle = style
         return .none
-
+        
       case .showArticleButtonTapped:
         guard
           let article = state.articles.first(where: { $0.urlString == state.linkURL })
         else { return .none }
-        linkNavigator.push(.linkDetail, article)
-        return .none
+        return .send(.delegate(.route(.linkDetail(article))))
         
       case .backGestureSwiped:
         if state.linkURL.isEmpty {
-          return .run { _ in await linkNavigator.pop() }
+          return .send(.delegate(.route(.back)))
         }
         state.isConfirmAlertPresented = true
         return .none
         
-      case let .didFetchArticleItems(.success(articles)):
+      case let .didFetchArticleItems(articles):
         state.articles = articles
         return .none
         
-      case .didFetchArticleItems(.failure(_)):
+      case .didFetchArticleItemsFailed:
         state.toastMessage = "링크 불러오기 실패"
         state.showToast = true
         return .run { send in
@@ -141,19 +157,17 @@ public struct AddLinkFeature {
               newLink.category = selectedCategory
             }
             try swiftDataClient.link.addLink(newLink)
-            await send(.saveLinkResponse(.success(newLink)))
+            await send(.saveLinkResponse(newLink))
           } catch {
-            await send(.saveLinkResponse(.failure(error)))
+            await send(.saveLinkResponseFailed(error.localizedDescription))
           }
         }
         
       case .navigateToLinkDetail(let article):
-        linkNavigator.push(.linkDetail, article)
-        return .none
+        return .send(.delegate(.route(.linkDetail(article))))
         
       case .addNewCategoryButtonTapped:
-        linkNavigator.push(.addCategory, nil)
-        return .none
+        return .send(.delegate(.route(.addCategory)))
         
       case .categoryGrid(.delegate(.toggleCategorySelection(let category))):
         if state.selectedCategory == category {
@@ -172,24 +186,18 @@ public struct AddLinkFeature {
         
       case .confirmAlertConfirmButtonTapped:
         state.isConfirmAlertPresented = false
-        return .run { _ in await linkNavigator.pop() }
+        return .send(.delegate(.route(.back)))
         
-      case .saveLinkResponse(.success(let savedArticle)):
+      case let .saveLinkResponse(savedArticle):
         state.isLoading = false
         NotificationCenter.default.post(
           name: .linkSaved,
           object: savedArticle.category
         )
-        return .run { _ in
+        return .run { send in
           try await Task.sleep(nanoseconds: 2_000_000_000)
-          await linkNavigator.pop()
+          await send(.delegate(.route(.back)))
         }
-        
-      case .saveLinkResponse(.failure(let error)):
-        state.isLoading = false
-        //TODO: 링크 저장 실패시 에러 알럿?
-        print("\(error)")
-        return .none
         
       case let .checkURLExists(urlString):
         return .run { send in
@@ -218,13 +226,22 @@ public struct AddLinkFeature {
           try await Task.sleep(nanoseconds: 2_000_000_000)
           await send(.hideToast)
         }
+        
       case .hideToast:
         state.showToast = false
         return .none
+        
       case .fetchArticleItem:
         return .none
+        
       case let .setSheetPresented(isPresented):
         state.isSheet = isPresented
+        return .none
+        
+      case .saveLinkResponseFailed:
+        return .none
+      
+      case .delegate:
         return .none
       }
     }

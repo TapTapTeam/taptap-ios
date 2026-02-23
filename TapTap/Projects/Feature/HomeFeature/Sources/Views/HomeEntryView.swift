@@ -28,6 +28,6 @@ public struct HomeEntryView: View {
   }
   
   public var body: some View {
-    HomeView(navigator: navigator, store: store)
+    HomeView(store: store)
   }
 }

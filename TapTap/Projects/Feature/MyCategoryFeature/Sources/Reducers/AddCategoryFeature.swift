@@ -24,6 +24,8 @@ public struct AddCategoryFeature {
     var isAlert: Bool = false
     var textFieldStyle: JNTextFieldStyle = .default
     var isDuplicate: Bool = false
+    
+    public init() {}
   }
   
   public enum Action: BindableAction, Equatable {
