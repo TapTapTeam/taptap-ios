@@ -12,53 +12,49 @@ import ComposableArchitecture
 import DesignSystem
 
 // MARK: - Properties
-struct OriginalArticleView: View {
+public struct OriginalArticleView: View {
   @Bindable var store: StoreOf<OriginalArticleFeature>
+  
+  public init(store: StoreOf<OriginalArticleFeature>) {
+    self.store = store
+  }
+  
   @State private var progress: Double = 0.0
   @State private var isWebViewLoaded: Bool = false
 }
 
 // MARK: - View
 extension OriginalArticleView {
-  var body: some View {
-    NavigationStack(
-      path: $store.scope(state: \.path, action: \.path)
-    ) {
-      ZStack(alignment: .topLeading) {
-        Color.background.ignoresSafeArea()
-        VStack(spacing: 0) {
-          OriginalHeaderView(
-            headerType: .article,
-            onEditTapped: { store.send(.editButtonTapped)},
-            onBackButtonTapped: { store.send(.backButtonTapped) }
-          )
-          
-          if progress < 1.0 {
-            ProgressView(value: progress, total: 1.0)
-              .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-              .frame(height: 2)
-          }
-          
-          if isWebViewLoaded {
-            OriginalArticleWebView(articleItem: store.articleItem, progress: $progress)
-              .ignoresSafeArea(edges: .bottom)
-          } else {
-            // 웹뷰가 로드되기 전까지 공간 차지 (또는 로딩 인디케이터)
-            Spacer()
-          }
+  public var body: some View {
+    ZStack(alignment: .topLeading) {
+      Color.background.ignoresSafeArea()
+      VStack(spacing: 0) {
+        OriginalHeaderView(
+          headerType: .article,
+          onEditTapped: { store.send(.editButtonTapped)},
+          onBackButtonTapped: { store.send(.backButtonTapped) }
+        )
+        
+        if progress < 1.0 {
+          ProgressView(value: progress, total: 1.0)
+            .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+            .frame(height: 2)
+        }
+        
+        if isWebViewLoaded {
+          OriginalArticleWebView(articleItem: store.articleItem, progress: $progress)
+            .ignoresSafeArea(edges: .bottom)
+        } else {
+          // 웹뷰가 로드되기 전까지 공간 차지 (또는 로딩 인디케이터)
+          Spacer()
         }
       }
-      .toolbar(.hidden)
-      .task {
-        // 화면 전환 애니메이션이 끝날 즈음에 웹뷰 로드 시작
-        try? await Task.sleep(for: .seconds(0.1))
-        isWebViewLoaded = true
-      }
-    } destination: { store in
-      switch store.case {
-      case let .originalEdit(store):
-        OriginalEditView(store: store)
-      }
+    }
+    .toolbar(.hidden)
+    .task {
+      // 화면 전환 애니메이션이 끝날 즈음에 웹뷰 로드 시작
+      try? await Task.sleep(for: .seconds(0.1))
+      isWebViewLoaded = true
     }
   }
 }

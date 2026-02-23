@@ -10,12 +10,14 @@ import ComposableArchitecture
 struct OriginalNavigationReducer: Reducer {
   typealias State = OriginalArticleFeature.State
   typealias Action = OriginalArticleFeature.Action
-
+  
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
-      case .path(.element(id: _, action: .originalEdit(.route(.back)))):
-        state.path.removeLast()
+      case .editButtonTapped:
+        return .none
+        
+      case .backButtonTapped:
         return .none
         
       default:

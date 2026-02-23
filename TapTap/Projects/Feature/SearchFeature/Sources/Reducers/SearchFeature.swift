@@ -47,7 +47,6 @@ public struct SearchFeature {
       case route(Route)
     }
     
-    case route(Route)
     public enum Route: Equatable {
       case back
       case linkDetail(ArticleItem)
@@ -83,7 +82,6 @@ public struct SearchFeature {
 
     Reduce { state, action in
       switch action {
-
       case .onAppear:
         state.isSearchFieldFocused = true
         return .merge(
@@ -94,9 +92,6 @@ public struct SearchFeature {
       case .backgroundTapped:
         state.isSearchFieldFocused = false
         return .none
-
-      case .backButtonTapped:
-        return .send(.delegate(.route(.back)))
 
       case .clearButtonTapped:
         state.searchQuery = ""
@@ -127,7 +122,10 @@ public struct SearchFeature {
           }
         }
 
-      case .recentSearch, .recentLink, .searchResult, .searchSuggestion, .binding, .route, .delegate:
+      case .recentSearch, .recentLink, .searchResult, .searchSuggestion, .binding, .delegate:
+        return .none
+        
+      default:
         return .none
       }
     }

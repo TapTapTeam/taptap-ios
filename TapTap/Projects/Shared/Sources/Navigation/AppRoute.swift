@@ -15,4 +15,5 @@ public enum AppRoute: Equatable {
   case addCategory
   case linkDetail
   case search
+  case originalArticle(ArticleItem)
 }

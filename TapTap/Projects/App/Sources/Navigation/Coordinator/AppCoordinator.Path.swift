@@ -11,6 +11,7 @@ import AddLinkFeature
 import LinkDetailFeature
 import MyCategoryFeature
 import OnboardingFeature
+import OriginalFeature
 import SearchFeature
 import SettingFeature
 
@@ -32,6 +33,7 @@ extension AppCoordinator {
     case onboardingHighlightGuide(OnboardingHighlightGuideFeature)
     
     // Original
+    case originalArticle(OriginalArticleFeature)
     
     // Search
     case search(SearchFeature)

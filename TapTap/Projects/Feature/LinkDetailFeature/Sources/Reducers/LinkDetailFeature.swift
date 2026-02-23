@@ -16,8 +16,7 @@ import Shared
 @Reducer
 public struct LinkDetailFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
-  @Dependency(\.linkNavigator) var linkNavigator
-  
+
   private enum CancelID { case editNotification }
   
   @ObservableState
@@ -79,6 +78,15 @@ public struct LinkDetailFeature {
     case dismissToast
     
     case summary(SummaryFeature.Action)
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(Route)
+    }
+    
+    public enum Route: Equatable {
+      case originalArticle(ArticleItem)
+    }
   }
   
   public var body: some ReducerOf<Self> {
@@ -214,13 +222,6 @@ public struct LinkDetailFeature {
         state.originalArticleProgress = progress
         return .none
         
-      case .originalArticleLoadingCompleted:
-        state.isLoadingOriginalArticle = false
-        state.originalArticleProgress = 0.0
-        let payload = OriginalPayload(articleItem: state.link)
-        linkNavigator.push(Route.originalArticle, payload)
-        return .none
-        
       case .refreshed(let item):
         if let item {
           state.link = item
@@ -245,8 +246,16 @@ public struct LinkDetailFeature {
         
       case .summary:
         return .none
+        
+      case .delegate:
+        return .none
+        
+      default:
+        return .none
       }
     }
+    
+    LinkDetailNavigationReducer()
   }
   
   public init() {}

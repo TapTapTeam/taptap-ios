@@ -45,7 +45,6 @@ struct SettingNavigationReducer: Reducer {
         
       case .openSourceTapped:
         return .send(.delegate(.route(.openSourceList)))
-        
       default:
         return .none
       }

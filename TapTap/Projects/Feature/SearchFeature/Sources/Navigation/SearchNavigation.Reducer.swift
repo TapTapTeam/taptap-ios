@@ -10,16 +10,19 @@ import ComposableArchitecture
 struct SearchNavigationReducer: Reducer {
   typealias State = SearchFeature.State
   typealias Action = SearchFeature.Action
-
+  
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .backButtonTapped:
+        return .send(.delegate(.route(.back)))
+        
       case .recentLink(.delegate(.route(.linkDetail(let item)))):
         return .send(.delegate(.route(.linkDetail(item))))
         
       case .searchResult(.delegate(.route(.linkDetail(let item)))):
         return .send(.delegate(.route(.linkDetail(item))))
-                
+        
       case .searchSuggestion(.delegate(.route(.linkDetail(let item)))):
         return .send(.delegate(.route(.linkDetail(item))))
         

@@ -14,18 +14,16 @@ import Shared
 
 @Reducer
 public struct OriginalArticleFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   @ObservableState
   public struct State: Equatable {
-    var path: StackState<Path.State> = .init()
-    
     var articleItem: ArticleItem
+    
+    public init(articleItem: ArticleItem) {
+      self.articleItem = articleItem
+    }
   }
   
   public enum Action: Equatable {
-    case path(StackActionOf<Path>)
-    
     case editButtonTapped
     case backButtonTapped
   }
@@ -33,18 +31,10 @@ public struct OriginalArticleFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
-      case .editButtonTapped:
-        state.path.append(.originalEdit(.init(articleItem: state.articleItem)))
-        return .none
-              
-      case .backButtonTapped:
-        return .none
-        
-      case .path:
+      default:
         return .none
       }
     }
-    .forEach(\.path, action: \.path)
     
     OriginalNavigationReducer()
   }

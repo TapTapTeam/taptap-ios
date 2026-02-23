@@ -13,6 +13,7 @@ import HomeFeature
 import LinkDetailFeature
 import MyCategoryFeature
 import OnboardingFeature
+import OriginalFeature
 import SearchFeature
 import SettingFeature
 
@@ -48,6 +49,8 @@ public struct AppCoordinatorView: View {
         OnboardingHighlightGuideView(store: store)
         
       // OriginalFeature
+      case let .originalArticle(store):
+        OriginalArticleView(store: store)
         
       // SearchFeature
       case let .search(store):

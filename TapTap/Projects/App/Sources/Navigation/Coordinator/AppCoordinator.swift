@@ -11,6 +11,7 @@ import AddLinkFeature
 import HomeFeature
 import SettingFeature
 import OnboardingFeature
+import OriginalFeature
 
 @Reducer
 public struct AppCoordinator {
@@ -39,6 +40,10 @@ public struct AppCoordinator {
       case .home(.delegate(.route(.search))):
         state.path.append(.search(.init()))
         return .none
+      
+      case .home(.delegate(.route(.originalArticle(let article)))):
+        state.path.append(.originalArticle(.init(articleItem: article)))
+        return .none
         
       case .home, .path:
         return .none
@@ -49,6 +54,7 @@ public struct AppCoordinator {
     AddLinkCoordinatorReducer()
     SettingCoordinatorReducer()
     SearchCoordinator()
+    LinkDetailCoordinator()
   }
 
   public init() {}
