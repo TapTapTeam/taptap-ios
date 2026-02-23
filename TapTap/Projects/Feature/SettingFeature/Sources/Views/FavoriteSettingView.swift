@@ -13,13 +13,18 @@ import ComposableArchitecture
 import DesignSystem
 import Shared
 
-struct FavoriteSettingView: View {
+public struct FavoriteSettingView: View {
   let store: StoreOf<FavoriteSettingFeature>
+  
+  public init(store: StoreOf<FavoriteSettingFeature>) {
+    self.store = store
+  }
+  
   @State private var isReady = false
 }
 
 extension FavoriteSettingView {
-  var body: some View {
+  public var body: some View {
     ZStack {
       Color.background.ignoresSafeArea()
       VStack(spacing: 16) {

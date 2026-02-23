@@ -11,12 +11,16 @@ import ComposableArchitecture
 
 import DesignSystem
 
-struct OpenSourceListView: View {
+public struct OpenSourceListView: View {
   @Bindable var store: StoreOf<OpenSourceListFeature>
+  
+  public init(store: StoreOf<OpenSourceListFeature>) {
+    self.store = store
+  }
 }
 
 extension OpenSourceListView {
-  var body: some View {
+  public var body: some View {
     ZStack {
       Color.background.ignoresSafeArea()
       

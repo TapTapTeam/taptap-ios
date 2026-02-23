@@ -41,14 +41,6 @@ extension AppRouterGroup {
       OriginalEditRouteBuilder().generate(),
       MoveLinkRouteBuilder().generate(),
       DeleteLinkRouteBuilder().generate(),
-      
-      // MARK: - 설정
-      SettingRouteBuilder().generate(),
-      PolicyDetailRouteBuilder().generate(),
-      OpenSourceListRouteBuilder().generate(),
-      FavoriteSettingRouteBuilder().generate(),
-      ExtensionSettingRouteBuilder().generate(),
-      ShareSettingRouteBuilder().generate()
     ]
   }
 }

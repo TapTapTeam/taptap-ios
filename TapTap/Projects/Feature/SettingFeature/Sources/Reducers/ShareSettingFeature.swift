@@ -6,17 +6,16 @@
 //
 
 import ComposableArchitecture
-import LinkNavigator
 
 import Core
 import Shared
 
 @Reducer
 public struct ShareSettingFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   @ObservableState
-  public struct State: Equatable { }
+  public struct State: Equatable {
+    public init() {}
+  }
   
   public enum Action: Equatable {
     case backButtonTapped

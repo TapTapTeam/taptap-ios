@@ -12,8 +12,13 @@ import ComposableArchitecture
 
 import DesignSystem
 
-struct ExtensionSettingView {
+public struct ExtensionSettingView {
   @Bindable var store: StoreOf<ExtensionSettingFeature>
+  
+  public init(store: StoreOf<ExtensionSettingFeature>) {
+    self.store = store
+  }
+  
   @State private var videoChecked: Bool = false
   @Environment(\.colorScheme) private var colorScheme
   @Environment(\.scenePhase) private var scenePhase
@@ -37,7 +42,7 @@ struct ExtensionSettingView {
 }
 
 extension ExtensionSettingView: View {
-  var body: some View {
+  public var body: some View {
     VStack(spacing: 0) {
       TopAppBarDefaultRightIconx(title: "Safari 익스텐션 허용하기") {
         store.send(.backButtonTapped)

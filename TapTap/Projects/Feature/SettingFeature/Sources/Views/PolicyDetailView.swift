@@ -12,12 +12,16 @@ import ComposableArchitecture
 import DesignSystem
 import Core
 
-struct PolicyDetailView: View {
+public struct PolicyDetailView: View {
   @Bindable var store: StoreOf<PolicyDetailFeature>
+  
+  public init(store: StoreOf<PolicyDetailFeature>) {
+    self.store = store
+  }
 }
 
 extension PolicyDetailView {
-  var body: some View {
+  public var body: some View {
     ZStack {
       Color.background.ignoresSafeArea()
       VStack(spacing: .zero) {

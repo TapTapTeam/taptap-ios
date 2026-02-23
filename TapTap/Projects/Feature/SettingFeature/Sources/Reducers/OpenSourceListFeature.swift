@@ -14,10 +14,10 @@ import Shared
 
 @Reducer
 public struct OpenSourceListFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   @ObservableState
-  public struct State: Equatable { }
+  public struct State: Equatable {
+    public init() {}
+  }
   
   public enum Action: Equatable {
     case backButtonTapped

@@ -8,15 +8,12 @@
 import Foundation
 
 import ComposableArchitecture
-import LinkNavigator
 
 import Core
 import Shared
 
 @Reducer
 public struct PolicyDetailFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   @ObservableState
   public struct State: Equatable {
     public var title: String

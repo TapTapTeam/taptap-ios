@@ -11,47 +11,31 @@ import ComposableArchitecture
 
 import DesignSystem
 import Core
-import OnboardingFeature
 import Shared
 
 /// 앱 메인 설정뷰
-struct SettingView {
+public struct SettingView {
   @Environment(\.openURL) private var openURL
   
   @Bindable var store: StoreOf<SettingFeature>
+  
+  public init(store: StoreOf<SettingFeature>) {
+    self.store = store
+  }
 }
 
 // MARK: View
 extension SettingView: View {
-  var body: some View {
-    NavigationStack(
-      path: $store.scope(state: \.path, action: \.path)
-    ) {
-      ZStack {
-        Color.background.ignoresSafeArea()
-        
-        VStack {
-          navigationBar
-          scrollView
-        }
-      }
-      .toolbar(.hidden)
-    } destination: { store in
-      switch store.case {
-      case let .extensionSetting(store):
-        ExtensionSettingView(store: store)
-      case let .shareSetting(store):
-        ShareSettingView(store: store)
-      case let .favoriteSetting(store):
-        FavoriteSettingView(store: store)
-      case let .policyDetail(store):
-        PolicyDetailView(store: store)
-      case let .termsOfService(store):
-        PolicyDetailView(store: store)
-      case let .openSourceList(store):
-        OpenSourceListView(store: store)
+  public var body: some View {
+    ZStack {
+      Color.background.ignoresSafeArea()
+      
+      VStack {
+        navigationBar
+        scrollView
       }
     }
+    .toolbar(.hidden)
   }
   
   private var navigationBar: some View {

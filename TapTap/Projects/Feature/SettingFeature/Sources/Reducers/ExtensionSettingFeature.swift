@@ -6,18 +6,16 @@
 //
 
 import ComposableArchitecture
-import LinkNavigator
 
 import Core
 import Shared
 
 @Reducer
 public struct ExtensionSettingFeature {
-  @Dependency(\.linkNavigator) var navigation
-  
   @ObservableState
   public struct State: Equatable {
     var currentPage: Int = 1
+    public init() {}
   }
   
   public enum Action: Equatable {
