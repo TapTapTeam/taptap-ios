@@ -41,15 +41,10 @@ public struct SearchFeature {
     case recentLink(RecentLinkFeature.Action)
     case searchResult(SearchResultFeature.Action)
     case searchSuggestion(SearchSuggestionFeature.Action)
-    
+
     case delegate(Delegate)
     public enum Delegate: Equatable {
-      case route(Route)
-    }
-    
-    public enum Route: Equatable {
-      case back
-      case linkDetail(ArticleItem)
+      case route(AppRoute)
     }
   }
 
@@ -121,16 +116,23 @@ public struct SearchFeature {
             await send(.searchResult(.loadSearchResult(term)))
           }
         }
-
-      case .recentSearch, .recentLink, .searchResult, .searchSuggestion, .binding, .delegate:
-        return .none
         
-      default:
+      case .backButtonTapped:
+        return .send(.delegate(.route(.back)))
+      
+      case .recentLink(.delegate(.route(let route))):
+        return .send(.delegate(.route(route)))
+      
+      case .searchResult(.delegate(.route(let route))):
+        return .send(.delegate(.route(route)))
+              
+      case .searchSuggestion(.delegate(.route(let route))):
+        return .send(.delegate(.route(route)))
+        
+      case .recentSearch, .recentLink, .searchResult, .searchSuggestion, .binding, .delegate:
         return .none
       }
     }
-    
-    SearchNavigationReducer()
   }
   
   public init() {}

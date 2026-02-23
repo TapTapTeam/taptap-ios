@@ -32,17 +32,7 @@ public struct SettingFeature {
     
     case delegate(Delegate)
     public enum Delegate: Equatable {
-      case route(Route)
-    }
-    
-    public enum Route: Equatable {
-      case back
-      case extensionSetting
-      case shareSetting
-      case favoriteSetting
-      case policyDetail(title: String, text: String)
-      case openSourceList
-      case onboardingHighlightGuide
+      case route(AppRoute)
     }
   }
   
@@ -52,15 +42,40 @@ public struct SettingFeature {
       case .serviceOpenLinkTapped:
         return .none
         
-      case .delegate:
-        return .none
+      case .backButtonTapped:
+        return .send(.delegate(.route(.back)))
         
-      default:
+      case .safariExtensionTipTapped:
+        return .send(.delegate(.route(.extensionSetting)))
+        
+      case .highlightTipTapped:
+        return .send(.delegate(.route(.onboardingHighlightGuide)))
+        
+      case .shareTipTapped:
+        return .send(.delegate(.route(.shareSetting)))
+        
+      case .favoriteTipTapped:
+        return .send(.delegate(.route(.favoriteSetting)))
+        
+      case .privacyPolicyTapped:
+        return .send(.delegate(.route(.policyDetail(
+          title: "개인정보 처리방침",
+          text: Constants.AppInfo.privacyPolicy
+        ))))
+        
+      case .termsOfServiceTapped:
+        return .send(.delegate(.route(.policyDetail(
+          title: "서비스 이용약관",
+          text: Constants.AppInfo.privacyPolicy
+        ))))
+        
+      case .openSourceTapped:
+        return .send(.delegate(.route(.openSourceList)))
+      
+      case .delegate:
         return .none
       }
     }
-    
-    SettingNavigationReducer()
   }
   
   public init() {}

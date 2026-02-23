@@ -51,6 +51,8 @@ public struct AppCoordinatorView: View {
       // OriginalFeature
       case let .originalArticle(store):
         OriginalArticleView(store: store)
+      case let .originalEdit(store):
+        OriginalEditView(store: store)
         
       // SearchFeature
       case let .search(store):

@@ -28,9 +28,9 @@ public struct PolicyDetailFeature {
   public enum Action: Equatable {
     case backButtonTapped
     
-    case route(Route)
-    public enum Route {
-      case back
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
     }
   }
   
@@ -38,8 +38,9 @@ public struct PolicyDetailFeature {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .send(.route(.back))
-      case .route:
+        return .send(.delegate(.route(.back)))
+        
+      case .delegate:
         return .none
       }
     }

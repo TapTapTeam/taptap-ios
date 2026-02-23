@@ -14,12 +14,17 @@ struct LinkDetailCoordinator: Reducer {
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      // MARK: - 부모(최상위) 피쳐 네비게이션
       case .path(.element(id: _, action: .linkDetail(.delegate(.route(let route))))):
         switch route {
         case .originalArticle(let article):
           state.path.append(.originalArticle(.init(articleItem: article)))
           return .none
+        
+        default:
+          return .none
         }
+      // MARK: - 자식(하위) 피쳐 네비게이션
       default:
         return .none
       }

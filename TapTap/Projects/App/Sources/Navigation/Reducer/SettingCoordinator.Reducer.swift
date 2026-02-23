@@ -14,7 +14,7 @@ struct SettingCoordinatorReducer: Reducer {
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
-
+      // MARK: - 부모(최상위) 피쳐 네비게이션
       case .path(.element(id: _, action: .setting(.delegate(.route(let route))))):
         switch route {
         case .back:
@@ -24,7 +24,7 @@ struct SettingCoordinatorReducer: Reducer {
         case .extensionSetting:
           state.path.append(.extensionSetting(.init()))
           return .none
-        
+          
         case .onboardingHighlightGuide:
           state.path.append(.onboardingHighlightGuide(.init()))
           return .none
@@ -44,15 +44,30 @@ struct SettingCoordinatorReducer: Reducer {
         case .openSourceList:
           state.path.append(.openSourceList(.init()))
           return .none
+        
+        default:
+          return .none
         }
         
-      case .path(.element(id: _, action: .extensionSetting(.route(.back)))),
-           .path(.element(id: _, action: .shareSetting(.route(.back)))),
-           .path(.element(id: _, action: .favoriteSetting(.route(.back)))),
-           .path(.element(id: _, action: .policyDetail(.route(.back)))),
-           .path(.element(id: _, action: .openSourceList(.route(.back)))),
-           .path(.element(id: _, action: .onboardingHighlightGuide(.route(.back)))):
-        state.path.removeLast()
+      // MARK: - 자식(하위) 피쳐 네비게이션
+      case .path(.element(id: _, action: .extensionSetting(.delegate(.route(.back))))):
+        if !state.path.isEmpty { state.path.removeLast() }
+        return .none
+        
+      case .path(.element(id: _, action: .shareSetting(.delegate(.route(.back))))):
+        if !state.path.isEmpty { state.path.removeLast() }
+        return .none
+        
+      case .path(.element(id: _, action: .favoriteSetting(.delegate(.route(.back))))):
+        if !state.path.isEmpty { state.path.removeLast() }
+        return .none
+        
+      case .path(.element(id: _, action: .policyDetail(.delegate(.route(.back))))):
+        if !state.path.isEmpty { state.path.removeLast() }
+        return .none
+         
+      case .path(.element(id: _, action: .openSourceList(.delegate(.route(.back))))):
+        if !state.path.isEmpty { state.path.removeLast() }
         return .none
         
       default:

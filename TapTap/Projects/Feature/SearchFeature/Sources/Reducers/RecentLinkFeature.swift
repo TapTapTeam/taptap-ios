@@ -24,11 +24,7 @@ public struct RecentLinkFeature {
     
     case delegate(Delegate)
     public enum Delegate: Equatable {
-      case route(Route)
-    }
-    
-    public enum Route: Equatable {
-      case linkDetail(ArticleItem)
+      case route(AppRoute)
     }
   }
   

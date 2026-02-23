@@ -14,6 +14,7 @@ struct SearchCoordinator: Reducer {
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      // MARK: - 부모(최상위) 피쳐 네비게이션
       case .path(.element(id: _, action: .search(.delegate(.route(let route))))):
         switch route {
         case .back:
@@ -23,7 +24,11 @@ struct SearchCoordinator: Reducer {
         case .linkDetail(let item):
           state.path.append(.linkDetail(.init(article: item)))
           return .none
+          
+        default:
+          return .none
         }
+      // MARK: - 자식(하위) 피쳐 네비게이션
       default:
         return .none
       }

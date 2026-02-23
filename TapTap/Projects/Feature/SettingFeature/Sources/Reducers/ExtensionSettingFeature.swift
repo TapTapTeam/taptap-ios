@@ -23,9 +23,9 @@ public struct ExtensionSettingFeature {
     case backButtonTapped
     case naviPush
     
-    case route(Route)
-    public enum Route {
-      case back
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
     }
   }
   
@@ -33,12 +33,15 @@ public struct ExtensionSettingFeature {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .send(.route(.back))
+        return .send(.delegate(.route(.back)))
+        
       case .settingButtonTapped:
         return .none
+        
       case .naviPush:
         return .none
-      case .route:
+        
+      case .delegate:
         return .none
       }
     }

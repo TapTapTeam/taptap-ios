@@ -14,6 +14,7 @@ struct AddLinkCoordinatorReducer: Reducer {
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      // MARK: - 부모(최상위) 피쳐 네비게이션
       case .path(.element(id: _, action: .addLink(.delegate(.route(let route))))):
         switch route {
         case .back:
@@ -27,7 +28,11 @@ struct AddLinkCoordinatorReducer: Reducer {
         case let .linkDetail(article):
           state.path.append(.linkDetail(.init(article: article)))
           return .none
+          
+        default:
+          return .none
         }
+      // MARK: - 자식(하위) 피쳐 네비게이션
       default:
         return .none
       }

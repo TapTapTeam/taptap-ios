@@ -45,6 +45,7 @@ public struct ArticleListFeature {
       case .tipCardTapped:
         linkNavigator.push(.setting, nil)
         return .none
+        //return .send(.delegate(.route(.setting)))
         
       case .toggleTipCard:
         state.showTipCard = false

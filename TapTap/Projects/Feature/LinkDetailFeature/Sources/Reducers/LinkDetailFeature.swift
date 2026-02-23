@@ -81,11 +81,7 @@ public struct LinkDetailFeature {
     
     case delegate(Delegate)
     public enum Delegate: Equatable {
-      case route(Route)
-    }
-    
-    public enum Route: Equatable {
-      case originalArticle(ArticleItem)
+      case route(AppRoute)
     }
   }
   
@@ -218,6 +214,11 @@ public struct LinkDetailFeature {
         state.originalArticleProgress = 0.0
         return .none
         
+      case .originalArticleLoadingCompleted:
+        state.isLoadingOriginalArticle = false
+        state.originalArticleProgress = 0.0
+        return .send(.delegate(.route(.originalArticle(state.link))))
+        
       case let .originalArticleProgressChanged(progress):
         state.originalArticleProgress = progress
         return .none
@@ -249,13 +250,8 @@ public struct LinkDetailFeature {
         
       case .delegate:
         return .none
-        
-      default:
-        return .none
       }
     }
-    
-    LinkDetailNavigationReducer()
   }
   
   public init() {}

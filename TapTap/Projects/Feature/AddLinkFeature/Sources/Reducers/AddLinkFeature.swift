@@ -69,13 +69,7 @@ public struct AddLinkFeature {
     
     case delegate(Delegate)
     public enum Delegate: Equatable {
-      case route(Route)
-    }
-    
-    public enum Route: Equatable {
-      case back
-      case addCategory
-      case linkDetail(ArticleItem)
+      case route(AppRoute)
     }
   }
   

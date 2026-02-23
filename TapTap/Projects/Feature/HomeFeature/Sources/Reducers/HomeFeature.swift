@@ -178,7 +178,6 @@ public struct HomeFeature {
         return .send(.delegate(.route(.search)))
         
       case .settingButtonTapped:
-        //linkNavigator.push(.setting, nil)
         return .send(.delegate(.route(.setting)))
       
       case .logoButtonTapped:

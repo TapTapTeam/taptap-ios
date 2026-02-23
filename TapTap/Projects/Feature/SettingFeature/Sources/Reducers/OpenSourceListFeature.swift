@@ -23,9 +23,9 @@ public struct OpenSourceListFeature {
     case backButtonTapped
     case libraryTapped(String)
     
-    case route(Route)
-    public enum Route {
-      case back
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
     }
   }
   
@@ -33,7 +33,7 @@ public struct OpenSourceListFeature {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .send(.route(.back))
+        return .send(.delegate(.route(.back)))
         
       case let .libraryTapped(url):
         if let link = URL(string: url) {
@@ -41,7 +41,7 @@ public struct OpenSourceListFeature {
         }
         return .none
         
-      case .route:
+      case .delegate:
         return .none
       }
     }
