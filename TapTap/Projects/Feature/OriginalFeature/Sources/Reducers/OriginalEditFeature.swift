@@ -14,13 +14,16 @@ import Shared
 
 @Reducer
 public struct OriginalEditFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
   @Dependency(\.swiftDataClient) var swiftDataClient
   
   @ObservableState
   public struct State: Equatable {
     var articleItem: ArticleItem
     var isDataRequestTriggered: Bool = false
+    
+    public init(articleItem: ArticleItem) {
+      self.articleItem = articleItem
+    }
   }
   
   public enum Action: Equatable {
@@ -28,9 +31,9 @@ public struct OriginalEditFeature {
     case backButtonTapped
     case highlightsDataResponse([HighlightPayload])
     
-    case route(Route)
-    public enum Route {
-      case back
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
     }
   }
   
@@ -44,7 +47,7 @@ public struct OriginalEditFeature {
         return .none
         
       case .backButtonTapped:
-        return .send(.route(.back))
+        return .send(.delegate(.route(.back)))
         
       case .highlightsDataResponse(let highlights):
         return .run { [linkID = state.articleItem.id] send in
@@ -60,7 +63,7 @@ public struct OriginalEditFeature {
             }
             try swiftDataClient.highlight.updateHighlightsForLink(linkID: linkID, highlights: highlights)
 
-            await linkNavigator.pop()
+            await send(.delegate(.route(.back)))
             
             try await Task.sleep(for: .milliseconds(300))
             NotificationCenter.default.post(name: .editCompleted, object: nil)
@@ -69,7 +72,7 @@ public struct OriginalEditFeature {
           }
         }
         
-      case .route:
+      case .delegate:
         return .none
       }
     }

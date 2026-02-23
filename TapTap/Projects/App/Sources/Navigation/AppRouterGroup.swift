@@ -27,18 +27,13 @@ extension AppRouterGroup {
     [
       //MARK: 앱
       HomeRouteBuilder().generate(),
-      AddLinkRouteBuilder().generate(),
       MyCategoryRouteBuilder().generate(),
       AddCategoryRouteBuilder().generate(),
       EditCategoryRouteBuilder().generate(),
       DeleteCategoryRouteBuilder().generate(),
       CategorySettingRouteBuilder().generate(),
-      SearchRouteBuilder().generate(),
       EditCategoryIconNameRouteBuilder().generate(),
       LinkListRouteBuilder().generate(),
-      LinkDetailRouteBuilder().generate(),
-      OriginalArticleRouteBuilder().generate(),
-      OriginalEditRouteBuilder().generate(),
       MoveLinkRouteBuilder().generate(),
       DeleteLinkRouteBuilder().generate(),
     ]

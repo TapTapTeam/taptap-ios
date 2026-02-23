@@ -12,15 +12,20 @@ import ComposableArchitecture
 import DesignSystem
 
 // MARK: - Properties
-struct OriginalEditView: View {
+public struct OriginalEditView: View {
   let store: StoreOf<OriginalEditFeature>
+  
+  public init(store: StoreOf<OriginalEditFeature>) {
+    self.store = store
+  }
+  
   @State private var progress: Double = 0.0
   @State private var isWebViewLoaded: Bool = false
 }
 
 // MARK: - View
 extension OriginalEditView {
-  var body: some View {
+  public var body: some View {
     ZStack(alignment: .topLeading) {
       Color.background.ignoresSafeArea()
       VStack(spacing: 0) {

@@ -34,6 +34,7 @@ extension AppCoordinator {
     
     // Original
     case originalArticle(OriginalArticleFeature)
+    case originalEdit(OriginalEditFeature)
     
     // Search
     case search(SearchFeature)

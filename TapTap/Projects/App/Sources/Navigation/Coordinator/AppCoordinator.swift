@@ -40,9 +40,8 @@ public struct AppCoordinator {
       case .home(.delegate(.route(.search))):
         state.path.append(.search(.init()))
         return .none
-      
-      case .home(.delegate(.route(.originalArticle(let article)))):
-        state.path.append(.originalArticle(.init(articleItem: article)))
+        
+      case .home(.delegate(.route(.linkList))):
         return .none
         
       case .home, .path:
@@ -55,6 +54,7 @@ public struct AppCoordinator {
     SettingCoordinatorReducer()
     SearchCoordinator()
     LinkDetailCoordinator()
+    OriginalCoordinator()
   }
 
   public init() {}

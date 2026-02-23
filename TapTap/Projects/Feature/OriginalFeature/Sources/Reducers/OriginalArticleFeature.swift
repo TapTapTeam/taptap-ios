@@ -26,17 +26,26 @@ public struct OriginalArticleFeature {
   public enum Action: Equatable {
     case editButtonTapped
     case backButtonTapped
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
-      default:
+      case .editButtonTapped:
+        return .send(.delegate(.route(.originalEdit(state.articleItem))))
+        
+      case .backButtonTapped:
+        return .send(.delegate(.route(.back)))
+        
+      case .delegate:
         return .none
       }
     }
-    
-    OriginalNavigationReducer()
   }
   
   public init() {}
