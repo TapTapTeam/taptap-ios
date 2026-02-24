@@ -12,10 +12,6 @@ extension TargetDependency {
     .external(name: "ComposableArchitecture")
   }
   
-  public static func LinkNavigator() -> TargetDependency {
-    .external(name: "LinkNavigator")
-  }
-  
   public static func Lottie() -> TargetDependency {
     .external(name: "Lottie")
   }
