@@ -12,8 +12,6 @@ import Shared
 
 @Reducer
 public struct MyCategoryGridFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   public struct State: Equatable {
     var categories: [CategoryItem] = []
   }
@@ -23,18 +21,20 @@ public struct MyCategoryGridFeature {
     case fetchCategoriesResponse([CategoryItem])
     case fetchCategoriesResponseFailed(String)
     case categoryTapped(CategoryItem)
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   @Dependency(\.swiftDataClient) var swiftDataClient
-  @Dependency(\.linkNavigator) var navigation
-  
+
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case let .categoryTapped(category):
-        let payload = LinkListPayload(links: [], categoryName: category.categoryName)
-        linkNavigator.push(.linkList, payload)
-        return .none
+        return .send(.delegate(.route(.linkList(initCategory: category.categoryName))))
         
       case .onAppear:
         return .run { send in
@@ -51,6 +51,9 @@ public struct MyCategoryGridFeature {
         return .none
         
       case .fetchCategoriesResponseFailed:
+        return .none
+        
+      case .delegate:
         return .none
       }
     }

@@ -12,9 +12,6 @@ import Shared
 
 @Reducer
 public struct ArticleListFeature {
-  
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   @ObservableState
   public struct State: Equatable {
     var articles: [ArticleItem] = []
@@ -39,16 +36,13 @@ public struct ArticleListFeature {
     Reduce { state, action in
       switch action {
       case .moreLinkButtonTapped:
-        return .send(.delegate(.route(.linkList)))
+        return .send(.delegate(.route(.linkList(initCategory: "전체"))))
         
       case .listCellTapped(let article):
-        linkNavigator.push(.linkDetail, article)
-        return .none
+        return .send(.delegate(.route(.linkDetail(article))))
         
       case .tipCardTapped:
-        linkNavigator.push(.setting, nil)
-        return .none
-        //return .send(.delegate(.route(.setting)))
+        return .send(.delegate(.route(.setting)))
         
       case .toggleTipCard:
         state.showTipCard = false

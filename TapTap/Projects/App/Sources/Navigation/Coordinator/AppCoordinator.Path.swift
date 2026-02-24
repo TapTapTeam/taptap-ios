@@ -32,6 +32,10 @@ extension AppCoordinator {
     
     // MyCategory
     case addCategory(AddCategoryFeature)
+    case deleteCategory(DeleteCategoryFeature)
+    case editCategory(EditCategoryFeature)
+    case editCategoryIconName(EditCategoryIconNameFeature)
+    case myCategoryCollection(MyCategoryCollectionFeature)
     
     // Onboarding
     case onboardingHighlightGuide(OnboardingHighlightGuideFeature)

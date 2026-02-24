@@ -50,6 +50,14 @@ public struct AppCoordinatorView: View {
       // MyCategoryFeature
       case let .addCategory(store):
         AddCategoryView(store: store)
+      case let .deleteCategory(store):
+        DeleteCategoryView(store: store)
+      case let .editCategory(store):
+        EditCategoryView(store: store)
+      case let .editCategoryIconName(store):
+        EditCategoryIconNameView(store: store)
+      case let .myCategoryCollection(store):
+        MyCategoryCollectionView(store: store)
         
       // OnboardingFeature
       case let .onboardingHighlightGuide(store):

@@ -21,6 +21,8 @@ public struct DeleteCategoryFeature {
     var categoryGrid = CategoryGridFeature.State(allowsMultipleSelection: true)
     var selectedCategories: Set<CategoryItem> = []
     var isAlert: Bool = false
+    
+    public init() {}
   }
   
   public enum Action: Equatable {
@@ -31,9 +33,9 @@ public struct DeleteCategoryFeature {
     case confirmAlertDismissed
     case confirmAlertConfirmButtonTapped
     
-    case route(Route)
-    public enum Route: Equatable {
-      case back
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
     }
   }
   
@@ -59,7 +61,7 @@ public struct DeleteCategoryFeature {
         return .none
         
       case .backButtonTapped:
-        return .send(.route(.back))
+        return .send(.delegate(.route(.back)))
         
       case let .toggleCategorySelection(category):
         state.selectedCategories.toggle(category)
@@ -83,13 +85,13 @@ public struct DeleteCategoryFeature {
             name: .categoryDeleted,
             object: ["deletedCount": deletedCount]
           )
-          await send(.route(.back))
+          await send(.delegate(.route(.back)))
         }
         
       case .categoryGrid(.fetchCategoriesResponseFailed(_)):
         return .none
         
-      case .route:
+      case .delegate:
         return .none
       }
     }

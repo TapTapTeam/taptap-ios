@@ -13,7 +13,6 @@ import Shared
 @Reducer
 public struct CategoryListFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
-  @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
   public struct State: Equatable {
@@ -22,7 +21,9 @@ public struct CategoryListFeature {
     var isShowingEmptyView: Bool = false
     var addLinkView: Bool = false
     
-    public init() {}
+    public init() {
+      print("CategoryList")
+    }
   }
   
   public enum Action: Equatable {
@@ -32,6 +33,11 @@ public struct CategoryListFeature {
     case moreCategoryButtonTapped
     case categoryTapped(CategoryItem)
     case addCategoryButtonTapped
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   public var body: some ReducerOf<Self> {
@@ -56,16 +62,15 @@ public struct CategoryListFeature {
         return .none
         
       case .moreCategoryButtonTapped:
-        linkNavigator.push(.myCategory, nil)
-        return .none
+        return .send(.delegate(.route(.myCategoryCollection)))
         
       case let .categoryTapped(category):
-        let payload = LinkListPayload(links: [], categoryName: category.categoryName)
-        linkNavigator.push(.linkList, payload)
-        return .none
+        return .send(.delegate(.route(.linkList(initCategory: category.categoryName))))
         
       case .addCategoryButtonTapped:
-        linkNavigator.push(.addCategory, nil)
+        return .send(.delegate(.route(.addCategory)))
+        
+      case .delegate:
         return .none
       }
     }

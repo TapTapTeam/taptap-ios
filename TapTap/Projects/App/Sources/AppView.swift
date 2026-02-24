@@ -8,7 +8,6 @@
 import SwiftUI
 
 import ComposableArchitecture
-import LinkNavigator
 
 import Core
 import OnboardingFeature
@@ -16,7 +15,6 @@ import Shared
 
 struct AppView {
   @Bindable var store: StoreOf<AppFeature>
-  let singleNavigator: SingleLinkNavigator
 }
 
 extension AppView: View {

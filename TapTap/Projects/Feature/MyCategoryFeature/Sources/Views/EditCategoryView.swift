@@ -14,6 +14,10 @@ import Shared
 
 public struct EditCategoryView {
   let store: StoreOf<EditCategoryFeature>
+  
+  public init(store: StoreOf<EditCategoryFeature>) {
+    self.store = store
+  }
 }
 
 extension EditCategoryView: View {

@@ -14,6 +14,7 @@ public enum AppRoute: Equatable {
   
   // AddLinkFeature
   case addLink(CopiedLink?)
+  
   // SettingFeature
   case setting
   case extensionSetting
@@ -31,14 +32,18 @@ public enum AppRoute: Equatable {
   case linkDetail(ArticleItem)
   
   // LinkListFeature
-  case linkList
+  case linkList(initCategory: String)
   case moveLink(allLinks: [ArticleItem], categoryName: String)
   case deleteLink(allLinks: [ArticleItem], categoryName: String)
   
   // MyCategoryFeature
   case addCategory
+  case deleteCategory
+  case editCategory
+  case editCategoryIconName(CategoryItem)
+  case myCategoryCollection
 
-
+  // SearchFeature
   case search
   
 

@@ -20,6 +20,8 @@ public struct EditCategoryFeature {
     var selectedCategory: CategoryItem?
     var showToast: Bool = false
     var toastMessage: String = ""
+    
+    public init() {}
   }
   
   public enum Action: Equatable {
@@ -31,10 +33,9 @@ public struct EditCategoryFeature {
     case onAppear
     case hideToast
 
-    case route(Route)
-    public enum Route: Equatable {
-      case back
-      case editCategoryIconName(CategoryItem)
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
     }
   }
   
@@ -67,14 +68,14 @@ public struct EditCategoryFeature {
         return .none
         
       case .cancelButtonTapped:
-        return .send(.route(.back))
+        return .send(.delegate(.route(.back)))
         
       case .editButtonTapped:
         guard let category = state.selectedCategory else { return .none }
-        return .send(.route(.editCategoryIconName(category)))
+        return .send(.delegate(.route(.editCategoryIconName(category))))
       
       case .backButtonTapped:
-        return .send(.route(.back))
+        return .send(.delegate(.route(.back)))
         
       case .showToast(let message):
         state.showToast = true
@@ -92,7 +93,7 @@ public struct EditCategoryFeature {
       case .categoryGrid(.fetchCategoriesResponseFailed(_)):
         return .none
         
-      case .route:
+      case .delegate:
         return .none
       }
     }

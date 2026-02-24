@@ -41,10 +41,22 @@ public struct AppCoordinator {
         state.path.append(.search(.init()))
         return .none
         
-      case .home(.delegate(.route(.linkList))):
-        state.path.append(.linkList(.init()))
+      case .home(.delegate(.route(.linkList(let categoryName)))):
+        state.path.append(.linkList(.init(initialCategoryName: categoryName)))
         return .none
         
+      case .home(.delegate(.route(.linkDetail(let article)))):
+        state.path.append(.linkDetail(.init(article: article)))
+        return .none
+        
+      case .home(.delegate(.route(.addCategory))):
+        state.path.append(.addCategory(.init()))
+        return .none
+        
+      case .home(.delegate(.route(.myCategoryCollection))):
+        state.path.append(.myCategoryCollection(.init()))
+        return .none
+    
       case .home, .path:
         return .none
       }
@@ -52,6 +64,7 @@ public struct AppCoordinator {
     .forEach(\.path, action: \.path)
     
     AddLinkCoordinatorReducer()
+    MyCategoryCoordinator()
     SettingCoordinatorReducer()
     SearchCoordinator()
     LinkDetailCoordinator()

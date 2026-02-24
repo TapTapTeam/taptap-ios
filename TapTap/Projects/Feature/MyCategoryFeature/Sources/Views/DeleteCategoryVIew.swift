@@ -14,6 +14,10 @@ import Shared
 
 public struct DeleteCategoryView {
   let store: StoreOf<DeleteCategoryFeature>
+  
+  public init(store: StoreOf<DeleteCategoryFeature>) {
+    self.store = store
+  }
 }
 
 extension DeleteCategoryView: View {

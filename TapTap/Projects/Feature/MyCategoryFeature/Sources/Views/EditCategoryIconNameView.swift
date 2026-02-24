@@ -16,6 +16,11 @@ import Shared
 
 public struct EditCategoryIconNameView {
   @Bindable var store: StoreOf<EditCategoryIconNameFeature>
+  
+  public init(store: StoreOf<EditCategoryIconNameFeature>) {
+    self.store = store
+  }
+  
   @FocusState private var isFocused: Bool
   
   let columns = [

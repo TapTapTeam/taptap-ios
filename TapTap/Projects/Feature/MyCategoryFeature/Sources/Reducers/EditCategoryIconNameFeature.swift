@@ -13,10 +13,6 @@ import DesignSystem
 import Core
 import Shared
 
-extension Notification.Name {
-  
-}
-
 @Reducer
 public struct EditCategoryIconNameFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
@@ -48,9 +44,9 @@ public struct EditCategoryIconNameFeature {
     case confirmAlertDismissed
     case confirmAlertConfirmButtonTapped
     
-    case route(Route)
-    public enum Route: Equatable {
-      case back
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
     }
   }
   
@@ -76,7 +72,7 @@ public struct EditCategoryIconNameFeature {
         }
         
       case .backButtonTapped:
-        return .send(.route(.back))
+        return .send(.delegate(.route(.back)))
         
       case let .setDuplicate(isDuplicate):
         state.isDuplicate = isDuplicate
@@ -93,7 +89,7 @@ public struct EditCategoryIconNameFeature {
                 print("카테고리 업데이트 실패 \(error)")
               }
             }
-            await send(.route(.back))
+            await send(.delegate(.route(.back)))
           }
         } else {
           return .none
@@ -113,9 +109,9 @@ public struct EditCategoryIconNameFeature {
         
       case .confirmAlertConfirmButtonTapped:
         state.isAlert = false
-        return .send(.route(.back))
+        return .send(.delegate(.route(.back)))
         
-      case .route:
+      case .delegate:
         return .none
       }
     }

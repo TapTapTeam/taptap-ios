@@ -116,6 +116,7 @@ extension LinkListView: View {
     }
   }
   
+  
   /// 메인
   private var mainContents: some View {
     VStack(spacing: .zero) {

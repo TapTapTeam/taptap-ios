@@ -12,13 +12,8 @@ import Shared
 
 @Reducer
 public struct MyCategoryCollectionFeature {
-  
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   @ObservableState
   public struct State: Equatable {
-    var path: StackState<Path.State> = .init()
-    
     var categoryGrid = CategoryGridFeature.State()
     var selectedCategory: CategoryItem?
     var settingModal: CategorySettingFeature.State?
@@ -27,12 +22,12 @@ public struct MyCategoryCollectionFeature {
     var showToast: Bool = false
     var toastMessage: String = ""
     
-    public init() {}
+    public init() {
+      print("mycategoryColl")
+    }
   }
   
   public enum Action: Equatable {
-    case path(StackActionOf<Path>)
-    
     case backButtonTapped
     case settingButtonTapped
     case categoryGrid(CategoryGridFeature.Action)
@@ -44,6 +39,11 @@ public struct MyCategoryCollectionFeature {
     case onAppear
     case showToast(String)
     case hideToast
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   @Dependency(\.swiftDataClient) var swiftDataClient
@@ -60,12 +60,10 @@ public struct MyCategoryCollectionFeature {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        print("back")
-        return .none
+        return .send(.delegate(.route(.back)))
         
       case .totalLinkTapped:
-        linkNavigator.push(.linkList, nil)
-        return .none
+        return .send(.delegate(.route(.linkList(initCategory: "전체"))))
         
       case .settingButtonTapped:
         state.settingModal = CategorySettingFeature.State()
@@ -89,23 +87,23 @@ public struct MyCategoryCollectionFeature {
         return .none
         
       case .settingModal(.addButtonTapped):
-        state.path.append(.addCategory(.init()))
         state.settingModal = nil
-        return .none
+        return .send(.delegate(.route(.addCategory)))
         
       case .settingModal(.editButtonTapped):
-        state.path.append(.editCategory(.init()))
         state.settingModal = nil
-        return .none
+        return .send(.delegate(.route(.editCategory)))
         
       case .settingModal(.deleteButtonTapped):
-        state.path.append(.deleteCategory(.init()))
         state.settingModal = nil
-        return .none
+        return .send(.delegate(.route(.deleteCategory)))
+        
+      case .myCategoryGrid(.delegate(.route(let route))):
+        return .send(.delegate(.route(route)))
         
       case .myCategoryGrid(_):
         return .none
-        
+      
       case let .fetchArticleResponse(articles):
         state.allLinksCount = articles.count
         return .none
@@ -126,12 +124,10 @@ public struct MyCategoryCollectionFeature {
         state.toastMessage = ""
         return .none
         
-      case .path:
+      case .delegate:
         return .none
       }
-    }.forEach(\.path, action: \.path) 
-    
-    MyCateogryNavigationReducer()
+    }
   }
   
   public init() {}

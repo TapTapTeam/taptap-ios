@@ -38,9 +38,9 @@ public struct AddCategoryFeature {
     case setDuplicate(Bool)
     case setTextFieldStyle(JNTextFieldStyle)
     
-    case route(Route)
-    public enum Route: Equatable {
-      case back
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
     }
   }
   
@@ -73,7 +73,7 @@ public struct AddCategoryFeature {
           return .run { send in
             try swiftDataClient.category.addCategory(newCategory)
             NotificationCenter.default.post(name: .categoryAdded, object: nil)
-            await send(.route(.back))
+            await send(.delegate(.route(.back)))
           }
         } else {
           return .none
@@ -95,9 +95,9 @@ public struct AddCategoryFeature {
         return .none
         
       case .confirmAlertConfirmButtonTapped:
-        return .send(.route(.back))
+        return .send(.delegate(.route(.back)))
         
-      case .route:
+      case .delegate:
         return .none
       }
     }

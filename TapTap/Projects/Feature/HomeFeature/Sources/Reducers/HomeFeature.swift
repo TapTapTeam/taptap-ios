@@ -8,7 +8,6 @@
 import SwiftUI
 
 import ComposableArchitecture
-import LinkNavigator
 
 import Core
 import MyCategoryFeature
@@ -16,10 +15,8 @@ import Shared
 
 @Reducer
 public struct HomeFeature {
-  
   @Dependency(\.clipboard) var clipboard
   @Dependency(\.swiftDataClient) var swiftDataClient
-  @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
   public struct State: Equatable {
@@ -180,15 +177,17 @@ public struct HomeFeature {
         return .send(.delegate(.route(.setting)))
       
       case .logoButtonTapped:
-        linkNavigator.replace([.onboardingService], nil)
         return .none
       
       case .articleList(.delegate(.route(let route))):
         return .send(.delegate(.route(route)))
         
+      case .categoryList(.delegate(.route(let route))):
+        return .send(.delegate(.route(route)))
+        
       case .categoryList, .articleList:
         return .none
-        
+
       case .delegate:
         return .none
       }
