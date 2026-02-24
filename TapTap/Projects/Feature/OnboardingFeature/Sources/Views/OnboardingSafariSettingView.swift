@@ -11,8 +11,12 @@ import ComposableArchitecture
 
 import DesignSystem
 
-struct OnboardingSafariSettingView {
+public struct OnboardingSafariSettingView {
   @Bindable var store: StoreOf<OnboardingSafariSettingFeature>
+  
+  public init(store: StoreOf<OnboardingSafariSettingFeature>) {
+    self.store = store
+  }
   
   @Environment(\.colorScheme) private var colorScheme
   @Environment(\.scenePhase) private var scenePhase
@@ -22,7 +26,7 @@ struct OnboardingSafariSettingView {
 }
 
 extension OnboardingSafariSettingView: View {
-  var body: some View {
+  public var body: some View {
     VStack(spacing: 0) {
       OnboardingSafariSetting(currentPage: $currentPage)
       .padding(.top, 60)
@@ -65,7 +69,7 @@ extension OnboardingSafariSettingView: View {
     }
     .onChange(of: scenePhase) { _, newValue in
       if newValue == .active && store.hasOpenedSettings {
-        store.send(.route(.onboardingHighlightMemo))
+        store.send(.openOnboardingHighlightMemo)
       }
     }
     .onAppear {

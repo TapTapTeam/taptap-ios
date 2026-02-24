@@ -11,12 +11,16 @@ import ComposableArchitecture
 
 import DesignSystem
 
-struct OnboardingHighlightMemoView {
+public struct OnboardingHighlightMemoView {
   let store: StoreOf<OnboardingHighlightMemoFeature>
+  
+  public init(store: StoreOf<OnboardingHighlightMemoFeature>) {
+    self.store = store
+  }
 }
 
 extension  OnboardingHighlightMemoView: View {
-  var body: some View {
+  public var body: some View {
     VStack(spacing: 0) {
       TopAppBarDefaultRightIconx(title: "") {
         store.send(.backButtonTapped)

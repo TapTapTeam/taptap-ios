@@ -15,6 +15,7 @@ struct NbsApp: App {
   var body: some Scene {
     WindowGroup {
       AppView(store: store)
+        .ignoresSafeArea()
     }
   }
 }

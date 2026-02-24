@@ -9,6 +9,8 @@ import Foundation
 
 import ComposableArchitecture
 
+import Shared
+
 @Reducer
 public struct OnboardingHighlightGuideFeature {
   @ObservableState
@@ -88,10 +90,9 @@ public struct OnboardingHighlightGuideFeature {
     case memoEvent
     case finishEvent
     
-    case route(Route)
-    public enum Route: Equatable {
-      case back
-      case onboardingShare
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
     }
   }
   
@@ -283,7 +284,7 @@ public struct OnboardingHighlightGuideFeature {
           .cancel(id: CancelID.dragAnimation),
           .cancel(id: CancelID.colorAnimation),
           .cancel(id: CancelID.memoAnimation),
-          .send(.route(.back))
+          .send(.delegate(.route(.back)))
         )
         
       case .nextButtonTapped:
@@ -292,10 +293,10 @@ public struct OnboardingHighlightGuideFeature {
           .cancel(id: CancelID.dragAnimation),
           .cancel(id: CancelID.colorAnimation),
           .cancel(id: CancelID.memoAnimation),
-          .send(.route(.onboardingShare))
+          .send(.delegate(.route(.onboardingShare)))
         )
         
-      case .route:
+      case .delegate:
         return .none
       }
     }

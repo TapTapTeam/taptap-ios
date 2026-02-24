@@ -31,8 +31,8 @@ extension AppView: View {
         }
 
       case .onboarding:
-        if let onboardingStore = store.scope(state: \.onboarding, action: \.onboarding) {
-          OnboardingView(store: onboardingStore)
+        if let onboardingStore = store.scope(state: \.onboardingCoordinator, action: \.onboardingCoordinator) {
+          OnboardingCoordinatorView(store: onboardingStore)
             .ignoresSafeArea()
         }
       }

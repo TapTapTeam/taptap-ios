@@ -18,6 +18,8 @@ public struct AppCoordinator {
   public struct State: Equatable {
     var path = StackState<Path.State>()
     var home = HomeFeature.State()
+    
+    public init() {}
   }
   
   public enum Action: Equatable {

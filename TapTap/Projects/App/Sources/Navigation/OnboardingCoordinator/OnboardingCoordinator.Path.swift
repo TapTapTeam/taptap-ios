@@ -1,13 +1,15 @@
 //
-//  OnboardingNavigation.path.swift
-//  OnboardingFeature
+//  OnboardingCoordinator.Path.swift
+//  TapTap
 //
-//  Created by 여성일 on 2/21/26.
+//  Created by 여성일 on 2/24/26.
 //
 
 import ComposableArchitecture
 
-extension OnboardingFeature {
+import OnboardingFeature
+
+extension OnboardingCoordinator {
   @Reducer(state: .equatable, action: .equatable)
   public enum Path {
     case onboardingSafariSetting(OnboardingSafariSettingFeature)

@@ -7,18 +7,21 @@
 
 import ComposableArchitecture
 
+import Shared
+
 @Reducer
 public struct OnboardingFinishFeature {
   @ObservableState
   public struct State: Equatable {
+    public init() {}
   }
   
   public enum Action: Equatable {
     case startButtonTapped
     
-    case route(Route)
-    public enum Route {
-      case home
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case onboardingCompleted
     }
   }
   
@@ -30,12 +33,14 @@ public struct OnboardingFinishFeature {
       case .startButtonTapped:
         return .run { send in
           try userDefaultsClient.saveOnboardingState()
-          await send(.route(.home))
+          await send(.delegate(.onboardingCompleted))
         }
         
-      case .route:
+      case .delegate:
         return .none
       }
     }
   }
+  
+  public init() {}
 }

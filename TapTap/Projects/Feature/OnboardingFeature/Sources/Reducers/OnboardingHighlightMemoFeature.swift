@@ -7,6 +7,8 @@
 
 import ComposableArchitecture
 
+import Shared
+
 @Reducer
 public struct OnboardingHighlightMemoFeature {
   @ObservableState
@@ -19,11 +21,9 @@ public struct OnboardingHighlightMemoFeature {
     case nextButtonTapped
     case skipButtonTapped
     
-    case route(Route)
-    public enum Route: Equatable {
-      case back
-      case onboardingHighlightGuide
-      case onboardingShare
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
     }
   }
   
@@ -31,15 +31,15 @@ public struct OnboardingHighlightMemoFeature {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .send(.route(.back))
+        return .send(.delegate(.route(.back)))
         
       case .nextButtonTapped:
-        return .send(.route(.onboardingHighlightGuide))
+        return .send(.delegate(.route(.onboardingHighlightGuide)))
         
       case .skipButtonTapped:
-        return .send(.route(.onboardingShare))
+        return .send(.delegate(.route(.onboardingShare)))
         
-      case .route:
+      case .delegate:
         return .none
       }
     }

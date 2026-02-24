@@ -21,9 +21,7 @@ public struct CategoryListFeature {
     var isShowingEmptyView: Bool = false
     var addLinkView: Bool = false
     
-    public init() {
-      print("CategoryList")
-    }
+    public init() { }
   }
   
   public enum Action: Equatable {

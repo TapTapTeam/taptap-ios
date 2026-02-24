@@ -22,11 +22,19 @@ public enum AppRoute: Equatable {
   case favoriteSetting
   case policyDetail(title: String, text: String)
   case openSourceList
-  case onboardingHighlightGuide
   
   // OriginalFeature
   case originalArticle(ArticleItem)
   case originalEdit(ArticleItem)
+  
+  // OnboardingFeature
+  case onboardingSafariSetting
+  case onboardingHighlightGuide
+  case onboardingHighlightMemo
+  case onboardingShare
+  case onboardingShareGuide
+  case onboardingFinish
+  
   
   // LinkDetailFeature
   case linkDetail(ArticleItem)

@@ -22,9 +22,7 @@ public struct MyCategoryCollectionFeature {
     var showToast: Bool = false
     var toastMessage: String = ""
     
-    public init() {
-      print("mycategoryColl")
-    }
+    public init() { }
   }
   
   public enum Action: Equatable {

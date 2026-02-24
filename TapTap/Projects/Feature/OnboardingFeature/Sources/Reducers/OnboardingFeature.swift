@@ -9,22 +9,22 @@ import SwiftUI
 
 import ComposableArchitecture
 
+import Shared
+
 @Reducer
 public struct OnboardingFeature {
   @ObservableState
   public struct State: Equatable {
-    var path: StackState<Path.State> = .init()
-    
     public init() {}
   }
   
   public enum Action: Equatable {
-    case path(StackActionOf<Path>)
     case startButtonTapped
     
     case delegate(Delegate)
     public enum Delegate: Equatable {
-        case onboardingCompleted
+      case onboardingCompleted
+      case route(AppRoute)
     }
   }
   
@@ -32,17 +32,13 @@ public struct OnboardingFeature {
     Reduce { state, action in
       switch action {
       case .startButtonTapped:
-        state.path.append(.onboardingSafariSetting(.init()))
-        return .none
-
-      case .delegate, .path:
+        return .send(.delegate(.route(.onboardingSafariSetting)))
+        
+      case .delegate:
         return .none
       }
     }
-    .forEach(\.path, action: \.path)
-    
-    OnboardingNavigationReducer()
   }
-
+  
   public init() {}
 }
