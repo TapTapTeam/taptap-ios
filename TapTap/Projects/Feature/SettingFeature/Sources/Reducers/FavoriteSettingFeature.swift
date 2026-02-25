@@ -6,32 +6,37 @@
 //
 
 import ComposableArchitecture
-import LinkNavigator
 
 import Core
 import Shared
 
 @Reducer
-struct FavoriteSettingFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-  
+public struct FavoriteSettingFeature {
   @ObservableState
-  struct State { }
-  
-  enum Action: Equatable {
-    case backButtonTapped
+  public struct State: Equatable {
+    public init() {}
   }
   
-  init() {}
+  public enum Action: Equatable {
+    case backButtonTapped
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
+  }
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .run { _ in
-          await linkNavigator.pop()
-        }
+        return .send(.delegate(.route(.back)))
+        
+      case .delegate:
+        return .none
       }
     }
   }
+  
+  public init() {}
 }

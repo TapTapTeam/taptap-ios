@@ -16,6 +16,11 @@ import OriginalFeature
 public struct LinkDetailView {
   @Environment(\.dismiss) private var dismiss
   @Bindable var store: StoreOf<LinkDetailFeature>
+  
+  public init(store: StoreOf<LinkDetailFeature>) {
+    self.store = store
+  }
+  
   @State private var selectedTab: LinkDetailSegment.Tab = .summary
   @FocusState private var titleFocused: Bool
   @State private var showAlertDialog = false

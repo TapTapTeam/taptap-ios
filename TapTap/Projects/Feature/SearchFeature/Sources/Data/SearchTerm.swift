@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SearchTerm: Equatable, Identifiable {
-  let id: UUID
-  let text: String
+public struct SearchTerm: Equatable, Identifiable {
+  public let id: UUID
+  public let text: String
 }

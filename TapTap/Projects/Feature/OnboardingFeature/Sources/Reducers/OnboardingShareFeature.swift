@@ -7,11 +7,13 @@
 
 import ComposableArchitecture
 
+import Shared
+
 @Reducer
 public struct OnboardingShareFeature {
   @ObservableState
   public struct State: Equatable {
-    
+    public init() {}
   }
   
   public enum Action: Equatable {
@@ -19,32 +21,29 @@ public struct OnboardingShareFeature {
     case nextButtonTapped
     case skipButtonTapped
     
-    case moveToOnboardingShareGuide
-    case moveToOnboardingFinish
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
-  
-  @Dependency(\.dismiss) var dismiss
   
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .run { _ in
-          await dismiss()
-        }
+        return .send(.delegate(.route(.back)))
         
       case .nextButtonTapped:
-        return .send(.moveToOnboardingShareGuide)
+        return .send(.delegate(.route(.onboardingShareGuide)))
         
       case .skipButtonTapped:
-        return .send(.moveToOnboardingFinish)
-        
-      case .moveToOnboardingShareGuide:
-        return .none
-        
-      case .moveToOnboardingFinish:
+        return .send(.delegate(.route(.onboardingFinish)))
+      
+      case .delegate:
         return .none
       }
     }
   }
+  
+  public init() {}
 }

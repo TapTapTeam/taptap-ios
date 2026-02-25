@@ -8,7 +8,6 @@
 import SwiftUI
 
 import ComposableArchitecture
-import LinkNavigator
 
 import Core
 import MyCategoryFeature
@@ -16,13 +15,11 @@ import Shared
 
 @Reducer
 public struct HomeFeature {
-  
   @Dependency(\.clipboard) var clipboard
   @Dependency(\.swiftDataClient) var swiftDataClient
-  @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
-  public struct State {
+  public struct State: Equatable {
     var isCheckingClipboard = false
     var articleList = ArticleListFeature.State()
     var categoryList = CategoryListFeature.State()
@@ -42,7 +39,7 @@ public struct HomeFeature {
     public init() {}
   }
   
-  public enum Action {
+  public enum Action: Equatable {
     case onAppear
     case scenePhaseChangedToActive
     case clipboardResponded(String?)
@@ -52,7 +49,8 @@ public struct HomeFeature {
     case categoryList(CategoryListFeature.Action) //TODO: 정말 필요한지 확인이 필요함
     case floatingButtonTapped
     case fetchArticles
-    case articlesResponse(Result<[ArticleItem], Error>)
+    case articlesResponse([ArticleItem])
+    case articlesResponseFailed(String)
     case searchButtonTapped
     case settingButtonTapped
     case logoButtonTapped
@@ -61,6 +59,11 @@ public struct HomeFeature {
     case showDeleteAlert(String)
     case hideDeleteAlert
     case hideToast
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   public var body: some ReducerOf<Self> {
@@ -112,7 +115,8 @@ public struct HomeFeature {
         
       case .alertBannerTapped:
         if let link = state.copiedLink {
-          linkNavigator.push(.addLink, CopiedLink(url: link))
+          print(link)
+          return .send(.delegate(.route(.addLink(CopiedLink(url: link)))))
         }
         state.alertBanner = nil
         return .none
@@ -143,15 +147,19 @@ public struct HomeFeature {
         
       case .fetchArticles:
         return .run { send in
-          await send(.articlesResponse(Result { try swiftDataClient.link.fetchLinks() }))
+          do {
+            let links = try swiftDataClient.link.fetchLinks()
+            await send(.articlesResponse(links))
+          } catch {
+            await send(.articlesResponseFailed(error.localizedDescription))
+          }
         }
         
-      case let .articlesResponse(.success(linkItems)):
+      case let .articlesResponse(linkItems):
         state.articleList.articles = linkItems
         return .none
         
-      case .articlesResponse(.failure(let error)):
-        print("Error fetching articles: \(error)")
+      case .articlesResponseFailed:
         return .none
         
       case .refresh:
@@ -160,23 +168,27 @@ public struct HomeFeature {
         }
         
       case .floatingButtonTapped:
-        return .run { _ in
-          linkNavigator.push(.addLink, nil)
-        }
+        return .send(.delegate(.route(.addLink(nil))))
         
       case .searchButtonTapped:
-        linkNavigator.push(.search, nil)
-        return .none
+        return .send(.delegate(.route(.search)))
         
       case .settingButtonTapped:
-        linkNavigator.push(.setting, nil)
-        return .none
+        return .send(.delegate(.route(.setting)))
       
       case .logoButtonTapped:
-        linkNavigator.replace([.onboardingService], nil)
         return .none
+      
+      case .articleList(.delegate(.route(let route))):
+        return .send(.delegate(.route(route)))
+        
+      case .categoryList(.delegate(.route(let route))):
+        return .send(.delegate(.route(route)))
         
       case .categoryList, .articleList:
+        return .none
+
+      case .delegate:
         return .none
       }
     }

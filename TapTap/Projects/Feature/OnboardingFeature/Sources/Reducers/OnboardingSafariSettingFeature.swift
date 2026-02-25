@@ -7,6 +7,8 @@
 
 import ComposableArchitecture
 
+import Shared
+
 @Reducer
 public struct OnboardingSafariSettingFeature {
   @ObservableState
@@ -23,8 +25,12 @@ public struct OnboardingSafariSettingFeature {
     case alertCancelButtonTapped
     case alertConfirmButtonTapped
     case settingsOpened
+    case openOnboardingHighlightMemo
     
-    case moveToOnboardingHighlightMemo
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   public var body: some ReducerOf<Self> {
@@ -43,7 +49,7 @@ public struct OnboardingSafariSettingFeature {
           state.isAlert = true
           return .none
         }
-        return .send(.moveToOnboardingHighlightMemo)
+        return .send(.delegate(.route(.onboardingHighlightMemo)))
         
       case .alertCancelButtonTapped:
         state.isAlert = false
@@ -51,9 +57,12 @@ public struct OnboardingSafariSettingFeature {
         
       case .alertConfirmButtonTapped:
         state.isAlert = false
-        return .send(.moveToOnboardingHighlightMemo)
+        return .send(.delegate(.route(.onboardingHighlightMemo)))
         
-      case .moveToOnboardingHighlightMemo:
+      case .openOnboardingHighlightMemo:
+        return .send(.delegate(.route(.onboardingHighlightMemo)))
+        
+      case .delegate:
         return .none
       }
     }

@@ -6,38 +6,46 @@
 //
 
 import ComposableArchitecture
-import LinkNavigator
 
 import Core
 import Shared
 
 @Reducer
-struct ExtensionSettingFeature {
-  @Dependency(\.linkNavigator) var navigation
-  
+public struct ExtensionSettingFeature {
   @ObservableState
-  struct State {
+  public struct State: Equatable {
     var currentPage: Int = 1
+    public init() {}
   }
   
-  enum Action {
+  public enum Action: Equatable {
     case settingButtonTapped
     case backButtonTapped
     case naviPush
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .run { send in
-          await navigation.pop()
-        }
+        return .send(.delegate(.route(.back)))
+        
       case .settingButtonTapped:
         return .none
+        
       case .naviPush:
+        return .none
+        
+      case .delegate:
         return .none
       }
     }
   }
+  
+  public init() {}
 }

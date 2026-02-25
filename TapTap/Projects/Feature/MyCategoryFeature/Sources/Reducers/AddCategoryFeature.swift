@@ -15,8 +15,6 @@ import Shared
 
 @Reducer
 public struct AddCategoryFeature {
-  
-  @Dependency(\.linkNavigator) var linkNavigator
   @Dependency(\.swiftDataClient) var swiftDataClient
   
   @ObservableState
@@ -26,9 +24,11 @@ public struct AddCategoryFeature {
     var isAlert: Bool = false
     var textFieldStyle: JNTextFieldStyle = .default
     var isDuplicate: Bool = false
+    
+    public init() {}
   }
   
-  public enum Action: BindableAction {
+  public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case saveButtonTapped
     case cancelButtonTapped
@@ -37,6 +37,11 @@ public struct AddCategoryFeature {
     case confirmAlertConfirmButtonTapped
     case setDuplicate(Bool)
     case setTextFieldStyle(JNTextFieldStyle)
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   public var body: some ReducerOf<Self> {
@@ -65,10 +70,10 @@ public struct AddCategoryFeature {
             categoryName: state.categoryName,
             icon: state.selectedIcon
           )
-          return .run { _ in
+          return .run { send in
             try swiftDataClient.category.addCategory(newCategory)
             NotificationCenter.default.post(name: .categoryAdded, object: nil)
-            await linkNavigator.pop()
+            await send(.delegate(.route(.back)))
           }
         } else {
           return .none
@@ -80,14 +85,20 @@ public struct AddCategoryFeature {
         
       case .binding:
         return .none
+        
       case .backGestureSwiped, .cancelButtonTapped:
         state.isAlert = true
         return .none
+        
       case .confirmAlertDismissed:
         state.isAlert = false
         return .none
+        
       case .confirmAlertConfirmButtonTapped:
-        return .run { _ in await linkNavigator.pop() }
+        return .send(.delegate(.route(.back)))
+        
+      case .delegate:
+        return .none
       }
     }
   }

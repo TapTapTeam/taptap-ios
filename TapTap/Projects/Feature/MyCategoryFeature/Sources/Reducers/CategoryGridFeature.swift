@@ -27,12 +27,13 @@ public struct CategoryGridFeature {
     }
   }
   
-  public enum Action {
+  public enum Action: Equatable {
     case onAppear
-    case fetchCategoriesResponse(Result<[CategoryItem], Error>)
+    case fetchCategoriesResponse([CategoryItem])
+    case fetchCategoriesResponseFailed(String)
     case toggleCategorySelection(CategoryItem)
+    
     case delegate(Delegate)
-
     public enum Delegate: Equatable {
       case toggleCategorySelection(CategoryItem)
     }
@@ -46,11 +47,15 @@ public struct CategoryGridFeature {
       case .onAppear:
         state.selectedCategories = []
         return .run { send in
-          await send(.fetchCategoriesResponse(Result {
-            try swiftDataClient.category.fetchCategories()
-          }))
+          do {
+            let categories = try swiftDataClient.category.fetchCategories()
+            await send(.fetchCategoriesResponse(categories))
+          } catch {
+            await send(.fetchCategoriesResponseFailed(error.localizedDescription))
+          }
         }
-      case let .fetchCategoriesResponse(.success(categories)):
+        
+      case let .fetchCategoriesResponse(categories):
         var allCategories = categories
         if state.showAllCategory {
           allCategories.append(CategoryItem(categoryName: "전체", icon: .init(number: 16)))
@@ -59,6 +64,7 @@ public struct CategoryGridFeature {
           state.categories = categories
         }
         return .none
+        
       case let .toggleCategorySelection(category):
         if state.allowsMultipleSelection {
           state.selectedCategories.toggle(category)
@@ -71,8 +77,9 @@ public struct CategoryGridFeature {
         }
         return .send(.delegate(.toggleCategorySelection(category)))
 
-      case .fetchCategoriesResponse(.failure(_)):
+      case .fetchCategoriesResponseFailed:
         return .none
+        
       case .delegate(_):
         return .none
       }

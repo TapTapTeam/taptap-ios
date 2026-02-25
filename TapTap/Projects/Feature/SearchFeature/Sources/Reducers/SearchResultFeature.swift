@@ -14,9 +14,9 @@ import Core
 import Shared
 
 @Reducer
-struct SearchResultFeature {
+public struct SearchResultFeature {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var searchResult: [ArticleItem] = []
     var filteredSearchResult: [ArticleItem] = []
     var query: String = ""
@@ -27,20 +27,24 @@ struct SearchResultFeature {
     @Presents var selectBottomSheet: SelectBottomSheetFeature.State?
   }
   
-  enum Action: Equatable {
+  public enum Action: Equatable {
     case loadSearchResult(String)
     case searchResponse([ArticleItem])
     case linkCardTapped(ArticleItem)
     case categoryButtonTapped
     
     case selectBottomSheet(PresentationAction<SelectBottomSheetFeature.Action>)
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   @Dependency(\.swiftDataClient) var swiftDataClient
-  @Dependency(\.linkNavigator) var linkNavigator
   @Dependency(\.uuid) var uuid
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .loadSearchResult(let query):
@@ -57,8 +61,7 @@ struct SearchResultFeature {
         return .none
         
       case .linkCardTapped(let item):
-        linkNavigator.push(.linkDetail, item)
-        return .none
+        return .send(.delegate(.route(.linkDetail(item))))
         
       case .categoryButtonTapped:
         let categoriesFromResults = state.searchResult.compactMap { $0.category }
@@ -97,11 +100,16 @@ struct SearchResultFeature {
         
       case .selectBottomSheet:
         return .none
+        
+      case .delegate:
+        return .none
       }
     }
     .ifLet(\.$selectBottomSheet, action: \.selectBottomSheet) {
       SelectBottomSheetFeature()
     }
   }
+  
+  public init() {}
 }
 

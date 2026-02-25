@@ -8,23 +8,18 @@
 import SwiftUI
 
 import ComposableArchitecture
-import LinkNavigator
 
 import DesignSystem
 import Core
 import MyCategoryFeature
 
 public struct HomeView {
-  let navigator: SingleLinkNavigator
-  
   @Bindable var store: StoreOf<HomeFeature>
   @Environment(\.scenePhase) private var scenePhase
   
   public init(
-    navigator: SingleLinkNavigator,
     store: StoreOf<HomeFeature>
   ) {
-    self.navigator = navigator
     self.store = store
   }
 }

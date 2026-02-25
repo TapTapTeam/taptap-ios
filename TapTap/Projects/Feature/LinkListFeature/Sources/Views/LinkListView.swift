@@ -14,15 +14,20 @@ import Core
 import Shared
 
 /// 링크 리스트 뷰
-struct LinkListView {
+public struct LinkListView {
   @Bindable var store: StoreOf<LinkListFeature>
+  
+  public init(store: StoreOf<LinkListFeature>) {
+    self.store = store
+  }
+  
   @State private var showScrollToTopButton: Bool = false
   @State private var initialOffsetY: CGFloat? = nil
 }
 
 // MARK: - View
 extension LinkListView: View {
-  var body: some View {
+  public var body: some View {
     ZStack {
       Color.background
         .ignoresSafeArea()
@@ -67,6 +72,7 @@ extension LinkListView: View {
           store.send(.fetchLinks)
         }
       }
+      .toolbar(.hidden)
       .task {
         NotificationCenter.default.addObserver(
           forName: .linkDeleted,
@@ -110,6 +116,7 @@ extension LinkListView: View {
     }
   }
   
+  
   /// 메인
   private var mainContents: some View {
     VStack(spacing: .zero) {
@@ -142,32 +149,32 @@ extension LinkListView: View {
   /// 카테고리 칩버튼 스크롤 + 기사 필터 스크롤
   private var scrollViewContents: some View {
     ScrollView(.vertical, showsIndicators: false) {
-//      LazyVStack(spacing: .zero, pinnedViews: [.sectionHeaders]) {
-//        Section {
+      //      LazyVStack(spacing: .zero, pinnedViews: [.sectionHeaders]) {
+      //        Section {
       VStack(spacing: 4) {
-          Color.clear
-            .frame(height: 0)
-            .id("top")
-          
-          ArticleFilterList(
-            store: store.scope(
-              state: \.articleList,
-              action: \.articleList
-            )
-          )
-          
-          GeometryReader { geo in
-            Color.clear
-              .preference(
-                key: ScrollOffsetPreferenceKey.self,
-                value: geo.frame(in: .named("scroll")).minY
-              )
-          }
+        Color.clear
           .frame(height: 0)
-          
-//        } header: {
-//          gradientBar
-//        }
+          .id("top")
+        
+        ArticleFilterList(
+          store: store.scope(
+            state: \.articleList,
+            action: \.articleList
+          )
+        )
+        
+        GeometryReader { geo in
+          Color.clear
+            .preference(
+              key: ScrollOffsetPreferenceKey.self,
+              value: geo.frame(in: .named("scroll")).minY
+            )
+        }
+        .frame(height: 0)
+        
+        //        } header: {
+        //          gradientBar
+        //        }
       }
     }
     .coordinateSpace(name: "scroll")

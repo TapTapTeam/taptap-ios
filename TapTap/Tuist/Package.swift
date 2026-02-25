@@ -7,7 +7,6 @@ import struct ProjectDescription.PackageSettings
 let packageSettings = PackageSettings(
   productTypes: [
     "ComposableArchitecture": .framework,
-    "LinkNavigator": .framework,
     "Lottie": .staticFramework
   ]
 )
@@ -19,10 +18,6 @@ let package = Package(
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture.git",
       from: "1.10.0"
-    ),
-    .package(
-      url: "https://github.com/interactord/LinkNavigator.git",
-      from: "1.3.1"
     ),
     .package(
       url: "https://github.com/airbnb/lottie-spm.git",

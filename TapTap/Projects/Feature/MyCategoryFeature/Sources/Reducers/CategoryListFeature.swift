@@ -13,7 +13,6 @@ import Shared
 @Reducer
 public struct CategoryListFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
-  @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
   public struct State: Equatable {
@@ -22,39 +21,54 @@ public struct CategoryListFeature {
     var isShowingEmptyView: Bool = false
     var addLinkView: Bool = false
     
-    public init() {}
+    public init() { }
   }
   
-  public enum Action {
+  public enum Action: Equatable {
     case onAppear
-    case categoriesResponse(Result<[CategoryItem], Error>)
+    case categoriesResponse([CategoryItem])
+    case categoriesResponseFailed(String)
     case moreCategoryButtonTapped
     case categoryTapped(CategoryItem)
     case addCategoryButtonTapped
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        return .run {
-          send in await send(.categoriesResponse(Result{ try swiftDataClient.category.fetchCategories() }))
+        return .run { send in
+          do {
+            let categories = try swiftDataClient.category.fetchCategories()
+            await send(.categoriesResponse(categories))
+          } catch {
+            await send(.categoriesResponseFailed(error.localizedDescription))
+          }
         }
-      case let .categoriesResponse(.success(categories)):
+        
+      case let .categoriesResponse(categories):
         state.categories = categories
         state.selectedCategory = categories.first
         return .none
-      case .categoriesResponse(.failure):
+        
+      case .categoriesResponseFailed:
         return .none
+        
       case .moreCategoryButtonTapped:
-        linkNavigator.push(.myCategory, nil)
-        return .none
+        return .send(.delegate(.route(.myCategoryCollection)))
+        
       case let .categoryTapped(category):
-        let payload = LinkListPayload(links: [], categoryName: category.categoryName)
-        linkNavigator.push(.linkList, payload)
-        return .none
+        return .send(.delegate(.route(.linkList(initCategory: category.categoryName))))
+        
       case .addCategoryButtonTapped:
-        linkNavigator.push(.addCategory, nil)
+        return .send(.delegate(.route(.addCategory)))
+        
+      case .delegate:
         return .none
       }
     }

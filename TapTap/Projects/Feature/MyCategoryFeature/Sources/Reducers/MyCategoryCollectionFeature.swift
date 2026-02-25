@@ -12,12 +12,8 @@ import Shared
 
 @Reducer
 public struct MyCategoryCollectionFeature {
-  
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   @ObservableState
   public struct State: Equatable {
-    var topAppBar = TopAppBarDefaultNoSearchFeature.State(title: CategoryNamespace.myCategoryCollection)
     var categoryGrid = CategoryGridFeature.State()
     var selectedCategory: CategoryItem?
     var settingModal: CategorySettingFeature.State?
@@ -26,75 +22,93 @@ public struct MyCategoryCollectionFeature {
     var showToast: Bool = false
     var toastMessage: String = ""
     
-    public init() {}
+    public init() { }
   }
   
-  public enum Action {
-    case topAppBar(TopAppBarDefaultNoSearchFeature.Action)
+  public enum Action: Equatable {
+    case backButtonTapped
+    case settingButtonTapped
     case categoryGrid(CategoryGridFeature.Action)
     case settingModal(CategorySettingFeature.Action)
     case totalLinkTapped
     case myCategoryGrid(MyCategoryGridFeature.Action)
-    case fetchArticleResponse(Result<[ArticleItem], Error>)
+    case fetchArticleResponse([ArticleItem])
+    case fetchArticleFailed(String)
     case onAppear
     case showToast(String)
     case hideToast
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   @Dependency(\.swiftDataClient) var swiftDataClient
   
   public var body: some ReducerOf<Self> {
-    Scope(state: \.topAppBar, action: \.topAppBar) {
-      TopAppBarDefaultNoSearchFeature()
-    }
-    
     Scope(state: \.categoryGrid, action: \.categoryGrid) {
       CategoryGridFeature()
     }
     
     Scope(state: \.myCategoryGrid, action: \.myCategoryGrid) {
          MyCategoryGridFeature()
-       }
+    }
+    
     Reduce { state, action in
       switch action {
+      case .backButtonTapped:
+        return .send(.delegate(.route(.back)))
+        
       case .totalLinkTapped:
-        linkNavigator.push(.linkList, nil)
-        return .none
-      case .topAppBar(.tapBackButton):
-        return .run { _ in await linkNavigator.pop() }
-      case .topAppBar(.tapSettingButton):
+        return .send(.delegate(.route(.linkList(initCategory: "전체"))))
+        
+      case .settingButtonTapped:
         state.settingModal = CategorySettingFeature.State()
         return .none
+        
       case .categoryGrid(_):
         return .none
+        
       case .onAppear:
         return .run { send in
-          await send(.fetchArticleResponse(Result {
-            try swiftDataClient.link.fetchLinks()
-          }))
+          do {
+            let links = try swiftDataClient.link.fetchLinks()
+            await send(.fetchArticleResponse(links))
+          } catch {
+            await send(.fetchArticleFailed(error.localizedDescription))
+          }
         }
+        
       case .settingModal(.dismissButtonTapped):
         state.settingModal = nil
         return .none
+        
       case .settingModal(.addButtonTapped):
-        linkNavigator.push(.addCategory, nil)
         state.settingModal = nil
-        return .none
+        return .send(.delegate(.route(.addCategory)))
+        
       case .settingModal(.editButtonTapped):
-        linkNavigator.push(.editCategory, nil)
         state.settingModal = nil
-        return .none
+        return .send(.delegate(.route(.editCategory)))
+        
       case .settingModal(.deleteButtonTapped):
-        linkNavigator.push(.deleteCategory, nil)
         state.settingModal = nil
-        return .none
+        return .send(.delegate(.route(.deleteCategory)))
+        
+      case .myCategoryGrid(.delegate(.route(let route))):
+        return .send(.delegate(.route(route)))
+        
       case .myCategoryGrid(_):
         return .none
-      case let .fetchArticleResponse(.success(article)):
-        state.allLinksCount = article.count
+      
+      case let .fetchArticleResponse(articles):
+        state.allLinksCount = articles.count
         return .none
-      case .fetchArticleResponse(.failure(_)):
+
+      case .fetchArticleFailed:
         return .none
+        
       case .showToast(let message):
         state.showToast = true
         state.toastMessage = message
@@ -102,9 +116,13 @@ public struct MyCategoryCollectionFeature {
           try await Task.sleep(for: .seconds(2))
           await send(.hideToast)
         }
+        
       case .hideToast:
         state.showToast = false
         state.toastMessage = ""
+        return .none
+        
+      case .delegate:
         return .none
       }
     }

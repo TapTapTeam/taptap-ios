@@ -48,7 +48,6 @@ public struct SelectBottomSheetFeature {
     Reduce { state, action in
       switch action {        
       case .categoryTapped(let category):
-        print(category)
         state.selectedCategory = category
         return .none
         

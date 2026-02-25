@@ -13,13 +13,18 @@ import DesignSystem
 import Core
 import Shared
 
-struct MoveLinkView: View {
+public struct MoveLinkView: View {
   @Bindable var store: StoreOf<MoveLinkFeature>
+  
+  public init(store: StoreOf<MoveLinkFeature>) {
+    self.store = store
+  }
+  
   @State private var showScrollToTopButton = false
 }
 
 extension MoveLinkView {
-  var body: some View {
+  public var body: some View {
     ZStack {
       Color.background
         .ignoresSafeArea()
@@ -57,6 +62,7 @@ extension MoveLinkView {
         }
       }
     }
+    .toolbar(.hidden)
   }
   
   /// 링크 이동하기 네비게이션바

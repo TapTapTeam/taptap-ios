@@ -8,15 +8,12 @@
 import Foundation
 
 import ComposableArchitecture
-import LinkNavigator
 
 import Core
 import Shared
 
 @Reducer
 public struct PolicyDetailFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   @ObservableState
   public struct State: Equatable {
     public var title: String
@@ -30,18 +27,24 @@ public struct PolicyDetailFeature {
   
   public enum Action: Equatable {
     case backButtonTapped
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
-  
-  public init() {}
   
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .run { _ in
-          await linkNavigator.pop()
-        }
+        return .send(.delegate(.route(.back)))
+        
+      case .delegate:
+        return .none
       }
     }
   }
+  
+  public init() {}
 }

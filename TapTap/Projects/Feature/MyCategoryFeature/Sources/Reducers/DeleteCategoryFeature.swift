@@ -8,32 +8,35 @@
 import SwiftUI
 
 import ComposableArchitecture
-import LinkNavigator
 
 import Core
 import Shared
 
 @Reducer
 public struct DeleteCategoryFeature {
-  
   @Dependency(\.swiftDataClient) var swiftDataClient
-  @Dependency(\.linkNavigator) var navigation
   
   @ObservableState
-  public struct State {
-    var topAppBar = TopAppBarDefaultRightIconxFeature.State(title: "카테고리 삭제하기")
+  public struct State: Equatable {
     var categoryGrid = CategoryGridFeature.State(allowsMultipleSelection: true)
     var selectedCategories: Set<CategoryItem> = []
     var isAlert: Bool = false
+    
+    public init() {}
   }
   
-  public enum Action {
+  public enum Action: Equatable {
     case categoryGrid(CategoryGridFeature.Action)
     case deleteButtonTapped
+    case backButtonTapped
     case toggleCategorySelection(CategoryItem)
-    case topAppBar(TopAppBarDefaultRightIconxFeature.Action)
     case confirmAlertDismissed
     case confirmAlertConfirmButtonTapped
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   public var body: some ReducerOf<Self> {
@@ -46,26 +49,34 @@ public struct DeleteCategoryFeature {
       case .categoryGrid(.delegate(.toggleCategorySelection(let category))):
         state.selectedCategories.toggle(category)
         return .none
+        
       case .categoryGrid(.onAppear):
         return .none
+        
       case .categoryGrid(.fetchCategoriesResponse(_)):
         return .none
+        
       case .deleteButtonTapped:
         state.isAlert = true
         return .none
+        
+      case .backButtonTapped:
+        return .send(.delegate(.route(.back)))
+        
       case let .toggleCategorySelection(category):
         state.selectedCategories.toggle(category)
         return .none
+        
       case .categoryGrid(.toggleCategorySelection(_)):
         return .none
-      case .topAppBar(_):
-        return .run { _ in await navigation.pop() }
+        
       case .confirmAlertDismissed:
         state.isAlert = false
         return .none
+        
       case .confirmAlertConfirmButtonTapped:
         state.isAlert = false
-        return .run { [selectedCategories = state.selectedCategories] _ in
+        return .run { [selectedCategories = state.selectedCategories] send in
           let deletedCount = selectedCategories.count
           for category in selectedCategories {
             try swiftDataClient.category.deleteCategory(category)
@@ -74,8 +85,14 @@ public struct DeleteCategoryFeature {
             name: .categoryDeleted,
             object: ["deletedCount": deletedCount]
           )
-          await navigation.pop()
+          await send(.delegate(.route(.back)))
         }
+        
+      case .categoryGrid(.fetchCategoriesResponseFailed(_)):
+        return .none
+        
+      case .delegate:
+        return .none
       }
     }
   }

@@ -14,35 +14,42 @@ import Core
 import Shared
 
 @Reducer
-struct DeleteLinkFeature {
+public struct DeleteLinkFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
-  @Dependency(\.linkNavigator) var linkNavigator
   
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var allLinks: [ArticleItem] = []
     var categoryName: String = "전체"
     var selectedLinks: Set<String> = []
     var isSelectAll: Bool = false
     var hideSelectControls: Bool = false
+    
+    public init(
+      allLinks: [ArticleItem],
+      categoryName: String
+    ) {
+      self.allLinks = allLinks
+      self.categoryName = categoryName
+    }
   }
   
-  enum Action: BindableAction {
+  public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case onAppear
     case toggleSelect(ArticleItem)
     case backButtonTapped
     case confirmDeleteTapped
-    case delegate(Delegate)
     case deleteDone(Int)
     
-    enum Delegate {
-      case dismiss
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
       case confirmDelete(selected: [ArticleItem])
+      case route(AppRoute)
     }
   }
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     BindingReducer()
     Reduce { state, action in
       switch action {
@@ -73,9 +80,7 @@ struct DeleteLinkFeature {
         return .none
         
       case .backButtonTapped:
-        return .run { _ in
-          await linkNavigator.pop()
-        }
+        return .send(.delegate(.route(.back)))
         
       case .confirmDeleteTapped:
         let selectedIDs = state.allLinks
@@ -86,7 +91,7 @@ struct DeleteLinkFeature {
           return .none
         }
         
-        return .run { _ in
+        return .run { send in
           do {
             for id in selectedIDs {
               try swiftDataClient.link.deleteLinkById(id)
@@ -98,7 +103,7 @@ struct DeleteLinkFeature {
             )
             
             try? await Task.sleep(nanoseconds: 400_000_000)
-            await linkNavigator.pop()
+            await send(.delegate(.route(.back)))
             
           } catch {
             print("delete by ids failed:", error)
@@ -106,13 +111,13 @@ struct DeleteLinkFeature {
         }
         
       case .deleteDone:
-        return .run { _ in
-          await linkNavigator.pop()
-        }
+        return .send(.delegate(.route(.back)))
         
       case .binding, .delegate:
         return .none
       }
     }
   }
+  
+  public init() {}
 }

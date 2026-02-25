@@ -16,6 +16,11 @@ import Shared
 
 public struct EditCategoryIconNameView {
   @Bindable var store: StoreOf<EditCategoryIconNameFeature>
+  
+  public init(store: StoreOf<EditCategoryIconNameFeature>) {
+    self.store = store
+  }
+  
   @FocusState private var isFocused: Bool
   
   let columns = [
@@ -31,7 +36,7 @@ extension EditCategoryIconNameView: View {
     ZStack(alignment: .leading) {
       VStack(spacing: 0) {
         TopAppBarDefaultRightIconx(title: "카테고리 수정하기") {
-          store.send(.topAppBar(.tapBackButton))
+          store.send(.backButtonTapped)
         }
         
         JNTextField(

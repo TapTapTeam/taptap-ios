@@ -15,17 +15,22 @@ struct OriginalHeaderView: View {
     case edit
     case article
   }
-  
-  @Environment(\.dismiss) var dismiss
-  
+
   let headerType: HeaderType
   let onEditTapped: (() -> Void)?
   let onCompleteTapped: (() -> Void)?
+  let onBackButtonTapped: (() -> Void)?
   
-  init(headerType: HeaderType, onEditTapped: (() -> Void)? = nil, onCompleteTapped: (() -> Void)? = nil) {
+  init(
+    headerType: HeaderType,
+    onEditTapped: (() -> Void)? = nil,
+    onCompleteTapped: (() -> Void)? = nil,
+    onBackButtonTapped: (() -> Void)? = nil
+  ) {
     self.headerType = headerType
     self.onEditTapped = onEditTapped
     self.onCompleteTapped = onCompleteTapped
+    self.onBackButtonTapped = onBackButtonTapped
   }
 }
 
@@ -38,7 +43,7 @@ extension OriginalHeaderView {
         .foregroundStyle(.text1)
       HStack {
         Button {
-          dismiss()
+          onBackButtonTapped?()
         } label: {
           Image(icon: Icon.chevronLeft)
             .renderingMode(.template)

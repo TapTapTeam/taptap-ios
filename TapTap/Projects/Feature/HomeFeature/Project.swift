@@ -12,7 +12,6 @@ let project = Project.project(
       dependencies: [
         .TCA(),
         .core(),
-        .LinkNavigator(),
         .Lottie(),
         .shared(),
         .myCategoryFeature(),

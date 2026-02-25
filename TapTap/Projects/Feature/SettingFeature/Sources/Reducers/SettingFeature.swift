@@ -11,95 +11,72 @@ import ComposableArchitecture
 
 import Core
 import Shared
-import OnboardingFeature
 
 @Reducer
-struct SettingFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-  
+public struct SettingFeature {
   @ObservableState
-  struct State: Equatable {
-    var path: StackState<Path.State> = .init()
+  public struct State: Equatable {
+    public init() {}
   }
   
-  enum Action: Equatable {
-    case path(StackActionOf<Path>)
-    
+  public enum Action: Equatable {
     case backButtonTapped
-    case privacyPolicyTapped
-    case termsOfServiceTapped
-    case openSourceTapped
-    case safariTipTapped
+    case safariExtensionTipTapped
     case highlightTipTapped
     case shareTipTapped
     case favoriteTipTapped
-    case openLinkTapped
+    case privacyPolicyTapped
+    case termsOfServiceTapped
+    case openSourceTapped
+    case serviceOpenLinkTapped
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .serviceOpenLinkTapped:
+        return .none
+        
       case .backButtonTapped:
-        return .run { _ in
-          await linkNavigator.pop()
-        }
+        return .send(.delegate(.route(.back)))
         
-      case .privacyPolicyTapped:
-        linkNavigator.push(
-          .policyDetail,
-          PolicyDetailPayload(
-            title: "개인정보 처리방침",
-            text: Constants.AppInfo.privacyPolicy
-          )
-        )
-        return .none
-        
-      case .termsOfServiceTapped:
-        linkNavigator.push(
-          .policyDetail,
-          PolicyDetailPayload(
-            title: "서비스 이용약관",
-            text: Constants.AppInfo.termsOfService
-          )
-        )
-        return .none
-        
-      case .openSourceTapped:
-        linkNavigator.push(.openSourceList, nil)
-        return .none
-        
-      case .safariTipTapped:
-        linkNavigator.push(.extensionSetting, nil)
-        return .none
+      case .safariExtensionTipTapped:
+        return .send(.delegate(.route(.extensionSetting)))
         
       case .highlightTipTapped:
-        state.path.append(.onboardingHighlightGuide(.init()))
-        return .none
-      
-      case .path(.element(id: _, action: .onboardingHighlightGuide(.backButtonTapped))):
-        state.path.removeLast()
-        return .none
+        return .send(.delegate(.route(.onboardingHighlightGuide)))
         
       case .shareTipTapped:
-        linkNavigator.push(.shareSetting, nil)
-        return .none
+        return .send(.delegate(.route(.shareSetting)))
         
       case .favoriteTipTapped:
-        linkNavigator.push(.favoriteSetting, nil)
-        return .none
+        return .send(.delegate(.route(.favoriteSetting)))
         
-      case .openLinkTapped:
-        return .none
+      case .privacyPolicyTapped:
+        return .send(.delegate(.route(.policyDetail(
+          title: "개인정보 처리방침",
+          text: Constants.AppInfo.privacyPolicy
+        ))))
         
-      case .path:
+      case .termsOfServiceTapped:
+        return .send(.delegate(.route(.policyDetail(
+          title: "서비스 이용약관",
+          text: Constants.AppInfo.privacyPolicy
+        ))))
+        
+      case .openSourceTapped:
+        return .send(.delegate(.route(.openSourceList)))
+      
+      case .delegate:
         return .none
       }
     }
-    .forEach(\.path, action: \.path)
   }
   
-  @Reducer(state: .equatable, action: .equatable)
-  enum Path {
-    case onboardingHighlightGuide(OnboardingHighlightGuideFeature)
-  }
+  public init() {}
 }

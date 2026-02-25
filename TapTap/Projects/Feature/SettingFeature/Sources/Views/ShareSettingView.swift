@@ -13,13 +13,18 @@ import ComposableArchitecture
 import DesignSystem
 import Shared
 
-struct ShareSettingView: View {
+public struct ShareSettingView: View {
   let store: StoreOf<ShareSettingFeature>
+
+  public init(store: StoreOf<ShareSettingFeature>) {
+    self.store = store
+  }
+  
   @State private var isReady = false
 }
 
 extension ShareSettingView {
-  var body: some View {
+  public var body: some View {
     ZStack {
       Color.background.ignoresSafeArea()
       VStack(spacing: 16) {
@@ -82,6 +87,7 @@ extension ShareSettingView {
         }
       }
     }
+    .toolbar(.hidden)
   }
 }
 

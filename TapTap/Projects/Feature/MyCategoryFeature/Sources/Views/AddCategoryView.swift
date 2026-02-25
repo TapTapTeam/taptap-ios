@@ -8,6 +8,11 @@ import Shared
 
 public struct AddCategoryView {
   @Bindable var store: StoreOf<AddCategoryFeature>
+  
+  public init(store: StoreOf<AddCategoryFeature>) {
+    self.store = store
+  }
+  
   @FocusState private var isFocused: Bool
   
   let columns = [

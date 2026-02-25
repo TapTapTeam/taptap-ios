@@ -12,38 +12,48 @@ import Shared
 
 @Reducer
 public struct MyCategoryGridFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   public struct State: Equatable {
     var categories: [CategoryItem] = []
   }
   
-  public enum Action {
+  public enum Action: Equatable {
     case onAppear
-    case fetchCategoriesResponse(Result<[CategoryItem], Error>)
+    case fetchCategoriesResponse([CategoryItem])
+    case fetchCategoriesResponseFailed(String)
     case categoryTapped(CategoryItem)
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   @Dependency(\.swiftDataClient) var swiftDataClient
-  @Dependency(\.linkNavigator) var navigation
-  
+
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case let .categoryTapped(category):
-        let payload = LinkListPayload(links: [], categoryName: category.categoryName)
-        linkNavigator.push(.linkList, payload)
-        return .none
+        return .send(.delegate(.route(.linkList(initCategory: category.categoryName))))
+        
       case .onAppear:
         return .run { send in
-          await send(.fetchCategoriesResponse(Result {
-            try swiftDataClient.category.fetchCategories()
-          }))
+          do {
+            let categories = try swiftDataClient.category.fetchCategories()
+            await send(.fetchCategoriesResponse(categories))
+          } catch {
+            await send(.fetchCategoriesResponseFailed(error.localizedDescription))
+          }
         }
-      case let .fetchCategoriesResponse(.success(categories)):
+        
+      case let .fetchCategoriesResponse(categories):
         state.categories = categories
         return .none
-      case .fetchCategoriesResponse(.failure(_)):
+        
+      case .fetchCategoriesResponseFailed:
+        return .none
+        
+      case .delegate:
         return .none
       }
     }

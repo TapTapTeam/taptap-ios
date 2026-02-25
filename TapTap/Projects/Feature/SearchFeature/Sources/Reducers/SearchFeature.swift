@@ -13,93 +13,127 @@ import Core
 import Shared
 
 @Reducer
-struct SearchFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
+public struct SearchFeature {
   @ObservableState
-  struct State: Equatable {
-    var topAppBar: TopAppBarSearchFeature.State = .init()
+  public struct State: Equatable {
+    var searchQuery: String = ""
+    var isSearchFieldFocused: Bool = false
+    var isSearchSubmitted: Bool = false
+
     var recentSearch: RecentSearchFeature.State = .init()
     var recentLink: RecentLinkFeature.State = .init()
     var searchResult: SearchResultFeature.State = .init()
     var searchSuggestion: SearchSuggestionFeature.State = .init()
-    var isSearchSubmitted: Bool = false
+    
+    public init() {}
   }
-  
-  enum Action: Equatable {
+
+  public enum Action: BindableAction, Equatable {
+    case binding(BindingAction<State>)
+
     case onAppear
     case backgroundTapped
-    case topAppBar(TopAppBarSearchFeature.Action)
+    case backButtonTapped
+    case submit
+    case clearButtonTapped
+
     case recentSearch(RecentSearchFeature.Action)
     case recentLink(RecentLinkFeature.Action)
     case searchResult(SearchResultFeature.Action)
     case searchSuggestion(SearchSuggestionFeature.Action)
+
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
-  
-  var body: some ReducerOf<Self> {
-    Scope(state: \.topAppBar, action: \.topAppBar) {
-      TopAppBarSearchFeature()
-    }
-    Scope(state: \.recentSearch, action: \.recentSearch) {
-      RecentSearchFeature()
-    }
-    Scope(state: \.recentLink, action: \.recentLink) {
-      RecentLinkFeature()
-    }
-    Scope(state: \.searchResult, action: \.searchResult) {
-      SearchResultFeature()
-    }
-    Scope(state: \.searchSuggestion, action: \.searchSuggestion) {
-      SearchSuggestionFeature()
-    }
-    
+
+  public enum CancelID { case searchDebounce }
+
+  public var body: some ReducerOf<Self> {
+    Scope(state: \.recentSearch, action: \.recentSearch) { RecentSearchFeature() }
+    Scope(state: \.recentLink, action: \.recentLink) { RecentLinkFeature() }
+    Scope(state: \.searchResult, action: \.searchResult) { SearchResultFeature() }
+    Scope(state: \.searchSuggestion, action: \.searchSuggestion) { SearchSuggestionFeature() }
+
+    BindingReducer()
+      .onChange(of: \.searchQuery) { _, newValue in
+        Reduce { state, _ in
+          state.isSearchSubmitted = false
+          state.searchSuggestion.searchText = newValue
+
+          let q = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+          guard !q.isEmpty else {
+            return .cancel(id: CancelID.searchDebounce)
+          }
+
+          return .run { send in
+            await send(.searchSuggestion(.loadSuggestionItem(q)))
+          }
+          .debounce(id: CancelID.searchDebounce, for: 0.5, scheduler: RunLoop.main)
+          .cancellable(id: CancelID.searchDebounce, cancelInFlight: true)
+        }
+      }
+
     Reduce { state, action in
       switch action {
       case .onAppear:
-        return .run { send in
-          await send(.topAppBar(.setSearchFieldFocus(true)))
-          await send(.recentSearch(.onAppear))
-          await send(.recentLink(.onAppear))
-        }
-        
+        state.isSearchFieldFocused = true
+        return .merge(
+          .send(.recentSearch(.onAppear)),
+          .send(.recentLink(.onAppear))
+        )
+
       case .backgroundTapped:
-        return .send(.topAppBar(.setSearchFieldFocus(false)))
-        
-      case .topAppBar(.delegate(let action)):
-        switch action {
-        case .searchTriggered(let query):
-          state.isSearchSubmitted = true
-          return .run { send in
-            await send(.recentSearch(.add(query)))
-            await send(.searchResult(.loadSearchResult(query)))
-          }
-        case .searchQueryChanged(let query):
-          state.isSearchSubmitted = false
-          state.searchSuggestion.searchText = query
-          return .run { send in
-            await send(.searchSuggestion(.loadSuggestionItem(query)))
-          }
-          .debounce(id: "search-debounce", for: 0.5, scheduler: RunLoop.main)
-          .cancellable(id: "search-debounce", cancelInFlight: true)
-        case .backButtonTapped:
-          return .run { _ in
-            await linkNavigator.pop()
-          }
+        state.isSearchFieldFocused = false
+        return .none
+
+      case .clearButtonTapped:
+        state.searchQuery = ""
+        state.isSearchSubmitted = false
+        state.searchSuggestion.searchText = ""
+        return .cancel(id: CancelID.searchDebounce)
+
+      case .submit:
+        let q = state.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !q.isEmpty else { return .none }
+
+        state.isSearchSubmitted = true
+        state.isSearchFieldFocused = false
+
+        return .run { send in
+          await send(.recentSearch(.add(q)))
+          await send(.searchResult(.loadSearchResult(q)))
         }
 
       case .recentSearch(.delegate(let action)):
         switch action {
         case .chipTapped(let term):
+          state.searchQuery = term
           state.isSearchSubmitted = true
+          state.isSearchFieldFocused = false
           return .run { send in
-            await send(.topAppBar(.setSearchFieldFocus(false)))
-            await send(.topAppBar(.setSearchText(term)))
             await send(.searchResult(.loadSearchResult(term)))
           }
         }
         
-      case .topAppBar, .recentSearch, .recentLink, .searchResult, .searchSuggestion:
+      case .backButtonTapped:
+        return .send(.delegate(.route(.back)))
+      
+      case .recentLink(.delegate(.route(let route))):
+        return .send(.delegate(.route(route)))
+      
+      case .searchResult(.delegate(.route(let route))):
+        return .send(.delegate(.route(route)))
+              
+      case .searchSuggestion(.delegate(.route(let route))):
+        return .send(.delegate(.route(route)))
+        
+      case .recentSearch, .recentLink, .searchResult, .searchSuggestion, .binding, .delegate:
         return .none
       }
     }
   }
+  
+  public init() {}
 }

@@ -3,7 +3,6 @@ import SwiftData
 
 import Core
 import DesignSystem
-import LinkNavigator
 
 import ComposableArchitecture
 
@@ -13,14 +12,10 @@ struct NbsApp: App {
     AppFeature()
   }
   
-  let singleNavigator = SingleLinkNavigator(
-    routeBuilderItemList: AppRouterGroup().routers(),
-    dependency: AppDependency()
-  )
-  
   var body: some Scene {
     WindowGroup {
-      AppView(store: store, singleNavigator: singleNavigator)
+      AppView(store: store)
+        .ignoresSafeArea()
     }
   }
 }

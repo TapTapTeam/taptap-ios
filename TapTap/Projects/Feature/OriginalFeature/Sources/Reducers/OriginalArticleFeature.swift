@@ -14,24 +14,35 @@ import Shared
 
 @Reducer
 public struct OriginalArticleFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-  
   @ObservableState
   public struct State: Equatable {
     var articleItem: ArticleItem
+    
+    public init(articleItem: ArticleItem) {
+      self.articleItem = articleItem
+    }
   }
   
   public enum Action: Equatable {
     case editButtonTapped
+    case backButtonTapped
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .editButtonTapped:
-        let payload = OriginalPayload(articleItem: state.articleItem)
-        linkNavigator.push(.originalEdit, payload)
-        linkNavigator.remove(.originalArticle)
+        return .send(.delegate(.route(.originalEdit(state.articleItem))))
+        
+      case .backButtonTapped:
+        return .send(.delegate(.route(.back)))
+        
+      case .delegate:
         return .none
       }
     }

@@ -14,16 +14,18 @@ import Shared
 
 public struct EditCategoryView {
   let store: StoreOf<EditCategoryFeature>
+  
+  public init(store: StoreOf<EditCategoryFeature>) {
+    self.store = store
+  }
 }
 
 extension EditCategoryView: View {
   public var body: some View {
     VStack(spacing: 0) {
-      TopAppBarDefaultRightIconxFeatureView(
-        store: store.scope(
-          state: \.topAppBar,
-          action: \.topAppBar
-        )
+      TopAppBarDefaultRightIconx(
+        title: "카테고리 수정하기",
+        onTapBackButton: { store.send(.backButtonTapped) }
       )
       CategoryGridView(
         store: store.scope(

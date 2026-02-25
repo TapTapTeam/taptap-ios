@@ -14,17 +14,20 @@ import Shared
 
 public struct MyCategoryCollectionView {
   @Bindable var store: StoreOf<MyCategoryCollectionFeature>
+  
+  public init(store: StoreOf<MyCategoryCollectionFeature>) {
+    self.store = store
+  }
 }
 
 extension MyCategoryCollectionView: View {
   public var body: some View {
     ZStack {
       VStack(spacing: 0) {
-        TopAppBarDefaultNoSearchView(
-          store: store.scope(
-            state: \.topAppBar,
-            action: \.topAppBar
-          )
+        TopAppBarDefaultNoSearch(
+          title: "내 카테고리 모음",
+          onTapBackButton: { store.send(.backButtonTapped) },
+          onTapSettingButton: { store.send(.settingButtonTapped) }
         )
         Button {
           store.send(.totalLinkTapped)
@@ -84,6 +87,7 @@ extension MyCategoryCollectionView: View {
         .zIndex(1)
       }
     }
+    .toolbar(.hidden)
     .onAppear {
       store.send(.onAppear)
     }

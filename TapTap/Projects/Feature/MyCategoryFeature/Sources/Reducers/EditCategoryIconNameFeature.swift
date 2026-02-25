@@ -13,19 +13,12 @@ import DesignSystem
 import Core
 import Shared
 
-extension Notification.Name {
-  
-}
-
 @Reducer
 public struct EditCategoryIconNameFeature {
-  
-  @Dependency(\.linkNavigator) var linkNavigator
   @Dependency(\.swiftDataClient) var swiftDataClient
   
   @ObservableState
   public struct State: Equatable {
-    var topAppBar = TopAppBarDefaultRightIconxFeature.State(title: "카테고리 수정하기")
     var categoryName: String
     var category: CategoryItem?
     var selectedIcon: CategoryIcon?
@@ -40,9 +33,9 @@ public struct EditCategoryIconNameFeature {
     }
   }
   
-  public enum Action {
+  public enum Action: Equatable {
     case compeleteButtonTapped
-    case topAppBar(TopAppBarDefaultRightIconxFeature.Action)
+    case backButtonTapped
     case setCategoryName(String)
     case selectIcon(CategoryIcon?)
     case setDuplicate(Bool)
@@ -50,13 +43,14 @@ public struct EditCategoryIconNameFeature {
     case backGestureSwiped
     case confirmAlertDismissed
     case confirmAlertConfirmButtonTapped
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
   }
   
   public var body: some ReducerOf<Self> {
-    Scope(state: \.topAppBar, action: \.topAppBar) {
-      TopAppBarDefaultRightIconxFeature()
-    }
-    
     Reduce { state, action in
       switch action {
       case let .setCategoryName(name):
@@ -64,9 +58,11 @@ public struct EditCategoryIconNameFeature {
         state.isDuplicate = false
         state.textFieldStyle = .default
         return .none
+        
       case let .selectIcon(icon):
         state.selectedIcon = icon
         return .none
+        
       case .compeleteButtonTapped:
         return .run { [category = state.category, name = state.categoryName] send in
           let categories = try swiftDataClient.category.fetchCategories()
@@ -75,12 +71,15 @@ public struct EditCategoryIconNameFeature {
           await send(.setDuplicate(isDuplicate))
         }
         
+      case .backButtonTapped:
+        return .send(.delegate(.route(.back)))
+        
       case let .setDuplicate(isDuplicate):
         state.isDuplicate = isDuplicate
         state.textFieldStyle = isDuplicate ? .errorCaption : .default
         
         if !isDuplicate {
-          return .run { [id = state.category?.id, name = state.categoryName, icon = state.selectedIcon] _ in
+          return .run { [id = state.category?.id, name = state.categoryName, icon = state.selectedIcon] send in
             guard let id, let icon else { return }
             await MainActor.run {
               do {
@@ -90,7 +89,7 @@ public struct EditCategoryIconNameFeature {
                 print("카테고리 업데이트 실패 \(error)")
               }
             }
-            await linkNavigator.pop()
+            await send(.delegate(.route(.back)))
           }
         } else {
           return .none
@@ -100,16 +99,20 @@ public struct EditCategoryIconNameFeature {
           state.textFieldStyle = style
           return .none
           
-      case .backGestureSwiped, .topAppBar(.tapBackButton):
-//        return .run { _ in await linkNavigator.pop() }
+      case .backGestureSwiped:
         state.isAlert = true
         return .none
+        
       case .confirmAlertDismissed:
         state.isAlert = false
         return .none
+        
       case .confirmAlertConfirmButtonTapped:
         state.isAlert = false
-        return .run { _ in await linkNavigator.pop() }
+        return .send(.delegate(.route(.back)))
+        
+      case .delegate:
+        return .none
       }
     }
   }

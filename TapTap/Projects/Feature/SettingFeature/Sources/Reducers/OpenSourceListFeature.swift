@@ -13,29 +13,39 @@ import DesignSystem
 import Shared
 
 @Reducer
-struct OpenSourceListFeature {
-  @Dependency(\.linkNavigator) var linkNavigator
-  
+public struct OpenSourceListFeature {
   @ObservableState
-  struct State: Equatable { }
-  
-  enum Action: Equatable {
-    case backButtonTapped
-    case libraryTapped(String)
+  public struct State: Equatable {
+    public init() {}
   }
   
-  var body: some ReducerOf<Self> {
+  public enum Action: Equatable {
+    case backButtonTapped
+    case libraryTapped(String)
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
+  }
+  
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .run { _ in await linkNavigator.pop() }
+        return .send(.delegate(.route(.back)))
         
       case let .libraryTapped(url):
         if let link = URL(string: url) {
           UIApplication.shared.open(link)
         }
         return .none
+        
+      case .delegate:
+        return .none
       }
     }
   }
+  
+  public init() {} 
 }
