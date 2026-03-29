@@ -34,7 +34,7 @@ public enum AppGroupContainer {
     }
     
     let storeURL = containerURL.appendingPathComponent("Nbs_store.sqlite")
-    let configuration = ModelConfiguration(schema: schema, url: storeURL)
+    let configuration = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .automatic)
     
     do {
       return try ModelContainer(for: schema, configurations: [configuration])

@@ -25,7 +25,8 @@ let appTarget = Target.target(
         "NSAllowsArbitraryLoads": true
       ],
       "UIBackgroundModes": [
-        "audio"
+        "audio",
+        "remote-notification"
       ],
       "UISupportedInterfaceOrientations": [
         "UIInterfaceOrientationPortrait"

@@ -18,8 +18,10 @@ let project = Project.project(
       deploymentTargets: .macOS("14.0"),
       sources: .sources,
       resources: .default,
+      entitlements: .file(path: "TapTapMac.entitlements"),
       dependencies: [
         .TCA(),
+        .core()
       ]
     )
   ]
