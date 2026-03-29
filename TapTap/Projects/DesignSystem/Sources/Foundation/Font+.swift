@@ -247,3 +247,98 @@ public extension TypeStyle {
     letterSpacing: 0.0
   )
 }
+
+// MARK: - macOS FontStyle
+public extension TypeStyle {
+  // MARK: Heading
+  /// SemiBold 26pt
+  static let MAC_H1 = TypeStyle(
+    font: .Pretendard.semibold.swiftUIFont(size: 26),
+    uiFont: .pretendard(type: .semibold, size: 26),
+    size: 26,
+    lineHeight: 1.3,
+    letterSpacing: -0.04
+  )
+  
+  ///Bold 22pt
+  static let MAC_H2 = TypeStyle(
+    font: .Pretendard.bold.swiftUIFont(size: 22),
+    uiFont: .pretendard(type: .bold, size: 22),
+    size: 22,
+    lineHeight: 1.3,
+    letterSpacing: -0.04
+  )
+  
+  /// Bold 18pt
+  static let MAC_H3 = TypeStyle(
+    font: .Pretendard.bold.swiftUIFont(size: 18),
+    uiFont: .pretendard(type: .bold, size: 18),
+    size: 18,
+    lineHeight: 1.4,
+    letterSpacing: -0.02
+  )
+  
+  /// SemiBold 16pt
+  static let MAC_H4_SB = TypeStyle(
+    font: .Pretendard.semibold.swiftUIFont(size: 16),
+    uiFont: .pretendard(type: .semibold, size: 16),
+    size: 16,
+    lineHeight: 1.4,
+    letterSpacing: -0.02
+  )
+  
+  /// Medium 16pt
+  static let MAC_H4_M = TypeStyle(
+    font: .Pretendard.medium.swiftUIFont(size: 16),
+    uiFont: .pretendard(type: .medium, size: 16),
+    size: 16,
+    lineHeight: 1.4,
+    letterSpacing: -0.02
+  )
+  
+  // MARK: Body
+  /// SemiBold 14pt
+  static let MAC_B1_SB = TypeStyle(
+    font: .Pretendard.semibold.swiftUIFont(size: 14),
+    uiFont: .pretendard(type: .semibold, size: 14),
+    size: 14,
+    lineHeight: 1.5,
+    letterSpacing: -0.02
+  )
+  
+  /// Medium 14pt
+  static let MAC_B1_M = TypeStyle(
+    font: .Pretendard.medium.swiftUIFont(size: 14),
+    uiFont: .pretendard(type: .medium, size: 14),
+    size: 14,
+    lineHeight: 1.5,
+    letterSpacing: -0.02
+  )
+  
+  /// Medium 14pt
+  static let MAC_B1_M_HL = TypeStyle(
+    font: .Pretendard.medium.swiftUIFont(size: 14),
+    uiFont: .pretendard(type: .medium, size: 14),
+    size: 14,
+    lineHeight: 1.7,
+    letterSpacing: -0.02
+  )
+  
+  /// Medium 12pt
+  static let MAC_B2_SB = TypeStyle(
+    font: .Pretendard.semibold.swiftUIFont(size: 12),
+    uiFont: .pretendard(type: .semibold, size: 12),
+    size: 14,
+    lineHeight: 1.5,
+    letterSpacing: -0.02
+  )
+  
+  /// Medium 12pt
+  static let MAC_B2_M = TypeStyle(
+    font: .Pretendard.medium.swiftUIFont(size: 12),
+    uiFont: .pretendard(type: .medium, size: 12),
+    size: 14,
+    lineHeight: 1.5,
+    letterSpacing: -0.02
+  )
+}
