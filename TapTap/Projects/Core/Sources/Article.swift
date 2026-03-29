@@ -7,7 +7,9 @@
 
 import Foundation
 
+#if os(iOS)
 import DesignSystem
+#endif
 
 public struct Article {
   public let id: UUID
@@ -34,11 +36,13 @@ public struct Article {
   }
 }
 
+#if os(iOS)
 extension Article: ArticleDisplayable {
   public var dateToString: String {
     DateFormatter.articleDateFormatter.string(from: createAt)
   }
 }
+#endif
 
 extension DateFormatter {
   public static let articleDateFormatter: DateFormatter = {

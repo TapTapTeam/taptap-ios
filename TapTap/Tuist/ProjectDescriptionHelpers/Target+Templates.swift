@@ -42,12 +42,26 @@ extension Target {
       finalConfigs = signing.configs
     }
     
+    let finalDestinations = destinations ?? .init([.iPhone])
+    let finalDeploymentTargets: DeploymentTargets
+    if let deploymentTargets {
+      finalDeploymentTargets = deploymentTargets
+    } else {
+      if finalDestinations.contains(.mac) && finalDestinations.contains(.iPhone) {
+        finalDeploymentTargets = .multiplatform(iOS: Project.iosVersion, macOS: Project.macOSVersion)
+      } else if finalDestinations.contains(.mac) {
+        finalDeploymentTargets = .macOS(Project.macOSVersion)
+      } else {
+        finalDeploymentTargets = .iOS(Project.iosVersion)
+      }
+    }
+    
     return Target.target(
       name: name,
-      destinations: destinations ?? .init([.iPhone]),
+      destinations: finalDestinations,
       product: product,
       bundleId: bundleId ?? Project.bundleIDBase + "." + name,
-      deploymentTargets: deploymentTargets ?? .iOS(Project.iosVersion),
+      deploymentTargets: finalDeploymentTargets,
       infoPlist: infoPlist,
       sources: sources,
       resources: resources,
