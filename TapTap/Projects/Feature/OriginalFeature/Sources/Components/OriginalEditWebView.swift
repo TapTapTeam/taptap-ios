@@ -106,7 +106,7 @@ public struct OriginalEditWebView: UIViewRepresentable {
         self.parent.progress = 1.0
       }
       
-      let highlightsJSON = parent.articleItem.highlights.map { item in
+      let highlightsJSON = (parent.articleItem.highlights ?? []).map { item in
         return [
           "id": item.id,
           "sentence": item.sentence,

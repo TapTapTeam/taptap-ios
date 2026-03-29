@@ -43,7 +43,7 @@ extension CategoryGridView: View {
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
                   if category.categoryName != "전체" {
-                    Text("\(category.links.count)개")
+                    Text("\((category.links ?? []).count)개")
                       .font(.B2_M)
                       .foregroundStyle(.caption1)
                   }
