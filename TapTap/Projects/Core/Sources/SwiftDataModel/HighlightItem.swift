@@ -22,10 +22,10 @@ public struct Comment: Codable, Hashable {
 
 @Model
 public final class HighlightItem: Codable, Identifiable {
-  @Attribute(.unique) public var id: String
-  public var sentence: String // 하이라이팅 문장
-  public var type: String // 하이라이팅 타입 (What/Why/Detail)
-  public var createdAt: Date // 하이라이트 생성 날짜
+  public var id: String = UUID().uuidString
+  public var sentence: String = "" // 하이라이팅 문장
+  public var type: String = "" // 하이라이팅 타입 (What/Why/Detail)
+  public var createdAt: Date = Date() // 하이라이트 생성 날짜
   
   @Attribute(originalName: "comments_json") private var commentsJSON: String = "[]" // JSON Comment
   

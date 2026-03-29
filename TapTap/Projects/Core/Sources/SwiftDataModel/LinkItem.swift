@@ -10,16 +10,16 @@ import SwiftData
 
 @Model
 public final class ArticleItem: Codable, Sendable {
-  @Attribute(.unique) public var id: String
-  @Attribute(.unique) public var urlString: String // URL
-  public var title: String // 기사 제목
-  public var createAt: Date // 링크 저장 날짜
-  public var lastViewedDate: Date // 마지막으로 본 날짜
+  public var id: String = UUID().uuidString
+  public var urlString: String = "" // URL
+  public var title: String = "" // 기사 제목
+  public var createAt: Date = Date() // 링크 저장 날짜
+  public var lastViewedDate: Date = Date() // 마지막으로 본 날짜
   public var category: CategoryItem?
   public var userMemo: String = "" // 추가 메모
   public var imageURL: String? // 이미지 URL
 //  public var newsCompany: String? // 신문사
-  @Relationship(deleteRule: .cascade) public var highlights: [HighlightItem] = [] // 해당 링크에 연결 된 하이라이트
+  @Relationship(deleteRule: .cascade) public var highlights: [HighlightItem]? = [] // 해당 링크에 연결 된 하이라이트
   
   public init(
     urlString: String,

@@ -22,12 +22,12 @@ public struct CategoryIcon: Codable, Hashable {
 
 @Model
 public final class CategoryItem: Identifiable, Codable, Equatable, Sendable {
-  @Attribute(.unique) public var id: UUID
-  @Attribute(.unique) public var categoryName: String // 카테고리 이름
-  public var createdAt: Date
-  public var icon: CategoryIcon
+  public var id: UUID = UUID()
+  public var categoryName: String = "" // 카테고리 이름
+  public var createdAt: Date = Date()
+  public var icon: CategoryIcon = CategoryIcon()
   
-  @Relationship(inverse: \ArticleItem.category) public var links: [ArticleItem] = []
+  @Relationship(inverse: \ArticleItem.category) public var links: [ArticleItem]? = []
   
   public init(
     categoryName: String,
