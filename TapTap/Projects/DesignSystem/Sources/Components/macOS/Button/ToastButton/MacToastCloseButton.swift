@@ -7,22 +7,18 @@
 
 import SwiftUI
 
-/// 작은 크기의 macOS용 CTA 버튼입니다.
+/// macOS용 토스트 닫기 버튼입니다.
 ///
-/// 아이콘과 텍스트를 함께 표시하며, hover 및 disabled 상태에 따라
-/// 스타일이 변경됩니다.
+/// `x` 아이콘을 표시하며, 사용자가 버튼을 클릭하면
+/// 전달받은 `onTap` 클로저를 실행합니다.
 ///
-/// 이 버튼은 단일 주요 액션을 수행하는 용도로 사용합니다.
+/// 버튼은 hover 상태에 따라 배경색이 변경되며,
+/// 토스트나 배너 우측 상단의 닫기 액션에 사용합니다.
 ///
 /// ```swift
-/// MacSmallCTAButton(title: "수정") {
-///   print("Tapped")
+/// MacToastCloseButton {
+///   print("Toast closed")
 /// }
-///
-/// MacSmallCTAButton(title: "수정") {
-///   print("Tapped")
-/// }
-/// .disabled(true)
 /// ```
 ///
 /// - Note:
@@ -39,9 +35,7 @@ public struct MacToastCloseButton: View {
   
   /// `MacToastCloseButton`을 생성합니다.
   ///
-  /// - Parameters:
-  ///   - title: 버튼에 표시할 텍스트입니다.
-  ///   - onTap: 버튼이 탭되었을 때 실행할 액션입니다.
+  /// - Parameter onTap: 버튼을 클릭했을 때 실행할 액션입니다.
   public init(
     onTap: @escaping () -> Void
   ) {
