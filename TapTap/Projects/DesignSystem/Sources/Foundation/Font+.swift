@@ -328,7 +328,7 @@ public extension TypeStyle {
   static let MAC_B2_SB = TypeStyle(
     font: .Pretendard.semibold.swiftUIFont(size: 12),
     uiFont: .pretendard(type: .semibold, size: 12),
-    size: 14,
+    size: 12,
     lineHeight: 1.5,
     letterSpacing: -0.02
   )
@@ -337,7 +337,7 @@ public extension TypeStyle {
   static let MAC_B2_M = TypeStyle(
     font: .Pretendard.medium.swiftUIFont(size: 12),
     uiFont: .pretendard(type: .medium, size: 12),
-    size: 14,
+    size: 12,
     lineHeight: 1.5,
     letterSpacing: -0.02
   )
