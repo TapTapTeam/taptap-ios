@@ -54,14 +54,14 @@ public enum TapTapSchemaV1: VersionedSchema {
     @Attribute(.unique) public var id: UUID
     @Attribute(.unique) public var categoryName: String
     public var createdAt: Date
-    public var iconNumber: Int
+    public var icon: CategoryIcon
     @Relationship(inverse: \ArticleItem.category) public var links: [ArticleItem] = []
 
-    public init(id: UUID, categoryName: String, createdAt: Date, iconNumber: Int) {
+    public init(id: UUID, categoryName: String, createdAt: Date, icon: CategoryIcon) {
       self.id = id
       self.categoryName = categoryName
       self.createdAt = createdAt
-      self.iconNumber = iconNumber
+      self.icon = icon
     }
   }
 }
@@ -130,7 +130,7 @@ public enum TapTapSchemaV2: VersionedSchema {
     public var sentence: String = ""
     public var type: String = ""
     public var createdAt: Date = Date()
-    @Attribute(originalName: "comments_json") private var commentsJSON: String = "[]"
+    @Attribute(originalName: "commentsJson") private var commentsJSON: String = "[]"
     public var link: ArticleItem?
 
     public var comments: [Comment] {
@@ -188,17 +188,19 @@ public enum TapTapSchemaV2: VersionedSchema {
     public var categoryName: String = ""
     public var createdAt: Date = Date()
     public var icon: CategoryIcon = CategoryIcon()
+    public var isFavorite: Bool = false
     @Relationship(inverse: \ArticleItem.category) public var links: [ArticleItem]? = []
 
-    public init(categoryName: String, icon: CategoryIcon) {
+    public init(categoryName: String, icon: CategoryIcon, isFavorite: Bool = false) {
       self.id = UUID()
       self.categoryName = categoryName
       self.createdAt = Date()
       self.icon = icon
+      self.isFavorite = isFavorite
     }
 
     enum CodingKeys: String, CodingKey {
-      case id, categoryName, createdAt, icon
+      case id, categoryName, createdAt, icon, isFavorite
     }
 
     public required init(from decoder: Decoder) throws {
@@ -207,6 +209,7 @@ public enum TapTapSchemaV2: VersionedSchema {
       self.categoryName = try container.decode(String.self, forKey: .categoryName)
       self.createdAt = try container.decode(Date.self, forKey: .createdAt)
       self.icon = try container.decode(CategoryIcon.self, forKey: .icon)
+      self.isFavorite = try container.decodeIfPresent(Bool.self, forKey: .isFavorite) ?? false
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -215,6 +218,7 @@ public enum TapTapSchemaV2: VersionedSchema {
       try container.encode(categoryName, forKey: .categoryName)
       try container.encode(createdAt, forKey: .createdAt)
       try container.encode(icon, forKey: .icon)
+      try container.encode(isFavorite, forKey: .isFavorite)
     }
   }
 }
