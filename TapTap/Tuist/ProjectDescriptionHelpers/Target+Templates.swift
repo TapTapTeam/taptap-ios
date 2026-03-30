@@ -47,9 +47,12 @@ extension Target {
     if let deploymentTargets {
       finalDeploymentTargets = deploymentTargets
     } else {
-      if finalDestinations.contains(.mac) && finalDestinations.contains(.iPhone) {
+      let containsMac = finalDestinations.contains(.mac)
+      let containsIOS = finalDestinations.contains(.iPhone) || finalDestinations.contains(.iPad) || finalDestinations.contains(.macWithiPadDesign)
+      
+      if containsMac && containsIOS {
         finalDeploymentTargets = .multiplatform(iOS: Project.iosVersion, macOS: Project.macOSVersion)
-      } else if finalDestinations.contains(.mac) {
+      } else if containsMac {
         finalDeploymentTargets = .macOS(Project.macOSVersion)
       } else {
         finalDeploymentTargets = .iOS(Project.iosVersion)
@@ -92,11 +95,13 @@ extension Target {
     
     var debugSettings: [String: SettingValue] = [
       "CODE_SIGN_IDENTITY": "$(CODE_SIGN_IDENTITY)",
+      "APS_ENVIRONMENT": "development",
     ]
     var releaseSettings: [String: SettingValue] = [
       "CODE_SIGN_IDENTITY": "$(CODE_SIGN_IDENTITY)",
       "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
       "INFOPLIST_KEY_CFBundleDisplayName": "\(name)",
+      "APS_ENVIRONMENT": "production",
     ]
     
     switch product {
