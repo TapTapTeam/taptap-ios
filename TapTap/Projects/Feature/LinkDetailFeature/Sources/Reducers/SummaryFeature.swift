@@ -61,22 +61,23 @@ public struct SummaryFeature {
         state.isCommentTextFieldFocused = false
         guard let editingId = state.editingCommentId else { return .none }
         
-        guard let highlightIndex = state.article.highlights.firstIndex(where: { $0.comments.contains(where: { $0.id == editingId })}) else {
+        guard let highlights = state.article.highlights,
+              let highlightIndex = highlights.firstIndex(where: { $0.comments.contains(where: { $0.id == editingId })}) else {
           return .none
         }
         
-        guard let commentIndex = state.article.highlights[highlightIndex]
+        guard let commentIndex = highlights[highlightIndex]
           .comments.firstIndex(where: { $0.id == editingId }) else {
           return .none
         }
         
-        let originalComment = state.article.highlights[highlightIndex].comments[commentIndex]
+        let originalComment = highlights[highlightIndex].comments[commentIndex]
         let updateComment = Comment(id: originalComment.id, type: originalComment.type, text: state.editedCommentText)
-        state.article.highlights[highlightIndex].comments[commentIndex] = updateComment
+        state.article.highlights?[highlightIndex].comments[commentIndex] = updateComment
         
         state.editingCommentId = nil
         
-        let highlightId = state.article.highlights[highlightIndex].id
+        let highlightId = highlights[highlightIndex].id
         let newText = state.editedCommentText
         
         return .run { _ in
@@ -99,11 +100,12 @@ public struct SummaryFeature {
           return .none
         }
         
-        guard let highlightIndex = state.article.highlights.firstIndex(where: { $0.id == highlightId }) else {
+        guard let highlights = state.article.highlights,
+              let highlightIndex = highlights.firstIndex(where: { $0.id == highlightId }) else {
           return .none
         }
         
-        let newComment = Comment(id: Date().timeIntervalSince1970, type: state.article.highlights[highlightIndex].type, text:
+        let newComment = Comment(id: Date().timeIntervalSince1970, type: highlights[highlightIndex].type, text:
               state.newCommentText)
         
         state.addingCommentToHighlightId = nil
@@ -135,13 +137,14 @@ public struct SummaryFeature {
       case .hightlightEditSheet(.presented(.delegate(.delete(let context)))):
         switch context {
         case .comment(let comment):
-          guard let highlightIndex = state.article.highlights.firstIndex(where: { $0.comments.contains(comment)}) else {
+          guard let highlights = state.article.highlights,
+                let highlightIndex = highlights.firstIndex(where: { $0.comments.contains(comment)}) else {
             return .none
           }
-          let highlightId = state.article.highlights[highlightIndex].id
+          let highlightId = highlights[highlightIndex].id
           let commentId = comment.id
           
-          state.article.highlights[highlightIndex].comments.removeAll { $0.id == comment.id }
+          state.article.highlights?[highlightIndex].comments.removeAll { $0.id == comment.id }
           
           return .run { _ in
             try swiftDataClient.highlight.deleteComment(commentId: commentId, highlightId: highlightId)
@@ -149,11 +152,12 @@ public struct SummaryFeature {
           .cancellable(id: "delete-comment-\(commentId)")
           
         case .highlight(let highlight):
-          guard let highlightIndex = state.article.highlights.firstIndex(where: { $0.id == highlight.id }) else {
+          guard let highlights = state.article.highlights,
+                let highlightIndex = highlights.firstIndex(where: { $0.id == highlight.id }) else {
             return .none
           }
           
-          state.article.highlights.remove(at: highlightIndex)
+          state.article.highlights?.remove(at: highlightIndex)
           
           let highlightId = highlight.id
           

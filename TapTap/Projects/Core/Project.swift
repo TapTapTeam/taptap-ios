@@ -13,6 +13,7 @@ let project = Project.project(
   targets: [
     Target.target(
       name: Module.Core.rawValue,
+      destinations: [.iPhone, .mac],
       product: .staticFramework,
       sources: .sources,
       resources: .default,

@@ -151,7 +151,7 @@ extension SummaryView {
   
   ///  type별 그룹핑된 highlights
   private var groupedHighlights: [String: [HighlightItem]] {
-    Dictionary(grouping: link.highlights) { item in
+    Dictionary(grouping: link.highlights ?? []) { item in
       item.type.capitalized
     }
   }

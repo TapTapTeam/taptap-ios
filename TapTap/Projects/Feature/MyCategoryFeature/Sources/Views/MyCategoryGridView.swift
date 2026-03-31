@@ -36,7 +36,7 @@ extension MyCategoryGridView: View {
                     .foregroundStyle(.text1)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
-                  Text("\(category.links.count)개")
+                  Text("\((category.links ?? []).count)개")
                     .font(.B2_M)
                     .foregroundStyle(.caption2)
                   Spacer()

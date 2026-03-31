@@ -1,45 +1,32 @@
 import Foundation
 import SwiftData
 
-//public enum AppGroupContainer {
-//    public static func createShareModelContainer() -> ModelContainer? {
-//        let appGroupID = "group.com.nbs.dev.ADA.shared"
-//        let schema = Schema([LinkItem.self, HighlightItem.self, CategoryItem.self])
-//        
-//        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) else {
-//            print("Error: Failed to get container URL for App Group ID: \(appGroupID)")
-//            return nil
-//        }
-//        
-//        let storeURL = containerURL.appendingPathComponent("Nbs_store.sqlite")
-//        let configuration = ModelConfiguration(schema: schema, url: storeURL)
-//        
-//        do {
-//            return try ModelContainer(for: schema, configurations: [configuration])
-//        } catch {
-//            print("Error creating ModelContainer: \(error)")
-//            return nil
-//        }
-//    }
-//}
-//
-
 public enum AppGroupContainer {
   public static let shared: ModelContainer = {
     let appGroupID = "group.com.nbs.dev.ADA.shared"
     let schema = Schema([ArticleItem.self, HighlightItem.self, CategoryItem.self])
     
     guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) else {
-      fatalError()
+      fatalError("Failed to find App Group container.")
     }
     
     let storeURL = containerURL.appendingPathComponent("Nbs_store.sqlite")
-    let configuration = ModelConfiguration(schema: schema, url: storeURL)
+    let isExtension = Bundle.main.bundleURL.pathExtension == "appex"
+    let configuration = ModelConfiguration(
+      schema: schema,
+      url: storeURL,
+      cloudKitDatabase: isExtension ? .none : .automatic
+    )
     
     do {
-      return try ModelContainer(for: schema, configurations: [configuration])
+      return try ModelContainer(
+        for: schema,
+        migrationPlan: TapTapMigrationPlan.self,
+        configurations: [configuration]
+      )
     } catch {
-      fatalError()
+      print("SwiftData Migration Error: \(error)")
+      fatalError("Failed to initialize ModelContainer: \(error.localizedDescription)")
     }
   }()
 }

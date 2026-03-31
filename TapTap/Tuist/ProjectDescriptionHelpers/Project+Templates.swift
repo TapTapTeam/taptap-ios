@@ -13,6 +13,7 @@ extension Project {
   public static let bundleIDBase = "com.Nbs.dev.app"
   public static let bundIDAppStore = "com.Nbs.dev.ADA.app"
   public static let iosVersion = "18.6"
+  public static let macOSVersion = "15.0"
   public static let appName = "TapTap"
 }
 

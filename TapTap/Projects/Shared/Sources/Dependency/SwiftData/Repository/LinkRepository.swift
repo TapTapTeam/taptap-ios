@@ -19,7 +19,18 @@ public struct LinkRepository {
   
   // MARK: - Create
   public func addLink(_ link: ArticleItem) throws {
-    context.insert(link)
+    let urlString = link.urlString
+    let descriptor = FetchDescriptor<ArticleItem>(predicate: #Predicate { $0.urlString == urlString })
+    
+    if let existing = try? context.fetch(descriptor).first {
+      existing.title = link.title
+      if let newImageURL = link.imageURL {
+        existing.imageURL = newImageURL
+      }
+      existing.lastViewedDate = link.lastViewedDate
+    } else {
+      context.insert(link)
+    }
     try context.save()
   }
   

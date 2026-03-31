@@ -40,7 +40,7 @@ public struct HighlightRepository {
         ArticleItem.self,
         predicate: #Predicate { $0.id == linkID }
       ) {
-          article.highlights.forEach { context.delete($0) }
+          article.highlights?.forEach { context.delete($0) }
           article.highlights = highlights
           try context.save()
       }

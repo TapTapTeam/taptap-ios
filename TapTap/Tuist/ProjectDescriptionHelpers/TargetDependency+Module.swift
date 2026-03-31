@@ -71,7 +71,7 @@ extension TargetDependency {
 // MARK: - Design
 extension TargetDependency {
   public static func designSystem() -> TargetDependency {
-    .project(target: Module.DesignSystem.rawValue, path: .relativeToRoot("Projects/DesignSystem"))
+    .project(target: Module.DesignSystem.rawValue, path: .relativeToRoot("Projects/DesignSystem"), condition: .when([.ios]))
   }
 }
 

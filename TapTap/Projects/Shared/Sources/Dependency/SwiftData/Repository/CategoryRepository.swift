@@ -19,7 +19,14 @@ public struct CategoryRepository {
   
   // MARK: - Create
   public func addCategory(_ category: CategoryItem) throws {
-    context.insert(category)
+    let name = category.categoryName
+    let descriptor = FetchDescriptor<CategoryItem>(predicate: #Predicate { $0.categoryName == name })
+    
+    if let existing = try? context.fetch(descriptor).first {
+      existing.icon = category.icon
+    } else {
+      context.insert(category)
+    }
     try context.save()
   }
   

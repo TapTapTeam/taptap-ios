@@ -42,12 +42,29 @@ extension Target {
       finalConfigs = signing.configs
     }
     
+    let finalDestinations = destinations ?? .init([.iPhone])
+    let finalDeploymentTargets: DeploymentTargets
+    if let deploymentTargets {
+      finalDeploymentTargets = deploymentTargets
+    } else {
+      let containsMac = finalDestinations.contains(.mac)
+      let containsIOS = finalDestinations.contains(.iPhone) || finalDestinations.contains(.iPad) || finalDestinations.contains(.macWithiPadDesign)
+      
+      if containsMac && containsIOS {
+        finalDeploymentTargets = .multiplatform(iOS: Project.iosVersion, macOS: Project.macOSVersion)
+      } else if containsMac {
+        finalDeploymentTargets = .macOS(Project.macOSVersion)
+      } else {
+        finalDeploymentTargets = .iOS(Project.iosVersion)
+      }
+    }
+    
     return Target.target(
       name: name,
-      destinations: destinations ?? .init([.iPhone]),
+      destinations: finalDestinations,
       product: product,
       bundleId: bundleId ?? Project.bundleIDBase + "." + name,
-      deploymentTargets: deploymentTargets ?? .iOS(Project.iosVersion),
+      deploymentTargets: finalDeploymentTargets,
       infoPlist: infoPlist,
       sources: sources,
       resources: resources,
@@ -78,11 +95,13 @@ extension Target {
     
     var debugSettings: [String: SettingValue] = [
       "CODE_SIGN_IDENTITY": "$(CODE_SIGN_IDENTITY)",
+      "APS_ENVIRONMENT": "development",
     ]
     var releaseSettings: [String: SettingValue] = [
       "CODE_SIGN_IDENTITY": "$(CODE_SIGN_IDENTITY)",
       "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
       "INFOPLIST_KEY_CFBundleDisplayName": "\(name)",
+      "APS_ENVIRONMENT": "production",
     ]
     
     switch product {

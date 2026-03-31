@@ -282,7 +282,7 @@ extension LinkDetailView: View {
     VStack {
       switch selectedTab {
       case .summary:
-        if store.link.highlights.isEmpty {
+        if (store.link.highlights ?? []).isEmpty {
           EmptyLinkDetailView()
             .padding(.top, 80)
         } else {
