@@ -4,7 +4,7 @@
 //
 //  Created by 홍 on 10/28/25.
 //
-
+#if os(iOS)
 import SwiftUI
 
 /// 선택이 가능한 카테고리 칩 버튼 컴포넌트
@@ -84,3 +84,4 @@ private struct CategoryChipButtonPreview: View {
 #Preview {
   CategoryChipButtonPreview()
 }
+#endif

@@ -4,7 +4,7 @@
 //
 //  Created by 이안 on 10/15/25.
 //
-
+#if os(iOS)
 import SwiftUI
 
 /// 공통 메인 버튼 컴포넌트
@@ -275,4 +275,4 @@ extension MainButton2 {
     ) { print("버튼입니다") }
   }
 }
-
+#endif

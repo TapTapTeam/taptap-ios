@@ -4,7 +4,7 @@
 //
 //  Created by 이안 on 10/18/25.
 //
-
+#if os(iOS)
 import SwiftUI
 
 /// 스크롤 위치에 따라 나타나는 플로팅 버튼 컴포넌트
@@ -108,3 +108,4 @@ extension ScrollFloatingButton {
     }
   }
 }
+#endif

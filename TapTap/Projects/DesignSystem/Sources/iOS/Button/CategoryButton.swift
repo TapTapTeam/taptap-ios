@@ -4,7 +4,7 @@
 //
 //  Created by 여성일 on 10/18/25.
 //
-
+#if os(iOS)
 import SwiftUI
 
 /// ShareExtension에서 사용되는 카테고리 버튼
@@ -116,3 +116,4 @@ private struct CategoryButtonPreview: View {
 #Preview {
   CategoryButtonPreview()
 }
+#endif

@@ -4,7 +4,7 @@
 //
 //  Created by 홍 on 10/29/25.
 //
-
+#if os(iOS)
 import SwiftUI
 
 /// 새로운 카테고리 칩 버튼 컴포넌트
@@ -60,3 +60,5 @@ extension MakeNewCategoryButton: View {
 #Preview {
   MakeNewCategoryButton()
 }
+#endif
+

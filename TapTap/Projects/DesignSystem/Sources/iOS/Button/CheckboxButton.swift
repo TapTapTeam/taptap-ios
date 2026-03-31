@@ -4,7 +4,7 @@
 //
 //  Created by 이안 on 10/16/25.
 //
-
+#if os(iOS)
 import SwiftUI
 
 /// 원형 체크박스 버튼 컴포넌트
@@ -133,3 +133,4 @@ private struct CheckboxButtonPreview: View {
 #Preview {
   CheckboxButtonPreview()
 }
+#endif
