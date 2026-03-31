@@ -15,13 +15,14 @@ let project = Project.project(
       name: Module.TapTapMac.rawValue,
       destinations: .macOS,
       product: .app,
-      deploymentTargets: .macOS("14.0"),
+      deploymentTargets: .macOS("15.0"),
       sources: .sources,
       resources: .default,
       entitlements: .file(path: "TapTapMac.entitlements"),
       dependencies: [
         .TCA(),
-        .core()
+        .core(),
+        .designSystem()
       ]
     )
   ]

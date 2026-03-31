@@ -3,6 +3,7 @@ import ComposableArchitecture
 import SwiftUI
 import SwiftData
 import Core
+import DesignSystem
 
 @main
 struct MacApp: App {
@@ -26,7 +27,7 @@ struct MACContentView: View {
       List(articles) { article in
         VStack(alignment: .leading, spacing: 4) {
           Text(article.title)
-            .font(.headline)
+            .font(.B1_M)
           Text(article.urlString)
             .font(.subheadline)
             .foregroundColor(.secondary)
