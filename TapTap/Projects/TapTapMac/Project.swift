@@ -21,7 +21,8 @@ let project = Project.project(
       entitlements: .file(path: "TapTapMac.entitlements"),
       dependencies: [
         .TCA(),
-        .core()
+        .core(),
+        .designSystem()
       ]
     )
   ]
