@@ -1,0 +1,17 @@
+//
+//  ExampleApp.swift
+//  {{ name }}Example
+//
+//  Created by TapTap on {{ "now" }}.
+//
+
+import SwiftUI
+
+@main
+struct {{ name }}FeatureExampleApp: App {
+var body: some Scene {
+  WindowGroup {
+    {{ name }}View()
+    }
+  }
+}

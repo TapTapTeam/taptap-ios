@@ -1,0 +1,14 @@
+//
+//  Sources.swift
+//  {{ name }}Feature
+//
+//  Created by TapTap on {{ "now" }}.
+//
+
+import SwiftUI
+
+struct {{ name }}View: View {
+  var body: some View {
+    Text("{{ name }}Feature")
+  }
+}

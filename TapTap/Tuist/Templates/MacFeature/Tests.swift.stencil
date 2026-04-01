@@ -1,0 +1,15 @@
+//
+//  Tests.swift
+//  {{ name }}Tests
+//
+//  Created by TapTap on {{ "now" }}.
+//
+
+import XCTest
+@testable import Mac{{ name }}Feature
+
+final class {{ name }}Tests: XCTestCase {
+  func test_example() {
+    XCTAssertTrue(true)
+  }
+}
