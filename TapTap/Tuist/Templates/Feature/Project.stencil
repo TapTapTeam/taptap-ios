@@ -1,0 +1,52 @@
+//
+//  Project.swift
+//  {{ name }}
+//
+//  Created by TapTap on {{ "now" }}.
+//
+
+import ProjectDescription
+import ProjectDescriptionHelpers
+
+let project = Project.project(
+  name: FeatureModule.{{ name }}Feature.rawValue,
+  targets: [
+    Target.target(
+      name: FeatureModule.{{ name }}Feature.rawValue,
+      product: .staticFramework,
+      sources: .sources,
+      resources: .default,
+      dependencies: [
+        .TCA(),
+        .core(),
+        .shared(),
+      ]
+    ),
+    Target.target(
+      name: "\(FeatureModule.{{ name }}Feature.rawValue)Example",
+      product: .app,
+      infoPlist: .extendingDefault(with: [
+        "UILaunchScreen": [
+          "UIColorName": "",
+          "UIImageName": ""
+        ],
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationPortrait"
+        ]
+      ]),
+      sources: ["Example/**"],
+      dependencies: [
+        .target(name: FeatureModule.{{ name }}Feature.rawValue)
+      ]
+    ),
+    Target.target(
+      name: "\(FeatureModule.{{ name }}Feature.rawValue)Tests",
+      product: .unitTests,
+      sources: ["Tests/**"],
+      dependencies: [
+        .target(name: FeatureModule.{{ name }}Feature.rawValue),
+        .TCA()
+      ]
+    )
+  ]
+)
