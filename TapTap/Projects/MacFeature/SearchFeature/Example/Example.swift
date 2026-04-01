@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import MacSearchFeature
 
 @main
-struct Example: App {
+struct SearchFeatureExampleApp: App {
   var body: some Scene {
     WindowGroup {
-      
+      SearchView()
     }
   }
 }
+

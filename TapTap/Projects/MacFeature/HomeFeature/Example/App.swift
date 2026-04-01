@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import MacHomeFeature
 
 @main
 struct HomeFeatureExampleApp: App {
-var body: some Scene {
-  WindowGroup {
-    HomeView()
+  var body: some Scene {
+    WindowGroup {
+      HomeView()
     }
   }
 }

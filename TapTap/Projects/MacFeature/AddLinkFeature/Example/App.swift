@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import MacAddLinkFeature
 
 @main
 struct AddLinkFeatureExampleApp: App {
-var body: some Scene {
-  WindowGroup {
-    AddLinkView()
+  var body: some Scene {
+    WindowGroup {
+      AddLinkView()
     }
   }
 }

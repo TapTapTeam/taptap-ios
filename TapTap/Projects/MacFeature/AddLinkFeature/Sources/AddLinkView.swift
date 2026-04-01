@@ -7,8 +7,10 @@
 
 import SwiftUI
 
-struct AddLinkView: View {
-  var body: some View {
-    Text("AddLinkFeature")
+public struct AddLinkView: View {
+  public init() {}
+  
+  public var body: some View {
+    Text("AddLinkView")
   }
 }
