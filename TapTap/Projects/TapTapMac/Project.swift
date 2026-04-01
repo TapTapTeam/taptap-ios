@@ -20,7 +20,6 @@ let project = Project.project(
       resources: .default,
       entitlements: .file(path: "TapTapMac.entitlements"),
       dependencies: [
-        .TCA(),
         .core(),
         .designSystem(),
         .macSearchFeature(),
