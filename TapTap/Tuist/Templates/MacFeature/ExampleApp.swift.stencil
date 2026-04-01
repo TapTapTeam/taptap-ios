@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Mac{{ name }}Feature
 
 @main
 struct {{ name }}FeatureExampleApp: App {
