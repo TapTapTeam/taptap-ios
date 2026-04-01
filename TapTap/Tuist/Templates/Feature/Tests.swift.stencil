@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import Mac{{ name }}Feature
+@testable import {{ name }}Feature
 
 final class {{ name }}Tests: XCTestCase {
   func test_example() {

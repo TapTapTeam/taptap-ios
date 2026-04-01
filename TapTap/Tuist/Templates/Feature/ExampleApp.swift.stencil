@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import {{ name }}Feature
 
 @main
 struct {{ name }}FeatureExampleApp: App {
-var body: some Scene {
-  WindowGroup {
-    {{ name }}View()
+  var body: some Scene {
+    WindowGroup {
+      {{ name }}View()
     }
   }
 }
