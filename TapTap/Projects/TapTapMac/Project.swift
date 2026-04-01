@@ -22,7 +22,10 @@ let project = Project.project(
       dependencies: [
         .TCA(),
         .core(),
-        .designSystem()
+        .designSystem(),
+        .macSearchFeature(),
+        .macAddLinkFeature(),
+        .macHomeFeature()
       ]
     )
   ]
