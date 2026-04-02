@@ -28,5 +28,11 @@ public enum FeatureModule: String {
   case HomeFeature
 }
 
+public enum MacFeatureModule: String {
+  case MacSearchFeature
+  case MacAddLinkFeature
+  case MacHomeFeature
+}
+
 extension Module: CaseIterable {}
 extension FeatureModule: CaseIterable {}
