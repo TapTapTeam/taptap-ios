@@ -112,7 +112,7 @@ public struct OriginalArticleWebView: UIViewRepresentable {
         return
       }
       
-      guard let cssString = try? String(contentsOfFile: cssPath)
+      guard let cssString = try? String(contentsOfFile: cssPath, encoding: .utf8)
         .replacingOccurrences(of: "\n", with: "") else {
         print("CSS 파일 읽기 실패")
         return
@@ -141,7 +141,7 @@ public struct OriginalArticleWebView: UIViewRepresentable {
       }
       
       do {
-        let scriptContent = try String(contentsOfFile: jsPath)
+        let scriptContent = try String(contentsOfFile: jsPath, encoding: .utf8)
         let fullScript = """
           \(scriptContent)
           applyHighlights(\(jsonString));
