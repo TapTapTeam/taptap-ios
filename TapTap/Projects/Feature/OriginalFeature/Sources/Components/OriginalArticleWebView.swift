@@ -110,8 +110,8 @@ public struct OriginalArticleWebView: UIViewRepresentable {
       observation?.invalidate()
     }
     
+    //로딩 완료 시점
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-      // 로딩 완료 시 progress를 1.0으로 명시적 설정
       DispatchQueue.main.async {
         self.parent.progress = 1.0
       }
@@ -136,9 +136,23 @@ public struct OriginalArticleWebView: UIViewRepresentable {
         print("변환 실패")
         return
       }
-      
+      //CSS와 JS 주입완료시점
       injectCss(webView: webView, filename: "OriginalArticleStyle")
       injectJS(webView: webView, filename: "OriginalArticleScript", jsonString: jsonString)
+    }
+    
+    //인터넷 연결이 끊기는 에러등
+    public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+      DispatchQueue.main.async {
+        self.parent.progress = 1.0
+      }
+    }
+    
+    //로딩 중 에러
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+      DispatchQueue.main.async {
+        self.parent.progress = 1.0
+      }
     }
     
     private func injectCss(webView: WKWebView, filename: String) {
