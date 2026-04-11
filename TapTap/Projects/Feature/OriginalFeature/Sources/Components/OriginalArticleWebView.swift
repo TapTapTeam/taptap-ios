@@ -15,26 +15,63 @@ public struct OriginalArticleWebView: UIViewRepresentable {
   @Binding var progress: Double
   private static var contentRuleList: WKContentRuleList?
   
+  private static func prepareContentBlocker() {
+    guard contentRuleList == nil else { return }
+    
+    // 안전한 네트워크 레벨 차단 규칙 (광고, 트래커, 분석 도구)
+    let rules = """
+    [
+      {
+        "trigger": 
+          { 
+            "url-filter": ".*(doubleclick\\\\.net|google-analytics\\\\.com|googlesyndication\\\\.com|amazon-adsystem\\\\.com|adnxs\\\\.com|adservice\\\\.google|analytics\\\\.google\\\\.com).*"
+          },
+          "action": { "type": "block" }
+        }
+    ]
+    """
+    
+    WKContentRuleListStore.default().compileContentRuleList(
+      forIdentifier: "SafeContentBlocker",
+      encodedContentRuleList: rules) { ruleList, _ in
+        Self.contentRuleList = ruleList
+      }
+  }
+  
   public init(
     articleItem: ArticleItem,
     progress: Binding<Double>
   ) {
     self.articleItem = articleItem
     self._progress = progress
+    Self.prepareContentBlocker()
   }
   
   public init(
-      articleItem: ArticleItem
-    ) {
-      self.articleItem = articleItem
-      self._progress = .constant(1.0)
-    }
-
+    articleItem: ArticleItem
+  ) {
+    self.articleItem = articleItem
+    self._progress = .constant(1.0)
+    Self.prepareContentBlocker()
+  }
+  
   public func makeUIView(context: Context) -> WKWebView {
     let configuration = WKWebViewConfiguration()
     
+    if let ruleList = Self.contentRuleList {
+      configuration.userContentController.add(ruleList)
+    }
+    
+    // 미디어 최적화: 자동 재생 방지 및 인라인 재생 허용
+    configuration.allowsInlineMediaPlayback = true
+    configuration.mediaTypesRequiringUserActionForPlayback = .all
+    
     let webView = WKWebView(frame: .zero, configuration: configuration)
     webView.navigationDelegate = context.coordinator
+    webView.allowsBackForwardNavigationGestures = true
+    
+    // 모바일 최적화된 페이지를 위해 User-Agent 설정
+    webView.customUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
     
     // progress 관찰을 위한 KVO 등록
     context.coordinator.observation = webView.observe(\.estimatedProgress, options: [.new]) { webView, change in
