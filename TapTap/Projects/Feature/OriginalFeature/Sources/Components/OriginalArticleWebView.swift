@@ -13,7 +13,7 @@ import Core
 public struct OriginalArticleWebView: UIViewRepresentable {
   let articleItem: ArticleItem
   @Binding var progress: Double
-  private static let processPool = WKProcessPool()
+  private static var contentRuleList: WKContentRuleList?
   
   public init(
     articleItem: ArticleItem,
@@ -32,7 +32,7 @@ public struct OriginalArticleWebView: UIViewRepresentable {
 
   public func makeUIView(context: Context) -> WKWebView {
     let configuration = WKWebViewConfiguration()
-    configuration.processPool = Self.processPool
+    
     let webView = WKWebView(frame: .zero, configuration: configuration)
     webView.navigationDelegate = context.coordinator
     
