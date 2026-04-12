@@ -141,6 +141,8 @@ public struct OriginalArticleWebView: UIViewRepresentable {
   }
   
   public func updateUIView(_ uiView: WKWebView, context: Context) {
+    context.coordinator.parent = self
+    
     if let ruleList = blockerManager.contentRuleList, !context.coordinator.isRuleListAdded {
       uiView.configuration.userContentController.add(ruleList)
       context.coordinator.isRuleListAdded = true
@@ -150,8 +152,8 @@ public struct OriginalArticleWebView: UIViewRepresentable {
       return
     }
     
-    let currentURLString = uiView.url?.absoluteString
-    if currentURLString == nil || (currentURLString != articleURL.absoluteString && !uiView.isLoading) {
+    if context.coordinator.loadedArticleURL != articleURL.absoluteString {
+      context.coordinator.loadedArticleURL = articleURL.absoluteString
       let request = URLRequest(url: articleURL)
       uiView.load(request)
     }
@@ -165,6 +167,7 @@ public struct OriginalArticleWebView: UIViewRepresentable {
     var parent: OriginalArticleWebView
     var observation: NSKeyValueObservation?
     var isRuleListAdded: Bool = false
+    var loadedArticleURL: String?
     
     public init(_ parent: OriginalArticleWebView) {
       self.parent = parent
