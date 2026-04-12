@@ -7,36 +7,89 @@
 
 import SwiftUI
 import WebKit
+import os
 
 import Core
+
+@MainActor
+public final class ContentBlockerManager: ObservableObject {
+  public static let shared = ContentBlockerManager()
+  
+  @Published public private(set) var contentRuleList: WKContentRuleList?
+  private var preparationTask: Task<WKContentRuleList, Error>?
+  
+  private init() {}
+  
+  public func prepare() async {
+    if contentRuleList != nil { return }
+    
+    if let existingTask = preparationTask {
+      _ = try? await existingTask.value
+      return
+    }
+    
+    let newTask = Task { () -> WKContentRuleList in
+      let identifier = "SafeContentBlocker"
+      if let existing = await lookup(identifier: identifier) {
+        return existing
+      }
+
+      let rules = """
+      [
+        {
+          "trigger": 
+            { 
+              "url-filter": ".*(doubleclick\\\\.net|google-analytics\\\\.com|googlesyndication\\\\.com|amazon-adsystem\\\\.com|adnxs\\\\.com|adservice\\\\.google|analytics\\\\.google\\\\.com).*"
+            },
+            "action": { "type": "block" }
+          }
+        ]
+      """
+      return try await compile(identifier: identifier, encodedRules: rules)
+    }
+    
+    preparationTask = newTask
+    
+    do {
+      self.contentRuleList = try await newTask.value
+    } catch {
+      os_log("ContentBlocker 준비 실패: \(error.localizedDescription)")
+    }
+    
+    preparationTask = nil
+  }
+  
+  private func lookup(identifier: String) async -> WKContentRuleList? {
+    await withCheckedContinuation { continuation in
+      WKContentRuleListStore.default().lookUpContentRuleList(forIdentifier: identifier) { ruleList, _ in
+        continuation.resume(returning: ruleList)
+      }
+    }
+  }
+  
+  private func compile(
+    identifier: String,
+    encodedRules: String
+  ) async throws -> WKContentRuleList {
+    try await withCheckedThrowingContinuation { continuation in
+      WKContentRuleListStore.default().compileContentRuleList(
+        forIdentifier: identifier,
+        encodedContentRuleList: encodedRules
+      ) { ruleList, error in
+          if let error = error {
+            continuation.resume(throwing: error)
+          } else if let ruleList = ruleList {
+            continuation.resume(returning: ruleList)
+          }
+        }
+    }
+  }
+}
 
 public struct OriginalArticleWebView: UIViewRepresentable {
   let articleItem: ArticleItem
   @Binding var progress: Double
-  private static var contentRuleList: WKContentRuleList?
-  
-  private static func prepareContentBlocker() {
-    guard contentRuleList == nil else { return }
-    
-    // 안전한 네트워크 레벨 차단 규칙 (광고, 트래커, 분석 도구)
-    let rules = """
-    [
-      {
-        "trigger": 
-          { 
-            "url-filter": ".*(doubleclick\\\\.net|google-analytics\\\\.com|googlesyndication\\\\.com|amazon-adsystem\\\\.com|adnxs\\\\.com|adservice\\\\.google|analytics\\\\.google\\\\.com).*"
-          },
-          "action": { "type": "block" }
-        }
-    ]
-    """
-    
-    WKContentRuleListStore.default().compileContentRuleList(
-      forIdentifier: "SafeContentBlocker",
-      encodedContentRuleList: rules) { ruleList, _ in
-        Self.contentRuleList = ruleList
-      }
-  }
+  @ObservedObject private var blockerManager = ContentBlockerManager.shared
   
   public init(
     articleItem: ArticleItem,
@@ -44,7 +97,9 @@ public struct OriginalArticleWebView: UIViewRepresentable {
   ) {
     self.articleItem = articleItem
     self._progress = progress
-    Self.prepareContentBlocker()
+    Task {
+      await ContentBlockerManager.shared.prepare()
+    }
   }
   
   public init(
@@ -52,14 +107,16 @@ public struct OriginalArticleWebView: UIViewRepresentable {
   ) {
     self.articleItem = articleItem
     self._progress = .constant(1.0)
-    Self.prepareContentBlocker()
+    Task {
+      await ContentBlockerManager.shared.prepare()
+    }
   }
   
   public func makeUIView(context: Context) -> WKWebView {
     let configuration = WKWebViewConfiguration()
-    
-    if let ruleList = Self.contentRuleList {
+    if let ruleList = blockerManager.contentRuleList {
       configuration.userContentController.add(ruleList)
+      context.coordinator.isRuleListAdded = true
     }
     
     // 미디어 최적화: 자동 재생 방지 및 인라인 재생 허용
@@ -84,11 +141,17 @@ public struct OriginalArticleWebView: UIViewRepresentable {
   }
   
   public func updateUIView(_ uiView: WKWebView, context: Context) {
+    if let ruleList = blockerManager.contentRuleList, !context.coordinator.isRuleListAdded {
+      uiView.configuration.userContentController.add(ruleList)
+      context.coordinator.isRuleListAdded = true
+    }
+    
     guard let articleURL = URL(string: articleItem.urlString) else {
       return
     }
     
-    if uiView.url?.absoluteString != articleURL.absoluteString {
+    let currentURLString = uiView.url?.absoluteString
+    if currentURLString == nil || (currentURLString != articleURL.absoluteString && !uiView.isLoading) {
       let request = URLRequest(url: articleURL)
       uiView.load(request)
     }
@@ -101,6 +164,7 @@ public struct OriginalArticleWebView: UIViewRepresentable {
   public class Coordinator: NSObject, WKNavigationDelegate {
     var parent: OriginalArticleWebView
     var observation: NSKeyValueObservation?
+    var isRuleListAdded: Bool = false
     
     public init(_ parent: OriginalArticleWebView) {
       self.parent = parent
