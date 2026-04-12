@@ -149,9 +149,7 @@ extension LinkListView: View {
   /// 카테고리 칩버튼 스크롤 + 기사 필터 스크롤
   private var scrollViewContents: some View {
     ScrollView(.vertical, showsIndicators: false) {
-      //      LazyVStack(spacing: .zero, pinnedViews: [.sectionHeaders]) {
-      //        Section {
-      VStack(spacing: 4) {
+      LazyVStack(spacing: 4) {
         Color.clear
           .frame(height: 0)
           .id("top")
@@ -171,10 +169,6 @@ extension LinkListView: View {
             )
         }
         .frame(height: 0)
-        
-        //        } header: {
-        //          gradientBar
-        //        }
       }
     }
     .coordinateSpace(name: "scroll")

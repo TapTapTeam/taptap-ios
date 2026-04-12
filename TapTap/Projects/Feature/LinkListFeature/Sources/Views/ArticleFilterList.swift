@@ -94,8 +94,10 @@ extension ArticleFilterList: View {
         .padding(.top, 120)
 
     } else {
-      ForEach(store.link) { article in
-        ArticleRowView(article: article, store: store)
+      LazyVStack(spacing: 0) {
+        ForEach(store.link) { article in
+          ArticleRowView(article: article, store: store)
+        }
       }
     }
   }
