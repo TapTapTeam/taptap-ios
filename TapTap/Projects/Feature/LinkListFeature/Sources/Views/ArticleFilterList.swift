@@ -92,12 +92,23 @@ extension ArticleFilterList: View {
     if store.link.isEmpty {
       EmptyLinkView()
         .padding(.top, 120)
-
     } else {
       LazyVStack(spacing: 0) {
         ForEach(store.link) { article in
-          ArticleRowView(article: article, store: store)
+          ArticleRowView(article: article) {
+            store.send(.listCellTapped(article))
+          } onLongPress: {
+            store.send(.listCellLongPressed(article))
+          }
         }
+        
+        Color.clear
+          .frame(height: 1)
+          .onAppear {
+            DispatchQueue.main.async {
+              store.send(.loadMore)
+            }
+          }
       }
     }
   }
