@@ -42,8 +42,26 @@ public struct LinkRepository {
     )
   }
   
-  public func fetchLinks() throws -> [ArticleItem] {
-    try context.fetchAll(ArticleItem.self)
+  public func fetchLinks(
+    predicate: Predicate<ArticleItem>? = nil,
+    sortBy: [SortDescriptor<ArticleItem>] = [SortDescriptor(\.createAt, order: .reverse)],
+    limit: Int? = nil,
+    offset: Int? = nil
+  ) throws -> [ArticleItem] {
+    var descriptor = FetchDescriptor<ArticleItem>(
+      predicate: predicate,
+      sortBy: sortBy
+    )
+    
+    if let limit = limit {
+      descriptor.fetchLimit = limit
+    }
+    
+    if let offset = offset {
+      descriptor.fetchOffset = offset
+    }
+    
+    return try context.fetch(descriptor)
   }
   
   public func searchLinks(query: String) throws -> [ArticleItem] {

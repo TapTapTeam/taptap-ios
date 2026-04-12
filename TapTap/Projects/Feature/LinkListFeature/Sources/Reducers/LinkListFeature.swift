@@ -35,7 +35,13 @@ public struct LinkListFeature {
     var initialCategoryName: String = "전체"
 
     var bottomSheetCategories: IdentifiedArrayOf<CategoryProps> = []
-
+    
+    // 페이징 상태
+    var currentPage: Int = 0
+    let pageSize: Int = 50
+    var isFetching: Bool = false
+    var hasMore: Bool = true
+    
     // 시트 상태 관리
     @Presents var editSheet: EditSheetFeature.State?
     @Presents var selectBottomSheet: SelectBottomSheetFeature.State?
@@ -194,8 +200,8 @@ private extension LinkListFeature {
         state.selectedCategory = match
         state.categoryChipList.selectedCategory = match
         state.articleList.link = (name == "전체")
-          ? state.allLinks
-          : state.allLinks.filter { $0.category?.categoryName == name }
+        ? state.allLinks
+        : state.allLinks.filter { $0.category?.categoryName == name }
       } else {
         if let all = state.categoryChipList.categories.first(where: { $0.categoryName == "전체" }) {
           state.selectedCategory = all
@@ -248,6 +254,9 @@ private extension LinkListFeature {
     case let .articleList(.delegate(.route(route))):
       return .send(.delegate(.route(route)))
 
+    case .articleList(.delegate(.loadMore)):
+      return .send(.fetchLinks)
+
     case .refresh:
       return .send(.fetchLinks)
 
@@ -264,11 +273,21 @@ private extension LinkListFeature {
 private extension LinkListFeature {
   func dataReducer(state: inout State, action: Action) -> Effect<Action> {
     switch action {
-
     case .fetchLinks:
+      guard !state.isFetching && state.hasMore else { return .none }
+      state.isFetching = true
+      
+      let limit = state.pageSize
+      let offset = state.currentPage * state.pageSize
+      
       return .run { send in
+        await Task.yield()
+        
         do {
-          let items = try swiftDataClient.link.fetchLinks()
+          let items = try swiftDataClient.link.fetchLinks(
+            limit: limit,
+            offset: offset
+          )
           await send(.fetchLinksResponse(items))
         } catch {
           await send(.fetchLinksResponseFailed(error.localizedDescription))
@@ -276,21 +295,39 @@ private extension LinkListFeature {
       }
 
     case let .fetchLinksResponse(items):
-      let sorted = items.sorted { $0.createAt > $1.createAt }
-      state.allLinks = sorted
-      state.articleList.sortOrder = .latest
+      state.isFetching = false
+
+      if items.isEmpty {
+        state.hasMore = false
+        return .none
+      }
+
+      let existingURLs = Set(state.allLinks.map { $0.urlString })
+      let newItems = items.filter { !existingURLs.contains($0.urlString) }
+      
+      if newItems.isEmpty {
+        state.hasMore = false
+        return .none
+      }
+
+      state.allLinks.append(contentsOf: newItems)
+      state.currentPage += 1
 
       let selectedName = state.selectedCategory?.categoryName ?? state.initialCategoryName
       if selectedName == "전체" {
-        state.articleList.link = sorted
+        state.articleList.link = state.allLinks
       } else {
-        state.articleList.link = sorted.filter { $0.category?.categoryName == selectedName }
+        state.articleList.link = state.allLinks.filter { $0.category?.categoryName == selectedName }
       }
+
       return .none
 
-    case let .fetchLinksResponseFailed(error):
-      print("LinkList fetch failed:", error)
-      return .none
+    case .refresh:
+      state.currentPage = 0
+      state.allLinks = []
+      state.hasMore = true
+      state.isFetching = false
+      return .send(.fetchLinks)
 
     case .fetchCategories:
       return .run { send in
@@ -312,8 +349,8 @@ private extension LinkListFeature {
       state.categoryChipList.categories = chipCategories
 
       let target = state.initialCategoryName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        ? "전체"
-        : state.initialCategoryName
+      ? "전체"
+      : state.initialCategoryName
 
       if let match = chipCategories.first(where: { $0.categoryName == target }) {
         state.selectedCategory = match

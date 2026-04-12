@@ -28,12 +28,14 @@ public struct ArticleFilterFeature {
     case listCellTapped(ArticleItem)
     case listCellLongPressed(ArticleItem)
     case sortOrderChanged(SortOrder)
+    case loadMore
     
     case delegate(Delegate)
     public enum Delegate: Equatable {
       case openLinkDetail(ArticleItem)
       case longPressed(ArticleItem)
       case route(AppRoute)
+      case loadMore
     }
   }
   
@@ -45,6 +47,9 @@ public struct ArticleFilterFeature {
         
       case let .listCellLongPressed(link):
         return .send(.delegate(.longPressed(link)))
+        
+      case .loadMore:
+        return .send(.delegate(.loadMore))
         
       case let .sortOrderChanged(order):
         state.sortOrder = order
