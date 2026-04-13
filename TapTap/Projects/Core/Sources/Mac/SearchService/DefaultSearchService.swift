@@ -7,30 +7,24 @@
 
 import Foundation
 
-import Foundation
-
 public final class DefaultSearchService: SearchServicing {
-  private let fetchArticles: () -> [ArticleItem]
-
-  public init(fetchArticles: @escaping () -> [ArticleItem]) {
-    self.fetchArticles = fetchArticles
-  }
-
-  public func search(query: String) -> [ArticleItem] {
+  public init() {}
+  
+  public func search(query: String, in articles: [ArticleItem]) -> [ArticleItem] {
     let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !trimmed.isEmpty else { return [] }
-
-    return fetchArticles().filter {
+    
+    return articles.filter {
       $0.title.localizedCaseInsensitiveContains(trimmed)
     }
   }
-
-  public func relatedKeywords(query: String) -> [String] {
+  
+  public func relatedKeywords(query: String, in articles: [ArticleItem]) -> [String] {
     let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !trimmed.isEmpty else { return [] }
-
-    let titles = fetchArticles().map(\.title)
-
+    
+    let titles = articles.map(\.title)
+    
     return Array(
       Set(
         titles.filter { $0.localizedCaseInsensitiveContains(trimmed) }

@@ -8,6 +8,6 @@
 import Foundation
 
 public protocol SearchServicing {
-  func search(query: String) -> [ArticleItem]
-  func relatedKeywords(query: String) -> [String]
+  func search(query: String, in articles: [ArticleItem]) -> [ArticleItem]
+  func relatedKeywords(query: String, in articles: [ArticleItem]) -> [String]
 }
