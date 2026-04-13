@@ -29,8 +29,6 @@ public struct LinkDetailFeature {
     var showToast: Bool = false
     
     var summary: SummaryFeature.State
-    var isLoadingOriginalArticle: Bool = false
-    var originalArticleProgress: Double = 0.0
     
     public init(article: ArticleItem) {
       self.link = article
@@ -68,8 +66,6 @@ public struct LinkDetailFeature {
     
     /// 원문보기
     case originalArticleTapped
-    case originalArticleProgressChanged(Double)
-    case originalArticleLoadingCompleted
     case refreshed(ArticleItem?)
     
     /// 토스트
@@ -210,18 +206,7 @@ public struct LinkDetailFeature {
         
         /// 원문보기
       case .originalArticleTapped:
-        state.isLoadingOriginalArticle = true
-        state.originalArticleProgress = 0.0
-        return .none
-        
-      case .originalArticleLoadingCompleted:
-        state.isLoadingOriginalArticle = false
-        state.originalArticleProgress = 0.0
         return .send(.delegate(.route(.originalArticle(state.link))))
-        
-      case let .originalArticleProgressChanged(progress):
-        state.originalArticleProgress = progress
-        return .none
         
       case .refreshed(let item):
         if let item {

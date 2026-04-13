@@ -45,15 +45,12 @@ extension OriginalArticleView {
           OriginalArticleWebView(articleItem: store.articleItem, progress: $progress)
             .ignoresSafeArea(edges: .bottom)
         } else {
-          // 웹뷰가 로드되기 전까지 공간 차지 (또는 로딩 인디케이터)
           Spacer()
         }
       }
     }
     .toolbar(.hidden)
-    .task {
-      // 화면 전환 애니메이션이 끝날 즈음에 웹뷰 로드 시작
-      try? await Task.sleep(for: .seconds(0.1))
+    .onAppear {
       isWebViewLoaded = true
     }
   }
