@@ -36,6 +36,16 @@ public final class SearchViewModel: ObservableObject {
 
   public func updateArticles(_ articles: [ArticleItem]) {
     self.articles = articles
+
+    let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+
+    guard !trimmed.isEmpty else { return }
+
+    if hasSubmittedSearch {
+      performSearch()
+    } else {
+      performRelatedSearch()
+    }
   }
 
   public func focus() {
