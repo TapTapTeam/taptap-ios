@@ -29,6 +29,7 @@ public struct SearchBar: View {
         Text("검색어를 입력해주세요")
           .font(.B1_SB)
           .foregroundStyle(.caption3)
+          .accessibilityHidden(true)
       }
 
       TextField("", text: $text)
@@ -39,6 +40,7 @@ public struct SearchBar: View {
         .onSubmit {
           onSubmit()
         }
+        .accessibilityLabel("검색어를 입력해주세요")
     }
     .padding(.vertical, 4)
     .padding(.horizontal, 10)
