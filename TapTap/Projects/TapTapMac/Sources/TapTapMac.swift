@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import SwiftData
+import SwiftUI
 import Core
 import DesignSystem
 import MacSearchFeature
