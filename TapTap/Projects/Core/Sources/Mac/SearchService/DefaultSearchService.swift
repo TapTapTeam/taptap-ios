@@ -23,13 +23,11 @@ public final class DefaultSearchService: SearchServicing {
     let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !trimmed.isEmpty else { return [] }
     
-    let titles = articles.map(\.title)
-    
     return Array(
-      Set(
-        titles.filter { $0.localizedCaseInsensitiveContains(trimmed) }
-      )
-      .prefix(10)
+      articles
+        .map(\.title)
+        .filter { $0.localizedCaseInsensitiveContains(trimmed) }
+        .prefix(10)
     )
   }
 }
