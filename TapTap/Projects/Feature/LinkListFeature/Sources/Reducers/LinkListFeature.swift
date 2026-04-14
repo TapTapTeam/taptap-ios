@@ -257,9 +257,6 @@ private extension LinkListFeature {
     case .articleList(.delegate(.loadMore)):
       return .send(.fetchLinks)
 
-    case .refresh:
-      return .send(.fetchLinks)
-
     case .delegate:
       return .none
 
