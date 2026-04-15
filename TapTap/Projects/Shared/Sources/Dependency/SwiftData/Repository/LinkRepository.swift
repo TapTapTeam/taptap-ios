@@ -63,6 +63,11 @@ public struct LinkRepository {
     
     return try context.fetch(descriptor)
   }
+
+  public func fetchLinksCount(predicate: Predicate<ArticleItem>? = nil) throws -> Int {
+    let descriptor = FetchDescriptor<ArticleItem>(predicate: predicate)
+    return try context.fetchCount(descriptor)
+  }
   
   public func searchLinks(query: String) throws -> [ArticleItem] {
     try context.fetchAll(

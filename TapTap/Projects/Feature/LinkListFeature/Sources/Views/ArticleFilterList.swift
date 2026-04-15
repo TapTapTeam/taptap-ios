@@ -40,7 +40,7 @@ extension ArticleFilterList: View {
           .font(.B1_M)
           .foregroundStyle(.caption1)
         
-        Text("\(store.link.count)")
+        Text("\(store.totalCount)")
           .font(.B1_SB)
           .foregroundStyle(.caption1)
         

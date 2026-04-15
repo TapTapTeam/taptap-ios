@@ -95,6 +95,9 @@ public struct LinkListFeature {
     case fetchLinksResponse([ArticleItem])
     case fetchLinksResponseFailed(String)
 
+    case fetchTotalCount
+    case fetchTotalCountResponse(Int)
+
     case fetchCategories
     case responseCategoryItems([CategoryItem])
 
@@ -133,6 +136,7 @@ private extension LinkListFeature {
       return .run { send in
         await send(.fetchCategories)
         await send(.fetchLinks)
+        await send(.fetchTotalCount)
       }
 
     case .backButtonTapped:
@@ -176,7 +180,7 @@ private extension LinkListFeature {
           $0.category?.categoryName == category.categoryName
         }
       }
-      return .none
+      return .send(.fetchTotalCount)
 
     case .editSheet(.presented(.delegate(.dismissSheet))):
       state.editSheet = nil
@@ -213,7 +217,7 @@ private extension LinkListFeature {
         }
         state.articleList.link = state.allLinks
       }
-      return .none
+      return .send(.fetchTotalCount)
 
     case .editSheet(.presented(.delegate(.deleteLink))):
       state.editSheet = nil
@@ -278,7 +282,6 @@ private extension LinkListFeature {
       let offset = state.currentPage * state.pageSize
       
       return .run { send in
-        await Task.yield()
         
         do {
           let items = try swiftDataClient.link.fetchLinks(
@@ -324,7 +327,32 @@ private extension LinkListFeature {
       state.allLinks = []
       state.hasMore = true
       state.isFetching = false
-      return .send(.fetchLinks)
+      return .run { send in
+        await send(.fetchLinks)
+        await send(.fetchTotalCount)
+      }
+
+    case .fetchTotalCount:
+      let categoryName = state.selectedCategory?.categoryName ?? state.initialCategoryName
+      return .run { send in
+        do {
+          let count: Int
+          if categoryName == "전체" {
+            count = try swiftDataClient.link.fetchLinksCount(predicate: nil)
+          } else {
+            count = try swiftDataClient.link.fetchLinksCount(
+              predicate: #Predicate<ArticleItem> { $0.category?.categoryName == categoryName }
+            )
+          }
+          await send(.fetchTotalCountResponse(count))
+        } catch {
+          print(error)
+        }
+      }
+
+    case let .fetchTotalCountResponse(count):
+      state.articleList.totalCount = count
+      return .none
 
     case .fetchCategories:
       return .run { send in

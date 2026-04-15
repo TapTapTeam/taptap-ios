@@ -15,6 +15,7 @@ public struct ArticleFilterFeature {
   @ObservableState
   public struct State: Equatable {
     var link: [ArticleItem] = []
+    var totalCount: Int = 0
     var sortOrder: SortOrder = .latest
     var selectedLink: ArticleItem? = nil
   }
