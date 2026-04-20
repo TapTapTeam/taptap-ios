@@ -294,7 +294,10 @@ private extension LinkListFeature {
           await send(.fetchLinksResponseFailed(error.localizedDescription))
         }
       }
-
+      
+    case .fetchLinksResponseFailed:
+      state.isFetching = false
+      return .send(.showAlert(title: "링크를 불러오지 못했어요", tint: .danger))
     case let .fetchLinksResponse(items):
       state.isFetching = false
 
