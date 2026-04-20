@@ -315,10 +315,13 @@ private extension LinkListFeature {
       state.currentPage += 1
 
       let selectedName = state.selectedCategory?.categoryName ?? state.initialCategoryName
-      if selectedName == "전체" {
-        state.articleList.link = state.allLinks
-      } else {
-        state.articleList.link = state.allLinks.filter { $0.category?.categoryName == selectedName }
+      
+      let filteredLinks = selectedName == "전체" ? state.allLinks : state.allLinks.filter { $0.category?.categoryName == selectedName }
+      switch state.articleList.sortOrder {
+      case .latest:
+        state.articleList.link = filteredLinks.sorted { $0.createAt > $1.createAt }
+      case .oldest:
+        state.articleList.link = filteredLinks.sorted { $0.createAt < $1.createAt }
       }
 
       return .none
