@@ -133,6 +133,7 @@ private extension LinkListFeature {
     switch action {
 
     case .onAppear:
+      guard state.currentPage == 0 else { return .none }
       return .run { send in
         await send(.fetchCategories)
         await send(.fetchLinks)
@@ -355,6 +356,7 @@ private extension LinkListFeature {
       return .none
 
     case .fetchCategories:
+      guard state.bottomSheetCategories.isEmpty else { return .none }
       return .run { send in
         let items = try swiftDataClient.category.fetchCategories()
         await send(.responseCategoryItems(items))
