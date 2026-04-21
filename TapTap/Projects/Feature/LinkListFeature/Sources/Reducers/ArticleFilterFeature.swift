@@ -54,13 +54,6 @@ public struct ArticleFilterFeature {
         
       case let .sortOrderChanged(order):
         state.sortOrder = order
-        
-        switch order {
-        case .latest:
-          state.link.sort { $0.createAt > $1.createAt }
-        case .oldest:
-          state.link.sort { $0.createAt < $1.createAt }
-        }
         return .none
         
       case .delegate:

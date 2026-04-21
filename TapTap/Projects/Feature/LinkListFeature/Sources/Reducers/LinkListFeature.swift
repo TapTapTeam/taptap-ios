@@ -174,14 +174,7 @@ private extension LinkListFeature {
       state.categoryChipList.selectedCategory = category
       state.selectBottomSheet?.selectedCategory = category.categoryName
 
-      if category.categoryName == "전체" {
-        state.articleList.link = state.allLinks
-      } else {
-        state.articleList.link = state.allLinks.filter {
-          $0.category?.categoryName == category.categoryName
-        }
-      }
-      return .send(.fetchTotalCount)
+      return .send(.refresh)
 
     case .editSheet(.presented(.delegate(.dismissSheet))):
       state.editSheet = nil
@@ -205,9 +198,6 @@ private extension LinkListFeature {
       if let match = state.categoryChipList.categories.first(where: { $0.categoryName == name }) {
         state.selectedCategory = match
         state.categoryChipList.selectedCategory = match
-        state.articleList.link = (name == "전체")
-        ? state.allLinks
-        : state.allLinks.filter { $0.category?.categoryName == name }
       } else {
         if let all = state.categoryChipList.categories.first(where: { $0.categoryName == "전체" }) {
           state.selectedCategory = all
@@ -217,9 +207,8 @@ private extension LinkListFeature {
           state.selectedCategory = all
           state.categoryChipList.selectedCategory = all
         }
-        state.articleList.link = state.allLinks
       }
-      return .send(.fetchTotalCount)
+      return .send(.refresh)
 
     case .editSheet(.presented(.delegate(.deleteLink))):
       state.editSheet = nil
@@ -261,6 +250,9 @@ private extension LinkListFeature {
     case let .articleList(.delegate(.route(route))):
       return .send(.delegate(.route(route)))
 
+    case .articleList(.sortOrderChanged):
+      return .send(.refresh)
+
     case .articleList(.delegate(.loadMore)):
       return .send(.fetchLinks)
 
@@ -284,10 +276,25 @@ private extension LinkListFeature {
       let limit = state.pageSize
       let offset = state.currentPage * state.pageSize
       
+      let categoryName = state.selectedCategory?.categoryName ?? state.initialCategoryName
+      let sortOrder = state.articleList.sortOrder
+      
       return .run { send in
-        
         do {
+          let predicate: Foundation.Predicate<ArticleItem>?
+          if categoryName == "전체" {
+            predicate = nil
+          } else {
+            predicate = #Predicate<ArticleItem> { $0.category?.categoryName == categoryName }
+          }
+          
+          let sortDescs: [SortDescriptor<ArticleItem>] = sortOrder == .latest 
+            ? [SortDescriptor(\.createAt, order: .reverse)]
+            : [SortDescriptor(\.createAt, order: .forward)]
+            
           let items = try swiftDataClient.link.fetchLinks(
+            predicate: predicate,
+            sortBy: sortDescs,
             limit: limit,
             offset: offset
           )
@@ -305,6 +312,7 @@ private extension LinkListFeature {
 
       if items.isEmpty {
         state.hasMore = false
+        state.articleList.link = state.allLinks
         return .none
       }
 
@@ -313,27 +321,21 @@ private extension LinkListFeature {
       
       if newItems.isEmpty {
         state.hasMore = false
+        state.articleList.link = state.allLinks
         return .none
       }
 
       state.allLinks.append(contentsOf: newItems)
       state.currentPage += 1
 
-      let selectedName = state.selectedCategory?.categoryName ?? state.initialCategoryName
-      
-      let filteredLinks = selectedName == "전체" ? state.allLinks : state.allLinks.filter { $0.category?.categoryName == selectedName }
-      switch state.articleList.sortOrder {
-      case .latest:
-        state.articleList.link = filteredLinks.sorted { $0.createAt > $1.createAt }
-      case .oldest:
-        state.articleList.link = filteredLinks.sorted { $0.createAt < $1.createAt }
-      }
+      state.articleList.link = state.allLinks
 
       return .none
 
     case .refresh:
       state.currentPage = 0
       state.allLinks = []
+      state.articleList.link = []
       state.hasMore = true
       state.isFetching = false
       return .run { send in
