@@ -63,6 +63,7 @@ extension MoveLinkView {
       }
     }
     .toolbar(.hidden)
+    .task { store.send(.onAppear) }
   }
   
   /// 링크 이동하기 네비게이션바

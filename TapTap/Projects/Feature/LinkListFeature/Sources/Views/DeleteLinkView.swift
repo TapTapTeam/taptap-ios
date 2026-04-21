@@ -70,6 +70,7 @@ extension DeleteLinkView {
       .animation(.easeInOut(duration: 0.25), value: showAlertDialog)
     }
     .toolbar(.hidden)
+    .task { store.send(.onAppear) }
   }
   
   /// 링크 삭제하기 네비게이션바

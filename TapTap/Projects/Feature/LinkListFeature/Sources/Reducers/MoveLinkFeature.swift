@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 import ComposableArchitecture
 
@@ -44,6 +45,7 @@ public struct MoveLinkFeature {
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case onAppear
+    case fetchLinksResponse([ArticleItem])
     case toggleSelect(ArticleItem)
     case backButtonTapped
     case confirmMoveTapped
@@ -66,6 +68,29 @@ public struct MoveLinkFeature {
       action in
       switch action {
       case .onAppear:
+        return .run { [categoryName = state.categoryName] send in
+          do {
+            let predicate: Foundation.Predicate<ArticleItem>?
+            if categoryName == "전체" {
+              predicate = nil
+            } else {
+              predicate = #Predicate<ArticleItem> { $0.category?.categoryName == categoryName }
+            }
+            let items = try swiftDataClient.link.fetchLinks(
+              predicate: predicate,
+              sortBy: [SortDescriptor(\.createAt, order: .reverse)]
+            )
+            await send(.fetchLinksResponse(items))
+          } catch {
+            print("Failed to fetch all links: \(error)")
+          }
+        }
+        
+      case let .fetchLinksResponse(items):
+        state.allLinks = items
+        if state.isSelectAll {
+          state.selectedLinks = Set(items.map(\.id))
+        }
         return .none
         
         /// 전체 선택 or 해제
@@ -123,12 +148,12 @@ public struct MoveLinkFeature {
         
         /// 시트에서 "선택하기"
       case .selectBottomSheet(.presented(.delegate(.categorySelected(let name)))):
-        guard let name,
-              let target = state.categories.first(where: { $0.categoryName == name })
-        else {
+        guard let name else {
           state.selectBottomSheet = nil
           return .none
         }
+        
+        let target = state.categories.first(where: { $0.categoryName == name })
         
         state.targetCategory = target
         let selected = state.allLinks.filter { state.selectedLinks.contains($0.id) }
