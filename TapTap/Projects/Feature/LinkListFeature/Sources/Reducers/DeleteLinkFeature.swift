@@ -21,22 +21,26 @@ public struct DeleteLinkFeature {
   public struct State: Equatable {
     var allLinks: [ArticleItem] = []
     var categoryName: String = "전체"
+    var totalCount: Int = 0
     var selectedLinks: Set<String> = []
     var isSelectAll: Bool = false
     var hideSelectControls: Bool = false
     
     public init(
       allLinks: [ArticleItem],
-      categoryName: String
+      categoryName: String,
+      totalCount: Int
     ) {
       self.allLinks = allLinks
       self.categoryName = categoryName
+      self.totalCount = totalCount
     }
   }
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case onAppear
+    case fetchLinksResponse([ArticleItem])
     case toggleSelect(ArticleItem)
     case backButtonTapped
     case confirmDeleteTapped
@@ -54,8 +58,28 @@ public struct DeleteLinkFeature {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        if state.hideSelectControls {
-          state.selectedLinks = Set(state.allLinks.map(\.id))
+        return .run { [categoryName = state.categoryName] send in
+          do {
+            let predicate: Foundation.Predicate<ArticleItem>?
+            if categoryName == "전체" {
+              predicate = nil
+            } else {
+              predicate = #Predicate<ArticleItem> { $0.category?.categoryName == categoryName }
+            }
+            let items = try swiftDataClient.link.fetchLinks(
+              predicate: predicate,
+              sortBy: [SortDescriptor(\.createAt, order: .reverse)]
+            )
+            await send(.fetchLinksResponse(items))
+          } catch {
+             print("fetch failed: \(error)")
+          }
+        }
+        
+      case let .fetchLinksResponse(items):
+        state.allLinks = items
+        if state.hideSelectControls || state.isSelectAll {
+          state.selectedLinks = Set(items.map(\.id))
           state.isSelectAll = true
         }
         return .none

@@ -40,7 +40,7 @@ extension ArticleFilterList: View {
           .font(.B1_M)
           .foregroundStyle(.caption1)
         
-        Text("\(store.link.count)")
+        Text("\(store.totalCount)")
           .font(.B1_SB)
           .foregroundStyle(.caption1)
         
@@ -92,10 +92,23 @@ extension ArticleFilterList: View {
     if store.link.isEmpty {
       EmptyLinkView()
         .padding(.top, 120)
-
     } else {
-      ForEach(store.link) { article in
-        ArticleRowView(article: article, store: store)
+      LazyVStack(spacing: 0) {
+        ForEach(store.link) { article in
+          ArticleRowView(article: article) {
+            store.send(.listCellTapped(article))
+          } onLongPress: {
+            store.send(.listCellLongPressed(article))
+          }
+        }
+        
+        Color.clear
+          .frame(height: 1)
+          .onAppear {
+            DispatchQueue.main.async {
+              store.send(.loadMore)
+            }
+          }
       }
     }
   }

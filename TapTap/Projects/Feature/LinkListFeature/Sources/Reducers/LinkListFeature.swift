@@ -35,7 +35,13 @@ public struct LinkListFeature {
     var initialCategoryName: String = "전체"
 
     var bottomSheetCategories: IdentifiedArrayOf<CategoryProps> = []
-
+    
+    // 페이징 상태
+    var currentPage: Int = 0
+    let pageSize: Int = 50
+    var isFetching: Bool = false
+    var hasMore: Bool = true
+    
     // 시트 상태 관리
     @Presents var editSheet: EditSheetFeature.State?
     @Presents var selectBottomSheet: SelectBottomSheetFeature.State?
@@ -89,6 +95,9 @@ public struct LinkListFeature {
     case fetchLinksResponse([ArticleItem])
     case fetchLinksResponseFailed(String)
 
+    case fetchTotalCount
+    case fetchTotalCountResponse(Int)
+
     case fetchCategories
     case responseCategoryItems([CategoryItem])
 
@@ -124,9 +133,11 @@ private extension LinkListFeature {
     switch action {
 
     case .onAppear:
+      guard state.currentPage == 0 else { return .none }
       return .run { send in
         await send(.fetchCategories)
         await send(.fetchLinks)
+        await send(.fetchTotalCount)
       }
 
     case .backButtonTapped:
@@ -163,14 +174,7 @@ private extension LinkListFeature {
       state.categoryChipList.selectedCategory = category
       state.selectBottomSheet?.selectedCategory = category.categoryName
 
-      if category.categoryName == "전체" {
-        state.articleList.link = state.allLinks
-      } else {
-        state.articleList.link = state.allLinks.filter {
-          $0.category?.categoryName == category.categoryName
-        }
-      }
-      return .none
+      return .send(.refresh)
 
     case .editSheet(.presented(.delegate(.dismissSheet))):
       state.editSheet = nil
@@ -183,7 +187,8 @@ private extension LinkListFeature {
       }
       return .send(.delegate(.route(.moveLink(
         allLinks: state.articleList.link,
-        categoryName: state.selectedCategory?.categoryName ?? "전체"
+        categoryName: state.selectedCategory?.categoryName ?? "전체",
+        totalCount: state.articleList.totalCount
       ))))
 
     case let .moveToCategoryName(name):
@@ -193,9 +198,6 @@ private extension LinkListFeature {
       if let match = state.categoryChipList.categories.first(where: { $0.categoryName == name }) {
         state.selectedCategory = match
         state.categoryChipList.selectedCategory = match
-        state.articleList.link = (name == "전체")
-          ? state.allLinks
-          : state.allLinks.filter { $0.category?.categoryName == name }
       } else {
         if let all = state.categoryChipList.categories.first(where: { $0.categoryName == "전체" }) {
           state.selectedCategory = all
@@ -205,9 +207,8 @@ private extension LinkListFeature {
           state.selectedCategory = all
           state.categoryChipList.selectedCategory = all
         }
-        state.articleList.link = state.allLinks
       }
-      return .none
+      return .send(.refresh)
 
     case .editSheet(.presented(.delegate(.deleteLink))):
       state.editSheet = nil
@@ -216,7 +217,8 @@ private extension LinkListFeature {
       }
       return .send(.delegate(.route(.deleteLink(
         allLinks: state.articleList.link,
-        categoryName: state.selectedCategory?.categoryName ?? "전체"
+        categoryName: state.selectedCategory?.categoryName ?? "전체",
+        totalCount: state.articleList.totalCount
       ))))
 
     case let .showAlert(title, tint):
@@ -248,7 +250,10 @@ private extension LinkListFeature {
     case let .articleList(.delegate(.route(route))):
       return .send(.delegate(.route(route)))
 
-    case .refresh:
+    case .articleList(.sortOrderChanged):
+      return .send(.refresh)
+
+    case .articleList(.delegate(.loadMore)):
       return .send(.fetchLinks)
 
     case .delegate:
@@ -264,35 +269,104 @@ private extension LinkListFeature {
 private extension LinkListFeature {
   func dataReducer(state: inout State, action: Action) -> Effect<Action> {
     switch action {
-
     case .fetchLinks:
+      guard !state.isFetching && state.hasMore else { return .none }
+      state.isFetching = true
+      
+      let limit = state.pageSize
+      let offset = state.currentPage * state.pageSize
+      
+      let categoryName = state.selectedCategory?.categoryName ?? state.initialCategoryName
+      let sortOrder = state.articleList.sortOrder
+      
       return .run { send in
         do {
-          let items = try swiftDataClient.link.fetchLinks()
+          let predicate: Foundation.Predicate<ArticleItem>?
+          if categoryName == "전체" {
+            predicate = nil
+          } else {
+            predicate = #Predicate<ArticleItem> { $0.category?.categoryName == categoryName }
+          }
+          
+          let sortDescs: [SortDescriptor<ArticleItem>] = sortOrder == .latest 
+            ? [SortDescriptor(\.createAt, order: .reverse)]
+            : [SortDescriptor(\.createAt, order: .forward)]
+            
+          let items = try swiftDataClient.link.fetchLinks(
+            predicate: predicate,
+            sortBy: sortDescs,
+            limit: limit,
+            offset: offset
+          )
           await send(.fetchLinksResponse(items))
         } catch {
           await send(.fetchLinksResponseFailed(error.localizedDescription))
         }
       }
-
+      
+    case .fetchLinksResponseFailed:
+      state.isFetching = false
+      return .send(.showAlert(title: "링크를 불러오지 못했어요", tint: .danger))
     case let .fetchLinksResponse(items):
-      let sorted = items.sorted { $0.createAt > $1.createAt }
-      state.allLinks = sorted
-      state.articleList.sortOrder = .latest
+      state.isFetching = false
 
-      let selectedName = state.selectedCategory?.categoryName ?? state.initialCategoryName
-      if selectedName == "전체" {
-        state.articleList.link = sorted
-      } else {
-        state.articleList.link = sorted.filter { $0.category?.categoryName == selectedName }
+      if items.isEmpty {
+        state.hasMore = false
+        state.articleList.link = state.allLinks
+        return .none
       }
+
+      let existingURLs = Set(state.allLinks.map { $0.urlString })
+      let newItems = items.filter { !existingURLs.contains($0.urlString) }
+      
+      if newItems.isEmpty {
+        state.hasMore = false
+        state.articleList.link = state.allLinks
+        return .none
+      }
+
+      state.allLinks.append(contentsOf: newItems)
+      state.currentPage += 1
+
+      state.articleList.link = state.allLinks
+
       return .none
 
-    case let .fetchLinksResponseFailed(error):
-      print("LinkList fetch failed:", error)
+    case .refresh:
+      state.currentPage = 0
+      state.allLinks = []
+      state.articleList.link = []
+      state.hasMore = true
+      state.isFetching = false
+      return .run { send in
+        await send(.fetchLinks)
+        await send(.fetchTotalCount)
+      }
+
+    case .fetchTotalCount:
+      let categoryName = state.selectedCategory?.categoryName ?? state.initialCategoryName
+      return .run { send in
+        do {
+          let count: Int
+          if categoryName == "전체" {
+            count = try swiftDataClient.link.fetchLinksCount(predicate: nil)
+          } else {
+            count = try swiftDataClient.link.fetchLinksCount(
+              predicate: #Predicate<ArticleItem> { $0.category?.categoryName == categoryName }
+            )
+          }
+          await send(.fetchTotalCountResponse(count))
+        } catch {
+          print(error)
+        }
+      }
+
+    case let .fetchTotalCountResponse(count):
+      state.articleList.totalCount = count
       return .none
 
     case .fetchCategories:
+      guard state.bottomSheetCategories.isEmpty else { return .none }
       return .run { send in
         let items = try swiftDataClient.category.fetchCategories()
         await send(.responseCategoryItems(items))
@@ -312,8 +386,8 @@ private extension LinkListFeature {
       state.categoryChipList.categories = chipCategories
 
       let target = state.initialCategoryName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        ? "전체"
-        : state.initialCategoryName
+      ? "전체"
+      : state.initialCategoryName
 
       if let match = chipCategories.first(where: { $0.categoryName == target }) {
         state.selectedCategory = match

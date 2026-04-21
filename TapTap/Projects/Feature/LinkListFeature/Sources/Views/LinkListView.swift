@@ -69,7 +69,7 @@ extension LinkListView: View {
           if let name = info["categoryName"] as? String {
             store.send(.moveToCategoryName(name))
           }
-          store.send(.fetchLinks)
+          store.send(.refresh)
         }
       }
       .toolbar(.hidden)
@@ -82,7 +82,7 @@ extension LinkListView: View {
           let count = (notification.object as? [String: Int])?["deletedCount"] ?? 0
           let message = count == 1 ? "링크를 삭제했어요" : "\(count)개의 링크를 삭제했어요"
           store.send(.showAlert(title: message, tint: .danger))
-          store.send(.fetchLinks)
+          store.send(.refresh)
         }
       }
       .onDisappear {
@@ -149,9 +149,7 @@ extension LinkListView: View {
   /// 카테고리 칩버튼 스크롤 + 기사 필터 스크롤
   private var scrollViewContents: some View {
     ScrollView(.vertical, showsIndicators: false) {
-      //      LazyVStack(spacing: .zero, pinnedViews: [.sectionHeaders]) {
-      //        Section {
-      VStack(spacing: 4) {
+      LazyVStack(spacing: 4) {
         Color.clear
           .frame(height: 0)
           .id("top")
@@ -171,10 +169,6 @@ extension LinkListView: View {
             )
         }
         .frame(height: 0)
-        
-        //        } header: {
-        //          gradientBar
-        //        }
       }
     }
     .coordinateSpace(name: "scroll")

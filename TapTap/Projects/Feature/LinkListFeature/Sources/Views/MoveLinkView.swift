@@ -63,6 +63,7 @@ extension MoveLinkView {
       }
     }
     .toolbar(.hidden)
+    .task { store.send(.onAppear) }
   }
   
   /// 링크 이동하기 네비게이션바
@@ -98,7 +99,7 @@ extension MoveLinkView {
   /// 링크 개수 + 선택
   private var linkSelectView: some View {
     HStack(spacing: 10) {
-      Text("\(store.categoryName) (\(store.allLinks.count)개)")
+      Text("\(store.categoryName) (\(store.totalCount)개)")
         .font(.B2_M)
         .foregroundStyle(.caption3)
       
