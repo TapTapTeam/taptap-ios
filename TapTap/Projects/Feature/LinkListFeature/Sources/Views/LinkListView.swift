@@ -69,7 +69,7 @@ extension LinkListView: View {
           if let name = info["categoryName"] as? String {
             store.send(.moveToCategoryName(name))
           }
-          store.send(.fetchLinks)
+          store.send(.refresh)
         }
       }
       .toolbar(.hidden)
@@ -82,7 +82,7 @@ extension LinkListView: View {
           let count = (notification.object as? [String: Int])?["deletedCount"] ?? 0
           let message = count == 1 ? "링크를 삭제했어요" : "\(count)개의 링크를 삭제했어요"
           store.send(.showAlert(title: message, tint: .danger))
-          store.send(.fetchLinks)
+          store.send(.refresh)
         }
       }
       .onDisappear {
