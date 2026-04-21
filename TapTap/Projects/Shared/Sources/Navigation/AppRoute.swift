@@ -41,8 +41,8 @@ public enum AppRoute: Equatable {
   
   // LinkListFeature
   case linkList(initCategory: String)
-  case moveLink(allLinks: [ArticleItem], categoryName: String)
-  case deleteLink(allLinks: [ArticleItem], categoryName: String)
+  case moveLink(allLinks: [ArticleItem], categoryName: String, totalCount: Int)
+  case deleteLink(allLinks: [ArticleItem], categoryName: String, totalCount: Int)
   
   // MyCategoryFeature
   case addCategory

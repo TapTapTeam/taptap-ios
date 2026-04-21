@@ -98,7 +98,7 @@ extension MoveLinkView {
   /// 링크 개수 + 선택
   private var linkSelectView: some View {
     HStack(spacing: 10) {
-      Text("\(store.categoryName) (\(store.allLinks.count)개)")
+      Text("\(store.categoryName) (\(store.totalCount)개)")
         .font(.B2_M)
         .foregroundStyle(.caption3)
       

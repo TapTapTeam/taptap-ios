@@ -21,16 +21,19 @@ public struct DeleteLinkFeature {
   public struct State: Equatable {
     var allLinks: [ArticleItem] = []
     var categoryName: String = "전체"
+    var totalCount: Int = 0
     var selectedLinks: Set<String> = []
     var isSelectAll: Bool = false
     var hideSelectControls: Bool = false
     
     public init(
       allLinks: [ArticleItem],
-      categoryName: String
+      categoryName: String,
+      totalCount: Int
     ) {
       self.allLinks = allLinks
       self.categoryName = categoryName
+      self.totalCount = totalCount
     }
   }
   

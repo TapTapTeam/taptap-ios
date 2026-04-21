@@ -194,7 +194,8 @@ private extension LinkListFeature {
       }
       return .send(.delegate(.route(.moveLink(
         allLinks: state.articleList.link,
-        categoryName: state.selectedCategory?.categoryName ?? "전체"
+        categoryName: state.selectedCategory?.categoryName ?? "전체",
+        totalCount: state.articleList.totalCount
       ))))
 
     case let .moveToCategoryName(name):
@@ -227,7 +228,8 @@ private extension LinkListFeature {
       }
       return .send(.delegate(.route(.deleteLink(
         allLinks: state.articleList.link,
-        categoryName: state.selectedCategory?.categoryName ?? "전체"
+        categoryName: state.selectedCategory?.categoryName ?? "전체",
+        totalCount: state.articleList.totalCount
       ))))
 
     case let .showAlert(title, tint):

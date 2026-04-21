@@ -29,12 +29,12 @@ struct LinkListCoordinator: Reducer {
           state.path.append(.linkDetail(.init(article: articleItem)))
           return .none
           
-        case let .moveLink(allLinks, categoryName):
-          state.path.append(.movieLink(.init(allLinks: allLinks, categoryName: categoryName)))
+        case let .moveLink(allLinks, categoryName, totalCount):
+          state.path.append(.movieLink(.init(allLinks: allLinks, categoryName: categoryName, totalCount: totalCount)))
           return .none
           
-        case let .deleteLink(allLinks, categoryName):
-            state.path.append(.deleteLink(.init(allLinks: allLinks, categoryName: categoryName)))
+        case let .deleteLink(allLinks, categoryName, totalCount):
+            state.path.append(.deleteLink(.init(allLinks: allLinks, categoryName: categoryName, totalCount: totalCount)))
             return .none
           
         default:
