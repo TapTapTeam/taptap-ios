@@ -9,6 +9,20 @@
 
 import SwiftUI
 
+// MARK: - Button Style
+struct CardButtonStyle: ButtonStyle {
+  let onPressedChange: (Bool) -> Void
+
+  func makeBody(configuration: Configuration) -> some View {
+    configuration.label
+      .scaleEffect(configuration.isPressed ? 0.995 : 1.0)
+      .animation(.easeInOut(duration: 0.16), value: configuration.isPressed)
+      .onChange(of: configuration.isPressed) { _, pressed in
+        onPressedChange(pressed)
+      }
+  }
+}
+
 // MARK: - Visual State
 extension MacArticleCard {
   enum VisualState {

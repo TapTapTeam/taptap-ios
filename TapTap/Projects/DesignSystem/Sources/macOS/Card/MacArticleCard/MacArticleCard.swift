@@ -29,7 +29,7 @@ public struct MacArticleCard: View {
   @State var isHovered: Bool = false
   @State var isEditButtonHovered: Bool = false
   @State var showEditMenu: Bool = false
-  @GestureState var isPressed: Bool = false
+  @State var isPressed: Bool = false
 
   // MARK: - Init
   public init(
@@ -58,45 +58,38 @@ public struct MacArticleCard: View {
 // MARK: - View
 extension MacArticleCard {
   public var body: some View {
-    HStack(spacing: 0) {
-      textContents
-
-      Spacer(minLength: 12)
-
-      rightContents
-    }
-    .frame(maxWidth: .infinity)
-    .frame(height: 110)
-    .background(backgroundLayer)
-    .overlay(borderLayer)
-    .overlay(alignment: .leading) {
+    Button {
       if isEditing {
-        selectionIndicator
-          .offset(x: -33)
-          .transition(.opacity.combined(with: .scale(scale: 0.8)))
+        isSelected.toggle()
+      } else {
+        onCardTap?()
       }
-    }
-    .compositingGroup()
-    .shadow(color: shadowColor, radius: shadowRadius, x: 0, y: 0)
-    .scaleEffect(effectivePressed ? 0.995 : 1.0)
-    .contentShape(RoundedRectangle(cornerRadius: 12))
-    .onHover { hovered in
-      isHovered = hovered
-    }
-    .simultaneousGesture(
-      DragGesture(minimumDistance: 0)
-        .updating($isPressed) { _, state, _ in
-          state = true
+    } label: {
+      HStack(spacing: 0) {
+        textContents
+
+        Spacer(minLength: 12)
+
+        rightContents
+      }
+      .frame(maxWidth: .infinity)
+      .frame(height: 110)
+      .background(backgroundLayer)
+      .overlay(borderLayer)
+      .overlay(alignment: .leading) {
+        if isEditing {
+          selectionIndicator
+            .offset(x: -33)
+            .transition(.opacity.combined(with: .scale(scale: 0.8)))
         }
-        .onEnded { _ in
-          if isEditing {
-            isSelected.toggle()
-          } else {
-            onCardTap?()
-          }
-        }
-    )
-    .animation(.easeInOut(duration: 0.16), value: visualState)
+      }
+      .compositingGroup()
+      .shadow(color: shadowColor, radius: shadowRadius, x: 0, y: 0)
+      .contentShape(RoundedRectangle(cornerRadius: 12))
+      .onHover { isHovered = $0 }
+      .animation(.easeInOut(duration: 0.16), value: visualState)
+    }
+    .buttonStyle(CardButtonStyle { isPressed = $0 })
   }
 }
 
