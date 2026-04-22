@@ -92,7 +92,8 @@ public struct LinkRepository {
   }
   
   // MARK: - Update
-  public func updateLinkLastViewed(_ link: ArticleItem) throws {
+  public func updateLinkLastViewed(_ id: String) throws {
+    guard let link = try fetchLink(id: id) else { return }
     link.lastViewedDate = Date()
     try context.save()
   }
