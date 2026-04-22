@@ -29,7 +29,7 @@ let project = Project.project(
           "UIInterfaceOrientationPortrait"
         ]
       ]),
-      sources: ["Example/**"],
+      sources: .sources,
       dependencies: [
         .target(name: FeatureModule.HomeFeature.rawValue)
       ]
