@@ -76,9 +76,7 @@ extension SearchResultView {
             Color.clear
               .frame(height: 1)
               .onAppear {
-                DispatchQueue.main.async {
-                  store.send(.loadMore)
-                }
+                store.send(.loadMore)
               }
           }
         }
