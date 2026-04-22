@@ -22,7 +22,7 @@ extension SearchResultView {
   var body: some View {
     VStack(alignment: .leading) {
       HStack(alignment: .center) {
-        Text("'\(store.query.truncatedString(count: 7))' 관련 결과 \(store.filteredSearchResult.count)개")
+        Text("'\(store.query.truncatedString(count: 7))' 관련 결과 \(store.totalCount)개")
           .font(.B2_M)
           .foregroundStyle(.caption2)
           .lineLimit(1)
@@ -57,22 +57,28 @@ extension SearchResultView {
       .padding(.top, 8)
       
       if !store.searchResult.isEmpty {
-        ScrollView(.vertical, showsIndicators: false) {
-          LazyVStack(spacing: 10) {
-            ForEach(store.filteredSearchResult) { result in
-              Button {
-                store.send(.linkCardTapped(result))
-              } label: {
-                ArticleCard(
-                  title: result.title,
-                  categoryName: result.category?.categoryName ?? "전체",
-                  imageURL: result.imageURL ?? "notImage",
-                  dateString: result.createAt.formattedKoreanDate()
-                )
-              }
-              .buttonStyle(.plain)
+        LazyVStack(spacing: 10) {
+          ForEach(store.filteredSearchResult, id: \.id) { result in
+            Button {
+              store.send(.linkCardTapped(result))
+            } label: {
+              ArticleCard(
+                title: result.title,
+                categoryName: result.category?.categoryName ?? "전체",
+                imageURL: result.imageURL ?? "notImage",
+                dateString: result.createAt.formattedKoreanDate()
+              )
             }
+            .buttonStyle(.plain)
           }
+          
+          Color.clear
+            .frame(height: 1)
+            .onAppear {
+              DispatchQueue.main.async {
+                store.send(.loadMore)
+              }
+            }
         }
       } else {
         EmptySearchView(type: .emptyResult(searchTerm: store.query))

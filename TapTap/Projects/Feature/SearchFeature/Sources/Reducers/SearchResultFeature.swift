@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftData
 
 import ComposableArchitecture
 
@@ -24,12 +25,19 @@ public struct SearchResultFeature {
     var filteredCategories: [CategoryItem] = []
     var originalSearchResults: [ArticleItem] = []
     
+    var currentPage: Int = 0
+    let pageSize: Int = 50
+    var isFetching: Bool = false
+    var hasMore: Bool = true
+    var totalCount: Int = 0
+    
     @Presents var selectBottomSheet: SelectBottomSheetFeature.State?
   }
   
   public enum Action: Equatable {
     case loadSearchResult(String)
-    case searchResponse([ArticleItem])
+    case loadMore
+    case searchResponse(response: [ArticleItem], totalCount: Int?)
     case linkCardTapped(ArticleItem)
     case categoryButtonTapped
     
@@ -49,15 +57,59 @@ public struct SearchResultFeature {
       switch action {
       case .loadSearchResult(let query):
         state.query = query
-        return .run { send in
-          let response = try swiftDataClient.link.searchLinks(query: query)
-          await send(.searchResponse(response))
+        state.currentPage = 0
+        state.hasMore = true
+        state.searchResult = []
+        state.filteredSearchResult = []
+        state.totalCount = 0
+        state.isFetching = true
+        
+        return .run { [pageSize = state.pageSize] send in
+          do {
+            let response = try swiftDataClient.link.searchLinks(query: query, limit: pageSize, offset: 0)
+            let descriptor = FetchDescriptor<TapTapSchemaV2.ArticleItem>(predicate: #Predicate { $0.title.localizedStandardContains(query) })
+            let totalCount = try swiftDataClient.link.fetchLinksCount(predicate: descriptor.predicate)
+            await send(.searchResponse(response: response, totalCount: totalCount))
+          } catch {
+            await send(.searchResponse(response: [], totalCount: 0))
+          }
         }
         
-      case .searchResponse(let item):
-        state.searchResult = item
-        state.filteredSearchResult = item
-        state.selectedCategoryTitle = "카테고리"
+      case .loadMore:
+        guard !state.isFetching, state.hasMore else { return .none }
+        state.isFetching = true
+        state.currentPage += 1
+        
+        return .run { [query = state.query, page = state.currentPage, pageSize = state.pageSize] send in
+          do {
+            let response = try swiftDataClient.link.searchLinks(query: query, limit: pageSize, offset: page * pageSize)
+            await send(.searchResponse(response: response, totalCount: nil))
+          } catch {
+            await send(.searchResponse(response: [], totalCount: nil))
+          }
+        }
+        
+      case let .searchResponse(item, totalCount):
+        state.isFetching = false
+        if let totalCount {
+          state.totalCount = totalCount
+        }
+        
+        if item.isEmpty || item.count < state.pageSize {
+          state.hasMore = false
+        }
+        
+        let existingIDs = Set(state.searchResult.map { $0.id })
+        let newItems = item.filter { !existingIDs.contains($0.id) }
+        state.searchResult.append(contentsOf: newItems)
+        
+        if state.selectedCategoryTitle == "카테고리" || state.selectedCategoryTitle == "전체" {
+          state.filteredSearchResult = state.searchResult
+        } else {
+          state.filteredSearchResult = state.searchResult.filter { link in
+            link.category?.categoryName == state.selectedCategoryTitle
+          }
+        }
         return .none
         
       case .linkCardTapped(let item):
