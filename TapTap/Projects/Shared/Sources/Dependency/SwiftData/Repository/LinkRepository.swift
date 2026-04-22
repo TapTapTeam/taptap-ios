@@ -69,12 +69,16 @@ public struct LinkRepository {
     return try context.fetchCount(descriptor)
   }
   
-  public func searchLinks(query: String, limit: Int? = nil) throws -> [ArticleItem] {
+  public func searchLinks(query: String, limit: Int? = nil, offset: Int? = nil) throws -> [ArticleItem] {
     var descriptor = FetchDescriptor<ArticleItem>(
-      predicate: #Predicate { $0.title.contains(query) }
+      predicate: #Predicate { $0.title.localizedStandardContains(query) },
+      sortBy: [SortDescriptor(\.createAt, order: .reverse)]
     )
     if let limit = limit {
       descriptor.fetchLimit = limit
+    }
+    if let offset = offset {
+      descriptor.fetchOffset = offset
     }
     return try context.fetch(descriptor)
   }
