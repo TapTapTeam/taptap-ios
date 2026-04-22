@@ -71,14 +71,16 @@ extension SearchResultView {
             }
             .buttonStyle(.plain)
           }
-          
-          Color.clear
-            .frame(height: 1)
-            .onAppear {
-              DispatchQueue.main.async {
-                store.send(.loadMore)
+         
+          if store.hasMore {
+            Color.clear
+              .frame(height: 1)
+              .onAppear {
+                DispatchQueue.main.async {
+                  store.send(.loadMore)
+                }
               }
-            }
+          }
         }
       } else {
         EmptySearchView(type: .emptyResult(searchTerm: store.query))
