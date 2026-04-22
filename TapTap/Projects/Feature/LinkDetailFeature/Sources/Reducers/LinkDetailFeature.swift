@@ -92,8 +92,9 @@ public struct LinkDetailFeature {
         state.editedTitle = state.link.title
         state.editedMemo  = state.link.userMemo
         return .merge(
-          .run { [linkID = state.link.id] send in
-            let linkItem = try swiftDataClient.link.fetchLink(id: linkID)
+          .run { [link = state.link] send in
+            try? swiftDataClient.link.updateLinkLastViewed(link)
+            let linkItem = try swiftDataClient.link.fetchLink(id: link.id)
             await send(.refreshed(linkItem))
           },
           .run { send in
