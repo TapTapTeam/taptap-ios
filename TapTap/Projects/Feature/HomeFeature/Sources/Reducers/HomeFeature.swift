@@ -148,7 +148,7 @@ public struct HomeFeature {
       case .fetchArticles:
         return .run { send in
           do {
-            let links = try swiftDataClient.link.fetchLinks()
+            let links = try swiftDataClient.link.fetchLinks(limit: 6)
             await send(.articlesResponse(links))
           } catch {
             await send(.articlesResponseFailed(error.localizedDescription))

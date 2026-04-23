@@ -46,7 +46,7 @@ extension ArticleListView: View {
       }
       else {
         VStack(spacing: 10) {
-          ForEach(store.state.articles.reversed().prefix(5)) { article in
+          ForEach(store.state.articles) { article in
             Button {
               store.send(.listCellTapped(article))
             } label: {
