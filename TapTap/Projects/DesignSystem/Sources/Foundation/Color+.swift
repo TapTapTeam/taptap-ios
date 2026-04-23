@@ -35,6 +35,9 @@ public extension ShapeStyle where Self == Color {
   static var bgDim: Color { DesignSystemAsset.bgDim.swiftUIColor }
   static var bgDimOnboarding: Color { DesignSystemAsset.bgDimOnboarding.swiftUIColor }
   static var bgDimCard: Color { DesignSystemAsset.bgDimCard.swiftUIColor }
+  static var bgDimDanger: Color { DesignSystemAsset.bgDimDanger.swiftUIColor }
+  static var bgDimHover: Color { DesignSystemAsset.bgDimHover.swiftUIColor }
+  static var bgDimWeb: Color { DesignSystemAsset.bgDimWeb.swiftUIColor }
   static var bgDimSelect: Color { DesignSystemAsset.bgDimSelect.swiftUIColor }
   static var bgMemo: Color { DesignSystemAsset.bgMemo.swiftUIColor }
   static var bgShadow1: Color { DesignSystemAsset.bgShadow1.swiftUIColor }
