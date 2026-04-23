@@ -94,7 +94,7 @@ extension ArticleFilterList: View {
         .padding(.top, 120)
     } else {
       LazyVStack(spacing: 0) {
-        ForEach(store.link) { article in
+        ForEach(store.link, id: \.id) { article in
           ArticleRowView(article: article) {
             store.send(.listCellTapped(article))
           } onLongPress: {
@@ -105,9 +105,7 @@ extension ArticleFilterList: View {
         Color.clear
           .frame(height: 1)
           .onAppear {
-            DispatchQueue.main.async {
-              store.send(.loadMore)
-            }
+            store.send(.loadMore)
           }
       }
     }

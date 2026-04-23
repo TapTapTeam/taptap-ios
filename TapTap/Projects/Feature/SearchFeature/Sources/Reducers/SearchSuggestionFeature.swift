@@ -40,7 +40,7 @@ public struct SearchSuggestionFeature {
           return .none
         }
         return .run { send in
-          let response = try swiftDataClient.link.searchLinks(query: query)
+          let response = try swiftDataClient.link.searchLinks(query: query, limit: 10)
           await send(.suggestionResponse(response))
         }
         

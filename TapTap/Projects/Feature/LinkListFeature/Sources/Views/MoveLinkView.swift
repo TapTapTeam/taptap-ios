@@ -121,7 +121,7 @@ extension MoveLinkView {
   /// 아티클카드
   private var articleListView: some View {
     LazyVStack(spacing: 10) {
-      ForEach(store.allLinks) { link in
+      ForEach(store.allLinks, id: \.id) { link in
         let binding = Binding<Bool>(
           get: { store.selectedLinks.contains(link.id) },
           set: { _ in store.send(.toggleSelect(link)) }

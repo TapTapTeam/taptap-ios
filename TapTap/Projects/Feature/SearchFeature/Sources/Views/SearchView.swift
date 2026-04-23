@@ -86,6 +86,7 @@ extension SearchView {
         store.send(.onAppear)
         isSearchFieldFocused = true
       }
+      .bind($store.isSearchFieldFocused, to: $isSearchFieldFocused)
     }
   }
 }

@@ -93,6 +93,11 @@ public struct LinkDetailFeature {
         state.editedMemo  = state.link.userMemo
         return .merge(
           .run { [linkID = state.link.id] send in
+            do {
+              try swiftDataClient.link.updateLinkLastViewed(linkID)
+            } catch {
+              print("Failed to update last viewed date: \(error)")
+            }
             let linkItem = try swiftDataClient.link.fetchLink(id: linkID)
             await send(.refreshed(linkItem))
           },

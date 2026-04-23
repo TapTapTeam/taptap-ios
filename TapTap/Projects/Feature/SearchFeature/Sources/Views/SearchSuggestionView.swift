@@ -21,7 +21,7 @@ extension SearchSuggestionView {
   var body: some View {
     ScrollView {
       LazyVStack(alignment: .leading, spacing: 12) {
-        ForEach(store.suggestionItem) { result in
+        ForEach(store.suggestionItem, id: \.id) { result in
           Button {
             store.send(.suggestionTapped(result))
           } label: {

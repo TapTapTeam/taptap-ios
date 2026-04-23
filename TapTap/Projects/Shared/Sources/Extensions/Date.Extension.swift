@@ -8,10 +8,14 @@
 import Foundation
 
 extension Date {
-  public func formattedKoreanDate() -> String {
+  private static let koreanDateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateFormat = "yyyy년 MM월 dd일"
     formatter.locale = Locale(identifier: "ko_KR")
-    return formatter.string(from: self)
+    return formatter
+  }()
+  
+  public func formattedKoreanDate() -> String {
+    return Self.koreanDateFormatter.string(from: self)
   }
 }
