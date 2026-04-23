@@ -9,13 +9,13 @@ import SwiftUI
 
 import DesignSystem
 
-public struct TipCardView {
+struct TipCardView {
   let buttonTap: () -> Void
   let closeTap: () -> Void
 }
 
 extension TipCardView: View {
-  public var body: some View {
+  var body: some View {
     ZStack(alignment: .topTrailing) {
       VStack(spacing: 0) {
         Text("Safari에서 바로 메모하고\n링크를 남겨보세요")
