@@ -73,15 +73,7 @@ extension ScrollFloatingButton {
         .foregroundStyle(.iconGray)
         .frame(width: 24, height: 24)
         .padding(12)
-        .background(.n0)
-        .clipShape(Circle())
-        .shadow(color: Color(red: 0.43, green: 0.39, blue: 0.74).opacity(0.05), radius: 3, x: 0, y: 2)
-        .shadow(color: Color(red: 0.24, green: 0.24, blue: 0.29).opacity(0.03), radius: 2, x: 0, y: 2)
-        .overlay(
-          RoundedRectangle(cornerRadius: 24)
-            .inset(by: 0.5)
-            .stroke(.divider1, lineWidth: 1)
-        )
+        .liquidGlassCircle()
         .contentShape(Circle())
     }
     .padding(.trailing, trailingPadding)
