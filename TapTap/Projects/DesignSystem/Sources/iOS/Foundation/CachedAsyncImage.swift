@@ -39,12 +39,21 @@ public struct CachedAsyncImage<Content: View>: View {
         content(.failure)
       }
     }
+    .onAppear {
+      checkMemoryCache()
+    }
     .task(id: url?.absoluteString) {
       await loadImage()
     }
   }
   
   // MARK: - Load
+  private func checkMemoryCache() {
+    guard let key = url?.absoluteString,
+          let image = ImageCache.shared.memoryImage(forKey: key) else { return }
+    state = .success(Image(uiImage: image))
+  }
+  
   @MainActor
   private func loadImage() async {
     guard let url else {
@@ -54,13 +63,23 @@ public struct CachedAsyncImage<Content: View>: View {
     
     let key = url.absoluteString
     
-    if let cached = ImageCache.shared.retrieveImage(forKey: key) {
+    if let image = ImageCache.shared.memoryImage(forKey: key) {
+      state = .success(Image(uiImage: image))
+      return
+    }
+    
+    state = .loading
+    
+    if let cached = await ImageCache.shared.retrieveImage(forKey: key) {
+      guard !Task.isCancelled else { return }
       state = .success(Image(uiImage: cached))
       return
     }
     
     do {
       let (data, _) = try await URLSession.shared.data(from: url)
+      guard !Task.isCancelled else { return }
+      
       guard let uiImage = UIImage(data: data) else {
         state = .failure
         return
@@ -69,6 +88,7 @@ public struct CachedAsyncImage<Content: View>: View {
       ImageCache.shared.store(uiImage, forKey: key)
       state = .success(Image(uiImage: uiImage))
     } catch {
+      guard !Task.isCancelled else { return }
       state = .failure
     }
   }

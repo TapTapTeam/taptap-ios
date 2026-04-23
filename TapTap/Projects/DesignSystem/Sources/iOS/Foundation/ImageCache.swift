@@ -7,6 +7,7 @@
 
 #if os(iOS)
 import UIKit
+import CryptoKit
 
 public final class ImageCache: @unchecked Sendable {
   
@@ -49,21 +50,35 @@ public final class ImageCache: @unchecked Sendable {
     }
   }
   
-  // MARK: - Retrieve
-  /// 메모리 → 디스크 순으로 이미지를 조회합니다.
-  public func retrieveImage(forKey key: String) -> UIImage? {
+  public func memoryImage(forKey key: String) -> UIImage? {
+    memoryCache.object(forKey: key as NSString)
+  }
+  
+  public func retrieveImage(forKey key: String) async -> UIImage? {
     let cacheKey = key as NSString
     
     if let image = memoryCache.object(forKey: cacheKey) {
       return image
     }
     
-    let fileURL = diskURL(forKey: key)
-    guard let data = try? Data(contentsOf: fileURL),
-          let image = UIImage(data: data) else { return nil }
-    
-    memoryCache.setObject(image, forKey: cacheKey, cost: memoryCost(for: image))
-    return image
+    return await withCheckedContinuation { continuation in
+      ioQueue.async { [weak self] in
+        guard let self else {
+          continuation.resume(returning: nil)
+          return
+        }
+        
+        let fileURL = self.diskURL(forKey: key)
+        guard let data = try? Data(contentsOf: fileURL),
+              let image = UIImage(data: data) else {
+          continuation.resume(returning: nil)
+          return
+        }
+        
+        self.memoryCache.setObject(image, forKey: cacheKey, cost: self.memoryCost(for: image))
+        continuation.resume(returning: image)
+      }
+    }
   }
   
   @objc public func clearMemoryCache() {
@@ -81,10 +96,10 @@ public final class ImageCache: @unchecked Sendable {
     }
   }
   
-  // MARK: - Helpers
   private func diskURL(forKey key: String) -> URL {
-    let fileName = key
-      .addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? key
+    let data = Data(key.utf8)
+    let hash = SHA256.hash(data: data)
+    let fileName = hash.compactMap { String(format: "%02x", $0) }.joined()
     return diskCacheURL.appendingPathComponent(fileName)
   }
   
