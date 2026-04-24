@@ -9,7 +9,8 @@
 import UIKit
 import CryptoKit
 
-public final class ImageCache: @unchecked Sendable {
+@MainActor
+public final class ImageCache {
   
   public static let shared = ImageCache()
   
@@ -40,12 +41,12 @@ public final class ImageCache: @unchecked Sendable {
   
   public func store(_ image: UIImage, forKey key: String) {
     let cacheKey = key as NSString
+    let cost = memoryCost(for: image)
+    let fileURL = diskURL(forKey: key)
     
-    memoryCache.setObject(image, forKey: cacheKey, cost: memoryCost(for: image))
-    
-    ioQueue.async { [weak self] in
-      guard let self, let data = image.jpegData(compressionQuality: 0.8) else { return }
-      let fileURL = self.diskURL(forKey: key)
+    memoryCache.setObject(image, forKey: cacheKey, cost: cost)
+    ioQueue.async {
+      guard let data = image.jpegData(compressionQuality: 0.8) else { return }
       try? data.write(to: fileURL, options: .atomic)
     }
   }
@@ -56,29 +57,35 @@ public final class ImageCache: @unchecked Sendable {
   
   public func retrieveImage(forKey key: String) async -> UIImage? {
     let cacheKey = key as NSString
+    let fileURL = diskURL(forKey: key)
     
     if let image = memoryCache.object(forKey: cacheKey) {
       return image
     }
     
-    return await withCheckedContinuation { continuation in
-      ioQueue.async { [weak self] in
-        guard let self else {
-          continuation.resume(returning: nil)
-          return
-        }
-        
-        let fileURL = self.diskURL(forKey: key)
+    guard let image = await withCheckedContinuation({
+      (continuation: CheckedContinuation<UIImage?, Never>) in
+      
+      ioQueue.async {
         guard let data = try? Data(contentsOf: fileURL),
               let image = UIImage(data: data) else {
           continuation.resume(returning: nil)
           return
         }
         
-        self.memoryCache.setObject(image, forKey: cacheKey, cost: self.memoryCost(for: image))
         continuation.resume(returning: image)
       }
+    }) else {
+      return nil
     }
+    
+    memoryCache.setObject(
+      image,
+      forKey: cacheKey,
+      cost: memoryCost(for: image)
+    )
+    
+    return image
   }
   
   @objc public func clearMemoryCache() {
@@ -86,13 +93,17 @@ public final class ImageCache: @unchecked Sendable {
   }
   
   public func clearDiskCache() {
-    ioQueue.async { [weak self] in
-      guard let self else { return }
+    let diskCacheURL = self.diskCacheURL
+    
+    ioQueue.async {
       let files = try? FileManager.default.contentsOfDirectory(
-        at: self.diskCacheURL,
+        at: diskCacheURL,
         includingPropertiesForKeys: nil
       )
-      files?.forEach { try? FileManager.default.removeItem(at: $0) }
+      
+      files?.forEach {
+        try? FileManager.default.removeItem(at: $0)
+      }
     }
   }
   
