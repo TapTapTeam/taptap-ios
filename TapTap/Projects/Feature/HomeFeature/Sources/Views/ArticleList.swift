@@ -11,10 +11,10 @@ import ComposableArchitecture
 
 import DesignSystem
 
-public struct ArticleListView {
+struct ArticleListView {
   let store: StoreOf<ArticleListFeature>
   
-  public init(
+  init(
     store: StoreOf<ArticleListFeature>
   ) {
     self.store = store
@@ -22,7 +22,7 @@ public struct ArticleListView {
 }
 
 extension ArticleListView: View {
-  public var body: some View {
+  var body: some View {
     VStack(spacing: 8) {
       ScrollViewHeader(
         headerTitle: .recentAddLink,
@@ -46,7 +46,7 @@ extension ArticleListView: View {
       }
       else {
         VStack(spacing: 10) {
-          ForEach(store.state.articles.reversed().prefix(5)) { article in
+          ForEach(store.state.articles) { article in
             Button {
               store.send(.listCellTapped(article))
             } label: {

@@ -110,7 +110,7 @@ extension ArticleCard {
 // MARK: - Subviews
 private extension ArticleCard {
   var articleImage: some View {
-    AsyncImage(url: URL(string: imageURL ?? "")) { phase in
+    CachedAsyncImage(url: URL(string: imageURL ?? "")) { phase in
       switch phase {
       case .empty:
         ProgressView()
@@ -130,8 +130,6 @@ private extension ArticleCard {
           .foregroundColor(.gray)
           .clipped()
           .clipShape(RoundedRectangle(cornerRadius: 6))
-      @unknown default:
-        EmptyView()
       }
     }
   }
