@@ -1,39 +1,64 @@
 import Foundation
 import SwiftUI
 import SwiftData
+import SwiftUI
 import Core
 import DesignSystem
+import MacSearchFeature
+import AppKit
 
-@main
-struct MacApp: App {
-  var body: some Scene {
-    WindowGroup {
-      MACContentView()
-        .modelContainer(AppGroupContainer.shared)
+final class FullScreenWindowDelegate: NSObject, NSWindowDelegate {
+  func window(
+    _ window: NSWindow,
+    willUseFullScreenPresentationOptions proposedOptions: NSApplication.PresentationOptions
+  ) -> NSApplication.PresentationOptions {
+    proposedOptions.union(.autoHideToolbar)
+  }
+}
+
+struct WindowAccessor: NSViewRepresentable {
+  let onWindowAvailable: (NSWindow) -> Void
+  
+  func makeNSView(context: Context) -> NSView {
+    let view = NSView()
+    
+    DispatchQueue.main.async {
+      if let window = view.window {
+        onWindowAvailable(window)
+      }
+    }
+    
+    return view
+  }
+  
+  func updateNSView(_ nsView: NSView, context: Context) {
+    DispatchQueue.main.async {
+      if let window = nsView.window {
+        onWindowAvailable(window)
+      }
     }
   }
 }
 
-public struct TapTapMac {
-  public init() {}
-}
-
-struct MACContentView: View {
-  @Query private var articles: [ArticleItem]
-
-  var body: some View {
-    NavigationView {
-      List(articles) { article in
-        VStack(alignment: .leading, spacing: 4) {
-          Text(article.title)
-            .font(.B1_M)
-          Text(article.urlString)
-            .font(.subheadline)
-            .foregroundColor(.secondary)
-        }
-        .padding(.vertical, 4)
-      }
-      .navigationTitle("저장된 링크 (CloudKit 연동)")
+@main
+struct MacApp: App {
+  private let fullScreenDelegate = FullScreenWindowDelegate()
+  
+  @StateObject private var searchViewModel = SearchViewModel(
+    searchService: DefaultSearchService(),
+    recentService: DefaultRecentSearchService()
+  )
+  
+  var body: some Scene {
+    WindowGroup {
+      RootView(searchViewModel: searchViewModel)
+        .modelContainer(AppGroupContainer.shared)
+        .background(
+          WindowAccessor { window in
+            window.delegate = fullScreenDelegate
+          }
+        )
     }
+    .windowStyle(.hiddenTitleBar)
   }
 }

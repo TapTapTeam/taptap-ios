@@ -18,7 +18,8 @@ let project = Project.project(
       sources: .sources,
       resources: .default,
       dependencies: [
-        .core()
+        .core(),
+        .designSystem()
       ]
     ),
     Target.target(
