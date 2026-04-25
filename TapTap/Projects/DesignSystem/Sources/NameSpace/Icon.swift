@@ -47,7 +47,18 @@ public extension Icon {
   static let file = "file"
   static let checkUnfill = "check-unfill"
   static let checkFill = "check-fill"
-
+  static let bookmark = "bookmark"
+  static let arrowLeft = "arrow-left"
+  static let arrowRight = "arrow-right"
+  static let linkMac = "linkMac"
+  static let link = "link"
+  static let plusThin = "plusThin"
+  static let macEdit = "macEdit"
+  static let smallChevronUp = "small-chevron-up"
+  static let history = "history"
+  static let openWindow = "openWindow"
+  static let sidebarClose = "sidebarClose"
+  static let sidebarOpen = "sidebarOpen"
 }
 
 public extension Image {

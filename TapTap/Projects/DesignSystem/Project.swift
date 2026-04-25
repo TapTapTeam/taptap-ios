@@ -8,11 +8,12 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let protject = Project.project(
+let project = Project.project(
   name: Module.DesignSystem.rawValue,
   targets: [
     Target.target(
       name: Module.DesignSystem.rawValue,
+      destinations: [.iPhone, .mac],
       product: .staticFramework,
       infoPlist: .extendingDefault(with: [
         "UIAppFonts": .array([
@@ -24,7 +25,9 @@ let protject = Project.project(
       ]),
       sources: .sources,
       resources: .default,
-      dependencies: []
+      dependencies: [
+        .Lottie()
+      ]
     )
   ]
 )

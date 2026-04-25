@@ -37,7 +37,8 @@ Temporary Items
 
 ## User settings
 xcuserdata/
-
+*.xcconfig
+report.xml
 ## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
 *.xcscmblueprint
 *.xccheckout
@@ -107,6 +108,7 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+*.p8
 
 # Code Injection
 # After new code Injection tools there's a generated folder /iOSInjectionProject

@@ -5,30 +5,19 @@ import PackageDescription
 import struct ProjectDescription.PackageSettings
 
 let packageSettings = PackageSettings(
-  // Customize the product types for specific package product
-  // Default is .staticFramework
-  // productTypes: ["Alamofire": .framework,]
   productTypes: [
     "ComposableArchitecture": .framework,
-    "LinkNavigator": .framework,
     "Lottie": .staticFramework
   ]
 )
 #endif
 
 let package = Package(
-  name: "ComposableArchitecture",
+  name: "TapTapDependency",
   dependencies: [
-    // Add your own dependencies here:
-    // .package(url: "https://github.com/Alamofire/Alamofire", from: "5.0.0"),
-    // You can read more about dependencies here: https://docs.tuist.io/documentation/tuist/dependencies
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture.git",
       from: "1.10.0"
-    ),
-    .package(
-      url: "https://github.com/interactord/LinkNavigator.git",
-      from: "1.3.1"
     ),
     .package(
       url: "https://github.com/airbnb/lottie-spm.git",

@@ -1,4 +1,10 @@
 # taptap-ios
+
+![Release](https://img.shields.io/github/v/release/TapTapTeam/taptap-ios?display_name=tag&sort=semver)
+![iOS](https://img.shields.io/badge/iOS-18.6%2B-blue)
+![Swift](https://img.shields.io/badge/Swift-6-orange)
+
+
 탭탭 iOS 레포지토리입니다.
 
 ## 💡 Feature

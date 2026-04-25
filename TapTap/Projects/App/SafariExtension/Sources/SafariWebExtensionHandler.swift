@@ -6,10 +6,9 @@
 //
 
 import SafariServices
-
-import Domain
-
 import SwiftData
+
+import Core
 
 final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
   private let appGroupID = "group.com.nbs.dev.ADA.shared"
@@ -45,11 +44,9 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
         return
       }
       
-      if let highlights = self.fetchHighlights(for: url) {
-          self.sendResponse(to: context, with: ["highlights": highlights])
-      } else {
-          self.sendResponse(to: context, with: ["highlights": []])
-      }
+      let highlights = self.fetchHighlights(for: url) ?? []
+      self.sendResponse(to: context, with: ["highlights": highlights])
+      
     case "getHasShownHighlightToast":
       let hasShown = sharedUserDefaults?.bool(forKey: "hasShownHighlightToast") ?? false
       self.sendResponse(to: context, with: ["hasShownHighlightToast": hasShown])
@@ -70,33 +67,10 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
   }
 }
 
-// MARK: - SwiftData
-private extension SafariWebExtensionHandler {
-  static func createSharedModelContainer() -> ModelContainer? {
-    let appGroupID = "group.com.nbs.dev.ADA.shared"
-    let schema = Schema([ArticleItem.self, HighlightItem.self, CategoryItem.self])
-    
-    guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) else {
-      return nil
-    }
-    
-    let storeURL = containerURL.appendingPathComponent("Nbs_store.sqlite")
-    let configuration = ModelConfiguration(schema: schema, url: storeURL)
-    
-    do {
-      return try ModelContainer(for: schema, configurations: [configuration])
-    } catch {
-      return nil
-    }
-  }
-}
-
 // MARK: - Communication Method
 private extension SafariWebExtensionHandler {
   func fetchHighlights(for urlString: String) -> Any? {
-    guard let container = SafariWebExtensionHandler.createSharedModelContainer() else {
-      return nil
-    }
+    let container = AppGroupContainer.shared
     
     let context = ModelContext(container)
     
@@ -106,7 +80,7 @@ private extension SafariWebExtensionHandler {
       return nil
     }
     
-    let highlights = linkItem.highlights
+    let highlights = linkItem.highlights ?? []
     
     do {
       let encoder = JSONEncoder()
@@ -126,5 +100,3 @@ private extension SafariWebExtensionHandler {
     context.completeRequest(returningItems: [response], completionHandler: nil)
   }
 }
-
-

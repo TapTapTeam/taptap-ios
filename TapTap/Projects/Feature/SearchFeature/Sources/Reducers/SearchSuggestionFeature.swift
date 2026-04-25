@@ -1,0 +1,61 @@
+//
+//  SearchSuggestionFeature.swift
+//  Feature
+//
+//  Created by 여성일 on 10/21/25.
+//
+
+import ComposableArchitecture
+
+import Core
+import Shared
+
+@Reducer
+public struct SearchSuggestionFeature {
+  @ObservableState
+  public struct State: Equatable {
+    var suggestionItem: [ArticleItem] = []
+    var searchText: String = ""
+  }
+  
+  public enum Action: Equatable {
+    case loadSuggestionItem(String)
+    case suggestionResponse([ArticleItem])
+    case suggestionTapped(ArticleItem)
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case route(AppRoute)
+    }
+  }
+
+  @Dependency(\.swiftDataClient) var swiftDataClient
+  
+  public var body: some ReducerOf<Self> {
+    Reduce { state, action in
+      switch action {
+      case .loadSuggestionItem(let query):
+        guard !query.isEmpty else {
+          state.suggestionItem = []
+          return .none
+        }
+        return .run { send in
+          let response = try swiftDataClient.link.searchLinks(query: query, limit: 10)
+          await send(.suggestionResponse(response))
+        }
+        
+      case .suggestionResponse(let item):
+        state.suggestionItem = item
+        return .none
+        
+      case .suggestionTapped(let item):
+        return .send(.delegate(.route(.linkDetail(item))))
+        
+      case .delegate:
+        return .none
+      }
+    }
+  }
+  
+  public init() {}
+}

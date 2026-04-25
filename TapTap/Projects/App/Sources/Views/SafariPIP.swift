@@ -8,7 +8,6 @@
 import SwiftUI
 
 import DesignSystem
-import Feature
 
 struct SafariPIP: View {
   @State var showHome = false

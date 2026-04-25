@@ -1,14 +1,237 @@
-# Nbs/fastlane/Fastfile
+require 'json'
 
 default_platform(:ios)
 
 platform :ios do
-  desc "Push a new beta build to TestFlight"
-  lane :beta do
+    lane :dev do
+        match(
+            type: "development",
+            app_identifier: [
+                "com.Nbs.dev.app",
+                "com.Nbs.dev.app.safariExtension",
+                "com.Nbs.dev.app.shareExtension",
+            ],
+            platform: "ios"
+        )
+    end
+
+    lane :release do
+        match(
+            type: "appstore",
+            app_identifier: [
+                "com.Nbs.dev.ADA.app",
+                "com.Nbs.dev.ADA.app.safariExtension",
+                "com.Nbs.dev.ADA.app.actionExtension",
+            ],
+            platform: "ios"
+        )
+    end
+  
+  desc "TesetFlight 업로드(버전을 입력해주세요.)"
+  lane :beta do |options|
+    version = options[:version] || prompt(text: "버전을 입력해주세요. (예: 1.10.0): ")
+
+    release
+
+    app_identifier = "com.Nbs.dev.ADA.app"
+    next_build = latest_testflight_build_number(app_identifier: app_identifier, version: version).to_i + 1
+
+    xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
+    content = File.read(xcconfig_path)
+
+    content = content.gsub(/^MARKETING_VERSION\s*=\s*.*$/, "MARKETING_VERSION = #{version}")
+    content = content.gsub(/^CURRENT_PROJECT_VERSION\s*=\s*.*$/, "CURRENT_PROJECT_VERSION = #{next_build}")
+
+    File.write(xcconfig_path, content)
+
     build_app(
-      workspace: "NBS.xcworkspace",
-      scheme: "Nbs"
+      workspace: "../TapTap/TapTap.xcworkspace",
+      scheme: "TapTap",
+      export_method: "app-store"
     )
-    upload_to_testflight
+
+    app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_FILEPATH"]
+    )
+
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      username: ENV["APPLE_ID"]
+    )
+
+    notify_discord(
+      title: "🚀 TestFlight 업로드 완료",
+      message: "새로운 베타 빌드가 성공적으로 업로드되었습니다.\n버전: #{version} (#{next_build})",
+      color: 377472
+    )
+  end
+
+  desc "App Store 배포 (버전을 입력해주세요.)"
+  lane :appstore do |options|
+    version = options[:version] || prompt(text: "배포할 버전을 입력해주세요. (예: 1.10.0): ")
+
+    release
+
+    app_identifier = "com.Nbs.dev.ADA.app"
+    next_build = latest_testflight_build_number(app_identifier: app_identifier, version: version).to_i + 1
+
+    xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
+    content = File.read(xcconfig_path)
+
+    content = content.gsub(/^MARKETING_VERSION\s*=\s*.*$/, "MARKETING_VERSION = #{version}")
+    content = content.gsub(/^CURRENT_PROJECT_VERSION\s*=\s*.*$/, "CURRENT_PROJECT_VERSION = #{next_build}")
+
+    File.write(xcconfig_path, content)
+
+    build_app(
+      workspace: "../TapTap/TapTap.xcworkspace",
+      scheme: "TapTap",
+      export_method: "app-store"
+    )
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_FILEPATH"]
+    )
+
+    upload_to_app_store(
+      api_key: api_key,
+      app_identifier: "com.Nbs.dev.ADA.app",
+      app_version: version,
+      force: true,
+      skip_metadata: false,
+      skip_screenshots: false,
+      submit_for_review: false,
+      run_precheck_before_submit: false
+    )
+
+    notify_discord(
+      title: "📦 App Store 제출 완료",
+      message: "앱이 성공적으로 App Store Connect에 제출되었습니다.\n버전: #{version} (#{next_build})",
+      color: 6377978
+    )
+  end
+
+  desc "CI용 TestFlight 업로드 (빌드 번호만 자동 업데이트)"
+  lane :ci_beta do
+    setup_ci
+    app_identifier = "com.Nbs.dev.ADA.app"
+    
+    api_key = app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_FILEPATH"]
+    )
+
+    match(type: "appstore", readonly: true, app_identifier: ["com.Nbs.dev.ADA.app", "com.Nbs.dev.ADA.app.safariExtension", "com.Nbs.dev.ADA.app.actionExtension"])
+
+    next_build = latest_testflight_build_number(
+      app_identifier: app_identifier,
+      api_key: api_key
+    ).to_i + 1
+
+    xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
+    content = File.read(xcconfig_path)
+    content = content.gsub(/^CURRENT_PROJECT_VERSION\s*=\s*.*$/, "CURRENT_PROJECT_VERSION = #{next_build}")
+    File.write(xcconfig_path, content)
+
+    build_app(workspace: "../TapTap/TapTap.xcworkspace", scheme: "TapTap", export_method: "app-store")
+    
+    upload_to_testflight(api_key: api_key, skip_waiting_for_build_processing: true)
+
+    notify_discord(
+      title: "🚀 [CI] TestFlight 업로드 완료",
+      message: "CI를 통한 베타 빌드 업로드가 성공했습니다.\n빌드 번호: #{next_build}",
+      color: 377472
+    )
+  end
+
+  desc "CI용 App Store 배포 (태그 버전 사용)"
+  lane :ci_release do |options|
+    setup_ci
+    version = options[:version] || UI.user_error!("버전 정보가 필요합니다.")
+    app_identifier = "com.Nbs.dev.ADA.app"
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_FILEPATH"]
+    )
+
+    match(type: "appstore", readonly: true, app_identifier: ["com.Nbs.dev.ADA.app", "com.Nbs.dev.ADA.app.safariExtension", "com.Nbs.dev.ADA.app.actionExtension"])
+
+    next_build = latest_testflight_build_number(
+      app_identifier: app_identifier,
+      api_key: api_key,
+      version: version
+    ).to_i + 1
+
+    xcconfig_path = File.expand_path("../../Tuist/Config/Project.xcconfig", __FILE__)
+    content = File.read(xcconfig_path)
+    content = content.gsub(/^MARKETING_VERSION\s*=\s*.*$/, "MARKETING_VERSION = #{version}")
+    content = content.gsub(/^CURRENT_PROJECT_VERSION\s*=\s*.*$/, "CURRENT_PROJECT_VERSION = #{next_build}")
+    File.write(xcconfig_path, content)
+
+    build_app(workspace: "../TapTap/TapTap.xcworkspace", scheme: "TapTap", export_method: "app-store")
+    
+    upload_to_app_store(
+      api_key: api_key,
+      app_identifier: app_identifier,
+      app_version: version,
+      force: true,
+      skip_metadata: false,
+      skip_screenshots: false,
+      skip_app_version_update: true,
+      submit_for_review: false,
+      run_precheck_before_submit: false
+    )
+
+    notify_discord(
+      title: "📦 [CI] App Store 제출 완료",
+      message: "CI를 통한 앱 제출이 성공했습니다.\n버전: #{version} (#{next_build})",
+      color: 6377978
+    )
+  end
+
+  # Discord 알림 함수
+  def notify_discord(params)
+    webhook_url = ENV["DISCORD_WEBHOOK_URL"]
+    return unless webhook_url
+
+    payload = {
+      embeds: [
+        {
+          title: params[:title],
+          description: params[:message],
+          color: params[:color] || 3447003,
+          timestamp: Time.now.iso8601
+        }
+      ]
+    }
+
+    sh("curl -H 'Content-Type: application/json' -d '#{payload.to_json}' #{webhook_url}")
+  end
+end
+
+platform :macos do
+  desc "탭탭 macOS Development 인증서/프로비저닝"
+  lane :dev do
+    match(
+      type: "development",
+      app_identifier: "com.Nbs.dev.taptap.macOS",
+      platform: "macos"
+    )
+  end
+
+  desc "탭탭 macOS AppStore 인증서/프로비저닝"
+  lane :release do
+    match(
+      type: "appstore",
+      app_identifier: "com.Nbs.dev.ADA.macOS",
+      platform: "macos"
+    )
   end
 end

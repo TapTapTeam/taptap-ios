@@ -1,0 +1,147 @@
+//
+//  DeleteLinkFeature.swift
+//  Feature
+//
+//  Created by 이안 on 10/22/25.
+//
+
+import SwiftUI
+import SwiftData
+
+import ComposableArchitecture
+
+import Core
+import Shared
+
+@Reducer
+public struct DeleteLinkFeature {
+  @Dependency(\.swiftDataClient) var swiftDataClient
+  
+  @ObservableState
+  public struct State: Equatable {
+    var allLinks: [ArticleItem] = []
+    var categoryName: String = "전체"
+    var totalCount: Int = 0
+    var selectedLinks: Set<String> = []
+    var isSelectAll: Bool = false
+    var hideSelectControls: Bool = false
+    
+    public init(
+      allLinks: [ArticleItem],
+      categoryName: String,
+      totalCount: Int
+    ) {
+      self.allLinks = allLinks
+      self.categoryName = categoryName
+      self.totalCount = totalCount
+    }
+  }
+  
+  public enum Action: BindableAction, Equatable {
+    case binding(BindingAction<State>)
+    case onAppear
+    case fetchLinksResponse([ArticleItem])
+    case toggleSelect(ArticleItem)
+    case backButtonTapped
+    case confirmDeleteTapped
+    case deleteDone(Int)
+    
+    case delegate(Delegate)
+    public enum Delegate: Equatable {
+      case confirmDelete(selected: [ArticleItem])
+      case route(AppRoute)
+    }
+  }
+  
+  public var body: some ReducerOf<Self> {
+    BindingReducer()
+    Reduce { state, action in
+      switch action {
+      case .onAppear:
+        return .run { [categoryName = state.categoryName] send in
+          do {
+            let predicate: Foundation.Predicate<ArticleItem>?
+            if categoryName == "전체" {
+              predicate = nil
+            } else {
+              predicate = #Predicate<ArticleItem> { $0.category?.categoryName == categoryName }
+            }
+            let items = try swiftDataClient.link.fetchLinks(
+              predicate: predicate,
+              sortBy: [SortDescriptor(\.createAt, order: .reverse)]
+            )
+            await send(.fetchLinksResponse(items))
+          } catch {
+             print("fetch failed: \(error)")
+          }
+        }
+        
+      case let .fetchLinksResponse(items):
+        state.allLinks = items
+        if state.hideSelectControls || state.isSelectAll {
+          state.selectedLinks = Set(items.map(\.id))
+          state.isSelectAll = true
+        }
+        return .none
+        
+        /// 전체 선택 or 해제
+      case .binding(\.isSelectAll):
+        if state.isSelectAll {
+          state.selectedLinks = Set(state.allLinks.map(\.id))
+        } else {
+          state.selectedLinks.removeAll()
+        }
+        return .none
+        
+        /// 개별 토글 시 전체선택 여부 갱신
+      case let .toggleSelect(link):
+        if state.selectedLinks.contains(link.id) {
+          state.selectedLinks.remove(link.id)
+        } else {
+          state.selectedLinks.insert(link.id)
+        }
+        state.isSelectAll = state.selectedLinks.count == state.allLinks.count
+        return .none
+        
+      case .backButtonTapped:
+        return .send(.delegate(.route(.back)))
+        
+      case .confirmDeleteTapped:
+        let selectedIDs = state.allLinks
+          .filter { state.selectedLinks.contains($0.id) }
+          .map(\.id)
+        
+        guard !selectedIDs.isEmpty else {
+          return .none
+        }
+        
+        return .run { send in
+          do {
+            for id in selectedIDs {
+              try swiftDataClient.link.deleteLinkById(id)
+            }
+            
+            NotificationCenter.default.post(
+              name: .linkDeleted,
+              object: ["deletedCount": selectedIDs.count]
+            )
+            
+            try? await Task.sleep(nanoseconds: 400_000_000)
+            await send(.delegate(.route(.back)))
+            
+          } catch {
+            print("delete by ids failed:", error)
+          }
+        }
+        
+      case .deleteDone:
+        return .send(.delegate(.route(.back)))
+        
+      case .binding, .delegate:
+        return .none
+      }
+    }
+  }
+  
+  public init() {}
+}

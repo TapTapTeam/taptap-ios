@@ -8,9 +8,13 @@
 import ProjectDescription
 
 extension Project {
-  public static let bundleID = "com.Nbs.dev.ADA"
-  public static let iosVersion = "17.0"
-  public static let appName = "Nbs"
+  public static let macOSbundleID = "com.Nbs.dev.taptap.macOS"
+  public static let macOSbundleIDAppStore = "com.Nbs.dev.ADA.macOS"
+  public static let bundleIDBase = "com.Nbs.dev.app"
+  public static let bundIDAppStore = "com.Nbs.dev.ADA.app"
+  public static let iosVersion = "18.6"
+  public static let macOSVersion = "15.0"
+  public static let appName = "TapTap"
 }
 
 extension Project {
