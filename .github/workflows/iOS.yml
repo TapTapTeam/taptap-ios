@@ -12,7 +12,7 @@ on:
 
 jobs:
   ios:
-    runs-on: macos-latest
+    runs-on: macos-26
     env:
       TUIST_VERSION: 4.57.1
     steps:
@@ -20,6 +20,9 @@ jobs:
     
     - name: Mise
       uses: jdx/mise-action@v2
+
+    - name: Xcode version
+      run: xcodebuild -version
       
     - uses: ruby/setup-ruby@v1
       with:
