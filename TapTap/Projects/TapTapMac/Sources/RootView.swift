@@ -15,6 +15,7 @@ import MacSearchFeature
 
 /// macOS 앱 전역 레이아웃(사이드바 고정 + 디테일 전환)을 소유하는 컨테이너 뷰.
 struct RootView: View {
+  @Environment(\.modelContext) private var modelContext
   @Query(sort: \CategoryItem.createdAt) private var allCategories: [CategoryItem]
   @Query(sort: \ArticleItem.lastViewedDate, order: .reverse) private var articles: [ArticleItem]
   
@@ -60,10 +61,13 @@ struct RootView: View {
               searchViewModel.focus()
             }
           )
-
+          
           if searchViewModel.hasSubmittedSearch {
-            SearchView(viewModel: searchViewModel)
-              .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            SearchView(viewModel: searchViewModel) { item in
+              item.lastViewedDate = Date()
+              try? modelContext.save()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
           } else {
             detailHeader
             detailList

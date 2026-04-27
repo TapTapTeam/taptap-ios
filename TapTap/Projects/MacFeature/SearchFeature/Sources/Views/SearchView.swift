@@ -1,13 +1,19 @@
 import SwiftUI
+import Core
 import DesignSystem
 
 public struct SearchView: View {
   @ObservedObject private var viewModel: SearchViewModel
   @State private var isDropdownOpen = false
   @State private var buttonFrame: CGRect = .zero
+  private let onTap: (ArticleItem) -> Void
   
-  public init(viewModel: SearchViewModel) {
+  public init(
+    viewModel: SearchViewModel,
+    onTap: @escaping (ArticleItem) -> Void
+  ) {
     self.viewModel = viewModel
+    self.onTap = onTap
   }
 }
 
@@ -59,7 +65,7 @@ public extension SearchView {
           SearchResultView(
             items: viewModel.filteredResults,
             onTap: { item in
-              print(item.title)
+              onTap(item)
             }
           )
         }
