@@ -65,7 +65,7 @@ extension SearchCategoryDropdownRow {
       .padding(.horizontal, 16)
       .padding(.vertical, 10)
       .frame(width: 195)
-      .background(isHovered ? Color.bgDimHover : Color.clear)
+      .background(isHovered || isSelected ? Color.bgDimHover : Color.clear)
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
