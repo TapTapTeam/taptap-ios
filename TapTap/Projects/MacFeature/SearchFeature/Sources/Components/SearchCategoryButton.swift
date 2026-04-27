@@ -11,7 +11,7 @@ import DesignSystem
 public struct SearchCategoryButton: View {
   private let selectedCategory: String
   private let action: () -> Void
-
+  
   public init(
     selectedCategory: String = "전체",
     action: @escaping () -> Void
@@ -45,6 +45,6 @@ public extension SearchCategoryButton {
   }
 }
 
-  #Preview {
-    SearchCategoryButton(action: {})
-  }
+#Preview {
+  SearchCategoryButton(action: {})
+}
