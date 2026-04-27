@@ -21,6 +21,8 @@ public extension SearchView {
         Text("개")
           
         Spacer()
+        
+        SearchCategoryButton(action: {})
       }
       .font(.B2_M)
       
