@@ -12,11 +12,17 @@ public struct SearchView: View {
 public extension SearchView {
   var body: some View {
     VStack(spacing: 20) {
-      HStack {
-        Text("'\(viewModel.query)' 관련 결과 \(viewModel.searchResults.count)개")
-          .font(.B2_M)
+      HStack(spacing: 0) {
+        Text("'\(viewModel.query)' 관련 결과 ")
+        
+        Text("\(viewModel.searchResults.count)")
+          .foregroundStyle(.bl6)
+        
+        Text("개")
+          
         Spacer()
       }
+      .font(.B2_M)
       
       if viewModel.searchResults.isEmpty {
         Spacer()
