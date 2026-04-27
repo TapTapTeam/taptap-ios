@@ -25,6 +25,8 @@ public final class SearchViewModel: ObservableObject {
   @Published public private(set) var selectedCategory: String = "전체"
   @Published public private(set) var filteredResults: [ArticleItem] = []
 
+  @Published public private(set) var recentLinks: [ArticleItem] = []
+  
   // 검색 결과에 존재하는 카테고리 목록 (드롭다운에 사용)
   public var categoryItems: [String] {
     let cats = searchResults.compactMap { $0.category?.categoryName }
@@ -39,7 +41,8 @@ public final class SearchViewModel: ObservableObject {
   private let searchService: SearchServicing
   private let recentService: RecentSearchServicing
   private var articles: [ArticleItem] = []
-
+  private var excludedRecentLinkIDs: Set<String> = []
+  
   public init(
     searchService: SearchServicing,
     recentService: RecentSearchServicing
@@ -52,6 +55,8 @@ public final class SearchViewModel: ObservableObject {
   public func updateArticles(_ articles: [ArticleItem]) {
     self.articles = articles
 
+    updateRecentLinks()
+    
     let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
 
     guard !trimmed.isEmpty else { return }
@@ -130,6 +135,19 @@ public final class SearchViewModel: ObservableObject {
     hasSubmittedSearch = false
     showRecentOrEmpty()
   }
+  
+  // TODO: - 기획 회의 필요
+  // 최근 본 링크 삭제 메소드
+  public func removeRecentLink(_ id: String) {
+    excludedRecentLinkIDs.insert(id)
+    updateRecentLinks()
+  }
+  
+  // 최근 본 링크 전체
+  public func clearRecentLinks() {
+    excludedRecentLinkIDs = Set(articles.map { $0.id })
+    recentLinks = []
+  }
 }
 
 // MARK: - Private
@@ -181,5 +199,14 @@ private extension SearchViewModel {
     filteredResults = searchResults.filter {
       $0.category?.categoryName == selectedCategory
     }
+  }
+  
+  // 최근 본 링크 업데이트 메소드
+  private func updateRecentLinks() {
+    recentLinks = articles
+      .filter { !excludedRecentLinkIDs.contains($0.id) }
+      .sorted { $0.lastViewedDate > $1.lastViewedDate } // Set이기 때문에 정렬 해줘야함.
+      .prefix(8) // 최대 8개이기 때문에 앞에서 8개만
+      .map { $0 }
   }
 }
