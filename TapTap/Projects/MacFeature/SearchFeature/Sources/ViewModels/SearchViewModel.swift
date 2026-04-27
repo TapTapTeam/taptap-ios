@@ -124,6 +124,8 @@ public final class SearchViewModel: ObservableObject {
   public func clearSearch() {
     query = ""
     searchResults = []
+    filteredResults = []      
+    selectedCategory = "전체"
     isSearching = false
     hasSubmittedSearch = false
     showRecentOrEmpty()
