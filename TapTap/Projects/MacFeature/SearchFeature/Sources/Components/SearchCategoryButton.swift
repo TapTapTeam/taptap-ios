@@ -9,9 +9,14 @@ import SwiftUI
 import DesignSystem
 
 public struct SearchCategoryButton: View {
+  private let selectedCategory: String
   private let action: () -> Void
-  
-  public init(action: @escaping () -> Void) {
+
+  public init(
+    selectedCategory: String = "전체",
+    action: @escaping () -> Void
+  ) {
+    self.selectedCategory = selectedCategory
     self.action = action
   }
 }
@@ -20,7 +25,7 @@ public extension SearchCategoryButton {
   var body: some View {
     Button(action: action) {
       HStack(spacing: 0) {
-        Text("전체")
+        Text(selectedCategory)
           .font(.B2_M)
           .foregroundStyle(.caption1)
           .padding(.horizontal, 8)
@@ -40,6 +45,6 @@ public extension SearchCategoryButton {
   }
 }
 
-#Preview {
-  SearchCategoryButton(action: {})
-}
+  #Preview {
+    SearchCategoryButton(action: {})
+  }
