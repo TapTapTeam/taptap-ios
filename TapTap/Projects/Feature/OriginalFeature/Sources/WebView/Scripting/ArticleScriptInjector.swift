@@ -7,33 +7,44 @@
 
 import Core
 import Foundation
+import OSLog
 import WebKit
 
 enum ArticleScriptInjector {
+  private static let logger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "TapTap",
+    category: "ArticleScriptInjector"
+  )
+  
   static func injectArticleScripts(
     into webView: WKWebView,
     articleItem: ArticleItem
   ) {
-    guard let jsonString = ArticleHighlightPayloadBuilder.jsonString(from: articleItem) else {
-      print("변환 실패")
-      return
+    do {
+      let jsonString = try ArticleHighlightPayloadBuilder.jsonString(from: articleItem)
+      
+      injectCss(webView: webView, filename: "OriginalArticleStyle")
+      injectJS(webView: webView, filename: "OriginalArticleScript", jsonString: jsonString)
+    } catch {
+      logger.error("하이라이트 JSON 생성 실패: \(error.localizedDescription, privacy: .public)")
     }
-
-    injectCss(webView: webView, filename: "OriginalArticleStyle")
-    injectJS(webView: webView, filename: "OriginalArticleScript", jsonString: jsonString)
   }
 
   private static func injectCss(webView: WKWebView, filename: String) {
     let bundle = Bundle.module
 
-    guard let cssPath = bundle.path(forResource: filename, ofType: "css") else {
-      print("\(filename).css 를 찾지 못함")
+    guard
+      let cssPath = bundle.path(forResource: filename, ofType: "css")
+    else {
+      logger.error("CSS 파일을 찾지 못함: \(filename, privacy: .public).css")
       return
     }
 
-    guard let cssString = try? String(contentsOfFile: cssPath, encoding: .utf8)
-      .replacingOccurrences(of: "\n", with: "") else {
-      print("CSS 파일 읽기 실패")
+    guard
+      let cssString = try? String(contentsOfFile: cssPath, encoding: .utf8)
+        .replacingOccurrences(of: "\n", with: "")
+    else {
+      logger.error("CSS 파일 읽기 실패: \(filename, privacy: .public).css")
       return
     }
 
@@ -46,16 +57,27 @@ enum ArticleScriptInjector {
 
     webView.evaluateJavaScript(javascript) { _, error in
       if let error = error {
-        print("CSS 주입 오류: \(error)")
+        logger.error("CSS 주입 오류: \(error.localizedDescription, privacy: .public)")
       }
     }
   }
-
-  private static func injectJS(webView: WKWebView, filename: String, jsonString: String) {
+  
+  /// injectJS
+  /// - Parameters:
+  ///   - webView: WKWebView
+  ///   - filename: javascript 파일 이름
+  ///   - jsonString: swiftData의 json타입
+  private static func injectJS(
+    webView: WKWebView,
+    filename: String,
+    jsonString: String
+  ) {
     let bundle = Bundle.module
 
-    guard let jsPath = bundle.path(forResource: filename, ofType: "js") else {
-      print("\(filename).js 를 찾지 못함")
+    guard
+      let jsPath = bundle.path(forResource: filename, ofType: "js")
+    else {
+      logger.error("JS 파일을 찾지 못함: \(filename, privacy: .public).js")
       return
     }
 
@@ -69,11 +91,11 @@ enum ArticleScriptInjector {
 
       webView.evaluateJavaScript(fullScript) { _, error in
         if let error = error {
-          print("JS 실행 오류: \(error)")
+          logger.error("JS 실행 오류: \(error.localizedDescription, privacy: .public)")
         }
       }
     } catch {
-      print("JS 파일 로드 실패: \(error)")
+      logger.error("JS 파일 로드 실패: \(error.localizedDescription, privacy: .public)")
     }
   }
 }
