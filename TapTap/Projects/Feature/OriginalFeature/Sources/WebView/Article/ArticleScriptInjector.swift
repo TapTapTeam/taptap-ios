@@ -23,8 +23,8 @@ enum ArticleScriptInjector {
     do {
       let jsonString = try ArticleHighlightPayloadBuilder.jsonString(from: articleItem)
       
-      injectCss(webView: webView, filename: "OriginalArticleStyle")
-      injectJS(webView: webView, filename: "OriginalArticleScript", jsonString: jsonString)
+      injectCss(webView: webView, filename: "Articlehighlight")
+      injectJS(webView: webView, filename: "ArticleHighlightScript", jsonString: jsonString)
     } catch {
       logger.error("하이라이트 JSON 생성 실패: \(error.localizedDescription, privacy: .public)")
     }
