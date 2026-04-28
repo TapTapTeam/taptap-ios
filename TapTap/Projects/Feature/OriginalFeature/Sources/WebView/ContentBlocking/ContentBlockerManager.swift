@@ -78,6 +78,8 @@ public final class ContentBlockerManager: ObservableObject {
           continuation.resume(throwing: error)
         } else if let ruleList = ruleList {
           continuation.resume(returning: ruleList)
+        } else {
+          continuation.resume(throwing: URLError(.unknown))
         }
       }
     }
