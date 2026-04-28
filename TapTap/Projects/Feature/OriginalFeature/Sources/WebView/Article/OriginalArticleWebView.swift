@@ -10,17 +10,25 @@ import WebKit
 
 import Core
 
+public enum ArticleWebViewLoadEvent {
+  case succeeded
+  case failed(message: String)
+}
+
 public struct OriginalArticleWebView: UIViewRepresentable {
   let articleItem: ArticleItem
+  let onLoadEvent: (ArticleWebViewLoadEvent) -> Void
   @Binding var progress: Double
   @ObservedObject private var blockerManager = ContentBlockerManager.shared
   private static var isContentBlockerEnabled: Bool { false }
   
   public init(
     articleItem: ArticleItem,
-    progress: Binding<Double>
+    progress: Binding<Double>,
+    onLoadEvent: @escaping (ArticleWebViewLoadEvent) -> Void = { _ in }
   ) {
     self.articleItem = articleItem
+    self.onLoadEvent = onLoadEvent
     self._progress = progress
     if Self.isContentBlockerEnabled {
       Task {
@@ -30,9 +38,11 @@ public struct OriginalArticleWebView: UIViewRepresentable {
   }
   
   public init(
-    articleItem: ArticleItem
+    articleItem: ArticleItem,
+    onLoadEvent: @escaping (ArticleWebViewLoadEvent) -> Void = { _ in }
   ) {
     self.articleItem = articleItem
+    self.onLoadEvent = onLoadEvent
     self._progress = .constant(1.0)
     if Self.isContentBlockerEnabled {
       Task {
@@ -73,6 +83,7 @@ public struct OriginalArticleWebView: UIViewRepresentable {
     }
     
     guard let articleURL = URL(string: articleItem.urlString) else {
+      onLoadEvent(.failed(message: "원문 주소가 올바르지 않습니다."))
 #if DEBUG
       print("[OriginalArticleWebView] event=invalid_url url=\(articleItem.urlString)")
 #endif
