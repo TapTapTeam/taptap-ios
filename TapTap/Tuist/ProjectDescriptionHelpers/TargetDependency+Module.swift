@@ -87,6 +87,12 @@ extension TargetDependency {
   }
 }
 
+extension TargetDependency {
+  public static func macLinkListFeature() -> TargetDependency {
+    .project(target: MacFeatureModule.MacLinkListFeature.rawValue, path: .relativeToRoot("Projects/MacFeature/LinkListFeature"))
+  }
+}
+
 // MARK: - Design
 extension TargetDependency {
   public static func designSystem() -> TargetDependency {
