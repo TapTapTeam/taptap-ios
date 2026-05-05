@@ -238,6 +238,7 @@ public final class LinkListViewModel {
 
   public func clearPendingDelete() {
     pendingDeleteArticles.removeAll()
+    isDeleteAlertPresented = false
   }
 
   public func presentMultiMovePicker() {
