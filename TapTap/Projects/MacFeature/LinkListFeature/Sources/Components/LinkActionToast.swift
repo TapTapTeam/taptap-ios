@@ -92,7 +92,7 @@ private extension LinkActionToast {
   var message: String {
     switch variant {
     case .move:
-      return "\(count)개의 링크를 이동했어요"
+      return count == 1 ? "링크를 이동했어요" : "\(count)개의 링크를 이동했어요"
     case .delete:
       return count == 1 ? "링크를 삭제했어요" : "\(count)개의 링크를 삭제했어요"
     }
