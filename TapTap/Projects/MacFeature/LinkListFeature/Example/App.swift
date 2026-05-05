@@ -12,7 +12,7 @@ import MacLinkListFeature
 struct LinkListFeatureExampleApp: App {
 var body: some Scene {
   WindowGroup {
-    LinkListView()
+    LinkListView(viewModel: LinkListViewModel())
     }
   }
 }
