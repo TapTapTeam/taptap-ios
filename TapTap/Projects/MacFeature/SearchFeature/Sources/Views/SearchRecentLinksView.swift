@@ -47,6 +47,7 @@ public extension SearchRecentLinksView {
         Spacer()
         SearchDeleteButton(action: onClear)
       }
+      .padding(.horizontal, 20)
       .padding(.top, 8)
       .padding(.bottom, 16)
       

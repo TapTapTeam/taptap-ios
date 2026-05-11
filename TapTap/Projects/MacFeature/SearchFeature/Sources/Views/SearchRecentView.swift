@@ -39,24 +39,10 @@ public extension SearchRecentView {
           onClear()
         })
       }
+      .padding(.horizontal, 20)
       
       ForEach(recentQuery, id: \.self) { item in
-        Button {
-          onTap(item)
-        } label: {
-          HStack(spacing: 12) {
-            Image(icon: Icon.history)
-              .renderingMode(.template)
-              .foregroundStyle(.iconDisabled)
-              .frame(width: 24, height: 24)
-            
-            Text(item)
-              .font(.B1_M)
-              .foregroundStyle(.text1)
-          }
-          .frame(height: 36)
-        }
-        .buttonStyle(.plain)
+        SearchRecentRowView(item: item, onTap: onTap, onDelete: onDelete)
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)

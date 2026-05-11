@@ -54,6 +54,7 @@ public extension Icon {
   static let link = "link"
   static let plusThin = "plusThin"
   static let macEdit = "macEdit"
+  static let macX = "macX"
   static let smallChevronUp = "small-chevron-up"
   static let history = "history"
   static let openWindow = "openWindow"
