@@ -11,6 +11,7 @@ import Core
 import DesignSystem
 
 import MacHomeFeature
+import MacLinkListFeature
 import MacSearchFeature
 
 /// macOS 앱 전역 레이아웃(사이드바 고정 + 디테일 전환)을 소유하는 컨테이너 뷰.
@@ -22,6 +23,7 @@ struct RootView: View {
   @State private var isSidebarCollapsed: Bool = false
   @State private var isSeeAllSelected: Bool = true
   @State private var selectedCategoryID: UUID?
+  @State private var isLinkListEditing: Bool = false
   
   @ObservedObject var searchViewModel: SearchViewModel
   @State private var isSearchOverlayPresented: Bool = false
@@ -54,6 +56,7 @@ struct RootView: View {
       
       ZStack(alignment: .top) {
         VStack(spacing: 0) {
+<<<<<<< feature/#90-recentSearchItem
           MacToolbar(
             text: $searchViewModel.query,
             onSearchTap: {
@@ -62,6 +65,18 @@ struct RootView: View {
             }
           )
           
+=======
+          if !isLinkListEditing {
+            MacToolbar(
+              text: $searchViewModel.query,
+              onSearchTap: {
+                isSearchOverlayPresented = true
+                searchViewModel.focus()
+              }
+            )
+          }
+
+>>>>>>> develop
           if searchViewModel.hasSubmittedSearch {
             SearchView(viewModel: searchViewModel) { item in
               item.lastViewedDate = Date()
@@ -69,8 +84,7 @@ struct RootView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
           } else {
-            detailHeader
-            detailList
+            detailContent
           }
         }
         
@@ -111,44 +125,16 @@ struct RootView: View {
     allCategories.filter { !$0.isFavorite }
   }
   
-  private var detailTitle: String {
-    if isSeeAllSelected { return "모든 링크" }
-    if let id = selectedCategoryID,
-       let name = allCategories.first(where: { $0.id == id })?.categoryName {
-      return name
-    }
-    return "링크"
-  }
-  
-  private var displayedArticles: [ArticleItem] {
-    guard !isSeeAllSelected, let id = selectedCategoryID else { return articles }
-    return articles.filter { $0.category?.id == id }
-  }
-  
-  private var detailHeader: some View {
-    HStack {
-      Text(detailTitle)
-        .font(.H3)
-        .foregroundStyle(Color.text1)
-      Spacer()
-    }
-    .padding(.horizontal, 20)
-    .padding(.top, 16)
-    .padding(.bottom, 12)
-  }
-  
-  private var detailList: some View {
-    List(displayedArticles) { article in
-      VStack(alignment: .leading, spacing: 4) {
-        Text(article.title)
-          .font(.B1_M)
-        Text(article.urlString)
-          .font(.subheadline)
-          .foregroundStyle(.secondary)
+  private var detailContent: some View {
+    LinkListContainerView(
+      articles: articles,
+      categories: allCategories,
+      selectedCategoryID: selectedCategoryID,
+      isSeeAllSelected: isSeeAllSelected,
+      isEditing: $isLinkListEditing,
+      onArticleTap: { article in
+        print(article.title)
       }
-      .padding(.vertical, 4)
-    }
-    .listStyle(.inset)
+    )
   }
 }
-
