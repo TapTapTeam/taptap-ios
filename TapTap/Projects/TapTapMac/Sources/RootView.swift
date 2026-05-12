@@ -56,16 +56,6 @@ struct RootView: View {
       
       ZStack(alignment: .top) {
         VStack(spacing: 0) {
-<<<<<<< feature/#90-recentSearchItem
-          MacToolbar(
-            text: $searchViewModel.query,
-            onSearchTap: {
-              isSearchOverlayPresented = true
-              searchViewModel.focus()
-            }
-          )
-          
-=======
           if !isLinkListEditing {
             MacToolbar(
               text: $searchViewModel.query,
@@ -75,8 +65,7 @@ struct RootView: View {
               }
             )
           }
-
->>>>>>> develop
+          
           if searchViewModel.hasSubmittedSearch {
             SearchView(viewModel: searchViewModel) { item in
               item.lastViewedDate = Date()
