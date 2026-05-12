@@ -1,46 +1,43 @@
 //
 //  Project.swift
-//  LinkList
+//  MacLinkDetailFeature
 //
-//  Created by TapTap on now.
+//  Created by TapTap on 5/11/26.
 //
 
 import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.project(
-  name: MacFeatureModule.MacLinkListFeature.rawValue,
+  name: MacFeatureModule.MacLinkDetailFeature.rawValue,
   targets: [
     Target.target(
-      name: MacFeatureModule.MacLinkListFeature.rawValue,
+      name: MacFeatureModule.MacLinkDetailFeature.rawValue,
       destinations: [.mac],
       product: .staticFramework,
       sources: .sources,
-      resources: .default,
       dependencies: [
         .core(),
-        .designSystem(),
-        .macLinkDetailFeature()
+        .designSystem()
       ]
     ),
     Target.target(
-      name: "\(MacFeatureModule.MacLinkListFeature.rawValue)Example",
+      name: "\(MacFeatureModule.MacLinkDetailFeature.rawValue)Example",
       destinations: [.mac],
       product: .app,
       sources: ["Example/**"],
       dependencies: [
-        .target(name: MacFeatureModule.MacLinkListFeature.rawValue),
-        .core(),
-        .macLinkDetailFeature()
+        .target(name: MacFeatureModule.MacLinkDetailFeature.rawValue),
+        .core()
       ]
     ),
     Target.target(
-      name: "\(MacFeatureModule.MacLinkListFeature.rawValue)Tests",
+      name: "\(MacFeatureModule.MacLinkDetailFeature.rawValue)Tests",
       destinations: [.mac],
       product: .unitTests,
       sources: ["Tests/**"],
       dependencies: [
-        .target(name: MacFeatureModule.MacLinkListFeature.rawValue),
+        .target(name: MacFeatureModule.MacLinkDetailFeature.rawValue),
         .core()
       ]
     )
