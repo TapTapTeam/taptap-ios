@@ -150,6 +150,10 @@ public extension ShapeStyle where Self == Color {
   static var statePressedDim: Color { DesignSystemAsset.statePressedDim.swiftUIColor }
   static var stateTooltipbackground: Color { DesignSystemAsset.stateTooltipbackground.swiftUIColor }
 
+  // MARK: - macOS
+  
+  // MARK: hover
+  static var macDimHover: Color { DesignSystemAsset.macDimHover.swiftUIColor }
 }
 
 public extension DesignSystemAsset {

@@ -50,35 +50,50 @@ public extension SearchDropdownPanel {
       }
     }
   }
-  
+
   @ViewBuilder
   private var content: some View {
     switch viewModel.state {
     case .empty:
-      SearchQueryEmptyView()
+      if viewModel.recentLinks.isEmpty {
+        SearchQueryEmptyView()
+          .frame(maxWidth: .infinity)
+          .padding(.top, 30)
+          .padding(.bottom, 20)
+      } else {
+        SearchRecentLinksView(
+          items: viewModel.recentLinks,
+          onTap: { _ in onClose() }
+        )
         .frame(maxWidth: .infinity)
+        .padding(.horizontal, 20)
         .padding(.top, 30)
         .padding(.bottom, 20)
-      
+      }
+
     case let .recent(items):
-      SearchRecentView(
-        recentQuery: .constant(items),
-        onTap: { keyword in
-          viewModel.selectRecentKeyword(keyword)
-          onClose()
-        },
-        onDelete: { keyword in
-          viewModel.removeRecent(keyword)
-        },
-        onClear: {
-          viewModel.clearRecent()
+      VStack(alignment: .leading, spacing: 24) {
+        SearchRecentView(
+          recentQuery: .constant(items),
+          onTap: { keyword in
+            viewModel.selectRecentKeyword(keyword)
+            onClose()
+          },
+          onDelete: { viewModel.removeRecent($0) },
+          onClear: { viewModel.clearRecent() }
+        )
+
+        if !viewModel.recentLinks.isEmpty {
+          SearchRecentLinksView(
+            items: viewModel.recentLinks,
+            onTap: { _ in onClose() },
+          )
         }
-      )
-      .frame(maxWidth: .infinity)
-      .padding(.horizontal, 20)
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.top, 30)
       .padding(.bottom, 20)
-      
+
     case let .related(keywords):
       SearchRelatedView(
         keywords: keywords,
@@ -89,9 +104,21 @@ public extension SearchDropdownPanel {
         }
       )
       .frame(maxWidth: .infinity)
-      .padding(.horizontal, 20)
       .padding(.top, 30)
       .padding(.bottom, 20)
     }
+  }
+
+  private var recentLinksSection: some View {
+    SearchRecentLinksView(
+      items: viewModel.recentLinks,
+      onTap: { item in
+        onClose()
+      }
+    )
+    .frame(maxWidth: .infinity)
+    .padding(.horizontal, 20)
+    .padding(.top, 30)
+    .padding(.bottom, 20)
   }
 }
