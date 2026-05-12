@@ -33,7 +33,9 @@ public enum MacFeatureModule: String {
   case MacAddLinkFeature
   case MacHomeFeature
   case MacLinkListFeature
+  case MacLinkDetailFeature
 }
 
 extension Module: CaseIterable {}
 extension FeatureModule: CaseIterable {}
+extension MacFeatureModule: CaseIterable {}
