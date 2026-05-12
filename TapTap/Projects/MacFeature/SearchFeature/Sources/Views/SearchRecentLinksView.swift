@@ -12,8 +12,6 @@ import Core
 public struct SearchRecentLinksView: View {
   private let items: [ArticleItem]
   private let onTap: (ArticleItem) -> Void
-  private let onDelete: (String) -> Void
-  private let onClear: () -> Void
 
   private let columns = [
     GridItem(.fixed(296), spacing: 8),
@@ -23,13 +21,9 @@ public struct SearchRecentLinksView: View {
   public init(
     items: [ArticleItem],
     onTap: @escaping (ArticleItem) -> Void,
-    onDelete: @escaping (String) -> Void,
-    onClear: @escaping () -> Void
   ) {
     self.items = items
     self.onTap = onTap
-    self.onDelete = onDelete
-    self.onClear = onClear
   }
 }
 
@@ -44,10 +38,7 @@ public extension SearchRecentLinksView {
         Text("최근 본 링크")
           .font(.B2_M)
           .foregroundStyle(.caption2)
-        Spacer()
-        SearchDeleteButton(action: onClear)
       }
-      .padding(.horizontal, 20)
       .padding(.top, 8)
       .padding(.bottom, 16)
       
@@ -56,8 +47,7 @@ public extension SearchRecentLinksView {
           SearchRecentLinksCard(
             title: item.title,
             image: item.imageURL,
-            onTap: { onTap(item) },
-            onDelete: { onDelete(item.id) }
+            onTap: { onTap(item) }
           )
         }
       }

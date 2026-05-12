@@ -63,9 +63,7 @@ public extension SearchDropdownPanel {
       } else {
         SearchRecentLinksView(
           items: viewModel.recentLinks,
-          onTap: { _ in onClose() },
-          onDelete: { viewModel.removeRecentLink($0) },
-          onClear: { viewModel.clearRecentLinks() }
+          onTap: { _ in onClose() }
         )
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 20)
@@ -89,8 +87,6 @@ public extension SearchDropdownPanel {
           SearchRecentLinksView(
             items: viewModel.recentLinks,
             onTap: { _ in onClose() },
-            onDelete: { viewModel.removeRecentLink($0) },
-            onClear: { viewModel.clearRecentLinks() }
           )
         }
       }
@@ -118,12 +114,6 @@ public extension SearchDropdownPanel {
       items: viewModel.recentLinks,
       onTap: { item in
         onClose()
-      },
-      onDelete: { id in
-        viewModel.removeRecentLink(id)
-      },
-      onClear: {
-        viewModel.clearRecentLinks()
       }
     )
     .frame(maxWidth: .infinity)
