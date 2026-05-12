@@ -1,3 +1,10 @@
+//
+//  ArticleHighlightScript.js
+//  OriginalFeature
+//
+//  Created by Hong on 4/28/26.
+//
+
 let currentMemoBox = null;
 
 function renderCapsules(span, comments) {

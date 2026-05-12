@@ -46,7 +46,7 @@ extension MacArticleCard {
         .padding(.vertical, 10)
         .padding(.trailing, 10)
 
-      if visualState == .defaultHover {
+      if !isEditing && (visualState == .defaultHover || showEditMenu) {
         editButton
           .padding(.trailing, 18)
           .padding(.bottom, 18)

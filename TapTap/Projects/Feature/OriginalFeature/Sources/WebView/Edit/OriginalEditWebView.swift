@@ -1,8 +1,8 @@
 //
 //  OriginalEditWebView.swift
-//  Feature
+//  OriginalFeature
 //
-//  Created by 여성일 on 11/7/25.
+//  Created by Hong on 4/28/26.
 //
 
 import SwiftUI
@@ -129,8 +129,8 @@ public struct OriginalEditWebView: UIViewRepresentable {
         return
       }
       
-      injectCss(webView: webView, filename: "OriginalEditStyle")
-      injectJS(webView: webView, filename: "OriginalEditScript", jsonString: jsonString)
+      injectCss(webView: webView, filename: "ArticleEditStyle")
+      injectJS(webView: webView, filename: "ArticleEditScript", jsonString: jsonString)
     }
     
     private func injectCss(webView: WKWebView, filename: String) {

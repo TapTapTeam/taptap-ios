@@ -184,7 +184,7 @@ platform :ios do
       force: true,
       skip_metadata: false,
       skip_screenshots: false,
-      skip_app_version_update: true,
+      skip_app_version_update: false,
       submit_for_review: false,
       run_precheck_before_submit: false
     )

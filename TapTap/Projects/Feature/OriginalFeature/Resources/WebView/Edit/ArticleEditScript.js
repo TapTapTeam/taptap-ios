@@ -1,3 +1,10 @@
+//
+//  ArticleEditScript.js
+//  OriginalFeature
+//
+//  Created by Hong on 4/28/26.
+//
+
 
 let lastSelectedHighlightType = 'what';
 let pendingHighlightRange = null;
