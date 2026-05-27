@@ -268,37 +268,13 @@ struct RootView: View {
   }
   
   private var detailContent: some View {
-    Group {
-      switch selectedDetail {
-      case .linkList:
-        LinkListContainerView(
-          articles: articles,
-          categories: allCategories,
-          selectedCategoryID: selectedCategoryID,
-          isSeeAllSelected: isSeeAllSelected,
-          isEditing: $isLinkListEditing,
-          onArticleTap: { article in
-            print(article.title)
-          }
-        )
-
-      case .addLink:
-        AddLinkView(
-          categories: allCategories,
-          totalLinkCount: articles.count,
-          onSave: { article in
-            showSavedLink(article)
-          },
-          onShowExistingLink: {
-            selectedDetail = .linkList
-            isSeeAllSelected = true
-            selectedCategoryID = nil
-          },
-          onAddCategory: showAddCategoryPopover
-        )
-          .frame(maxWidth: .infinity, maxHeight: .infinity)
-      }
-    }
+    LinkListContainerView(
+      articles: articles,
+      categories: allCategories,
+      selectedCategoryID: selectedCategoryID,
+      isSeeAllSelected: isSeeAllSelected,
+      isEditing: $isLinkListEditing
+    )
   }
   
   private func showSavedLink(_ article: ArticleItem) {
