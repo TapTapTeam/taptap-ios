@@ -116,10 +116,7 @@ struct RootView: View {
       categories: allCategories,
       selectedCategoryID: selectedCategoryID,
       isSeeAllSelected: isSeeAllSelected,
-      isEditing: $isLinkListEditing,
-      onArticleTap: { article in
-        print(article.title)
-      }
+      isEditing: $isLinkListEditing
     )
   }
 }
