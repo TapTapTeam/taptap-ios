@@ -138,12 +138,11 @@ public struct AddLinkFeature {
         
         return .run { [linkURL = state.linkURL, selectedCategory = state.selectedCategory] send in
           do {
-            let title = try await extractTitle(from: url)
-            let image = try await extractImageURL(from: url)
+            let metadata = try await LinkService.shared.extractMetadata(from: url)
             let newLink = ArticleItem(
               urlString: linkURL,
-              title: title,
-              imageURL: image.absoluteString
+              title: metadata.title,
+              imageURL: metadata.imageURL?.absoluteString
             )
             if selectedCategory?.categoryName == "전체" {
               newLink.category = nil
@@ -196,7 +195,7 @@ public struct AddLinkFeature {
       case let .checkURLExists(urlString):
         return .run { send in
           do {
-            let exists = try await swiftDataClient.urlExists(urlString)
+            let exists = try await LinkService.shared.urlExists(urlString)
             await send(.didCheckURLExists(exists))
           } catch {
             await send(.didCheckURLExists(false))
@@ -242,66 +241,4 @@ public struct AddLinkFeature {
   }
   
   public init() {}
-  
-  //TODO: 함수들 어떻게 해야할지 생각해봐야함 SideEffect?
-  private func extractTitle(from url: URL) async throws -> String {
-    let (data, _) = try await URLSession.shared.data(from: url)
-    guard let htmlString = String(data: data, encoding: .utf8) else {
-      throw URLError(.cannotDecodeContentData)
-    }
-    
-    let regex = try NSRegularExpression(pattern: "<title[^>]*>(.*?)</title>", options: [.caseInsensitive, .dotMatchesLineSeparators])
-    if let match = regex.firstMatch(in: htmlString, options: [], range: NSRange(location: 0, length: htmlString.utf16.count)) {
-      if let titleRange = Range(match.range(at: 1), in: htmlString) {
-        let title = String(htmlString[titleRange]).trimmingCharacters(in: .whitespacesAndNewlines)
-        return title.decodeHtmlEntities()
-      }
-    }
-    throw URLError(.cannotParseResponse)
-  }
-}
-
-private func extractImageURL(from url: URL) async throws -> URL {
-  let (data, _) = try await URLSession.shared.data(from: url)
-  guard let htmlString = String(data: data, encoding: .utf8) else {
-    throw URLError(.cannotDecodeContentData)
-  }
-  
-  let ogImageRegex = try NSRegularExpression(
-    pattern: "<meta[^>]*property=[\"']og:image[\"'][^>]*content=[\"']([^\"']+)[\"'][^>]*>",
-    options: [.caseInsensitive, .dotMatchesLineSeparators]
-  )
-  if let match = ogImageRegex.firstMatch(in: htmlString, options: [], range: NSRange(location: 0, length: htmlString.utf16.count)),
-     let range = Range(match.range(at: 1), in: htmlString) {
-    let imageUrlString = String(htmlString[range])
-    if let imageUrl = URL(string: imageUrlString, relativeTo: url) {
-      return imageUrl
-    }
-  }
-  
-  let imgRegex = try NSRegularExpression(
-    pattern: "<img[^>]*src=[\"']([^\"']+)[\"'][^>]*>",
-    options: [.caseInsensitive, .dotMatchesLineSeparators]
-  )
-  if let match = imgRegex.firstMatch(in: htmlString, options: [], range: NSRange(location: 0, length: htmlString.utf16.count)),
-     let range = Range(match.range(at: 1), in: htmlString) {
-    let imageUrlString = String(htmlString[range])
-    if let imageUrl = URL(string: imageUrlString, relativeTo: url) {
-      return imageUrl
-    }
-  }
-  
-  throw URLError(.fileDoesNotExist)
-}
-
-extension SwiftDataClient {
-  @MainActor
-  func urlExists(_ urlString: String) throws -> Bool {
-    let container = AppGroupContainer.shared
-    let context = container.mainContext
-    let fetchDescriptor = FetchDescriptor<ArticleItem>(
-      predicate: #Predicate { $0.urlString == urlString }
-    )
-    return try context.fetch(fetchDescriptor).first != nil
-  }
 }
