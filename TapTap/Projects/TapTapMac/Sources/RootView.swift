@@ -76,7 +76,7 @@ struct RootView: View {
           onSettings: { }
         )
         .transition(.move(edge: .leading).combined(with: .opacity))
-        .zIndex(1)
+        .zIndex(100)
       }
       
       ZStack(alignment: .top) {

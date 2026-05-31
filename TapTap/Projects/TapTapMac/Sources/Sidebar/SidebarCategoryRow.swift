@@ -16,13 +16,14 @@ struct SidebarCategoryRow: View {
   let countText: String
   let isSelected: Bool
   @Binding var hoveredCategoryID: UUID?
+  @Binding var presentedMenuCategoryID: UUID?
   let onSelectCategory: (UUID) -> Void
   let onToggleFavorite: (UUID) -> Void
   let onDeleteCategory: (UUID) -> Void
 
-  @State private var isMenuPresented: Bool = false
-
   private var isHovered: Bool { hoveredCategoryID == categoryID }
+  private var isMenuPresented: Bool { presentedMenuCategoryID == categoryID }
+  private let trailingAccessoryWidth: CGFloat = 32
 
   var body: some View {
     HStack(spacing: 10) {
@@ -39,32 +40,23 @@ struct SidebarCategoryRow: View {
 
       if isHovered || isMenuPresented {
         Button {
-          isMenuPresented.toggle()
+          presentedMenuCategoryID = isMenuPresented ? nil : categoryID
         } label: {
           SeeMoreButton()
         }
         .buttonStyle(.plain)
-        .popover(isPresented: $isMenuPresented, arrowEdge: .trailing) {
-          SidebarCategoryMorePopup(
-            favoriteTitle: isFavorite ? "즐겨찾기에서 제거하기" : "즐겨찾기에 추가하기",
-            onToggleFavorite: {
-              isMenuPresented = false
-              onToggleFavorite(categoryID)
-            },
-            onOpenInNewTab: { isMenuPresented = false },
-            onEdit: { isMenuPresented = false },
-            onDelete: {
-              isMenuPresented = false
-              onDeleteCategory(categoryID)
-            }
-          )
+        .anchorPreference(
+          key: SidebarCategoryMenuAnchorPreferenceKey.self,
+          value: .bounds
+        ) { anchor in
+          isMenuPresented ? [categoryID: anchor] : [:]
         }
-        .padding(.trailing, 6)
+        .frame(width: trailingAccessoryWidth, alignment: .trailing)
       } else {
         Text(countText)
           .font(.B2_M)
           .foregroundStyle(SidebarForeground.caption2)
-          .padding(.trailing, 6)
+          .frame(width: trailingAccessoryWidth, alignment: .trailing)
       }
     }
     .padding(.leading, 12)
@@ -86,10 +78,22 @@ struct SidebarCategoryRow: View {
         hoveredCategoryID = nil
       }
     }
+    .zIndex(isMenuPresented ? 1 : 0)
   }
 }
 
-private struct SidebarCategoryMorePopup: View {
+struct SidebarCategoryMenuAnchorPreferenceKey: PreferenceKey {
+  static var defaultValue: [UUID: Anchor<CGRect>] = [:]
+
+  static func reduce(
+    value: inout [UUID: Anchor<CGRect>],
+    nextValue: () -> [UUID: Anchor<CGRect>]
+  ) {
+    value.merge(nextValue(), uniquingKeysWith: { _, newValue in newValue })
+  }
+}
+
+struct SidebarCategoryMorePopup: View {
   let favoriteTitle: String
   let onToggleFavorite: () -> Void
   let onOpenInNewTab: () -> Void

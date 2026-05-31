@@ -13,6 +13,7 @@ struct SidebarBookmarksView: View {
   let selectedCategoryID: UUID?
   let isSeeAllSelected: Bool
   @Binding var hoveredCategoryID: UUID?
+  @Binding var presentedMenuCategoryID: UUID?
   let onSelectCategory: (CategoryItem) -> Void
   let onToggleCategoryFavorite: (UUID) -> Void
   let onDeleteCategory: (UUID) -> Void
@@ -39,6 +40,7 @@ struct SidebarBookmarksView: View {
             countText: "\((category.links ?? []).count)개",
             isSelected: selectedCategoryID == category.id && !isSeeAllSelected,
             hoveredCategoryID: $hoveredCategoryID,
+            presentedMenuCategoryID: $presentedMenuCategoryID,
             onSelectCategory: { _ in onSelectCategory(category) },
             onToggleFavorite: onToggleCategoryFavorite,
             onDeleteCategory: onDeleteCategory

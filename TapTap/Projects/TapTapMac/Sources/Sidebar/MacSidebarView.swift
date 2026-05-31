@@ -26,6 +26,7 @@ public struct MacSidebarView: View {
   public var onSettings: () -> Void
   
   @State private var hoveredCategoryID: UUID?
+  @State private var presentedMenuCategoryID: UUID?
 
   public init(
     totalLinkCount: Int,
@@ -61,8 +62,19 @@ public struct MacSidebarView: View {
 
   public var body: some View {
     let width: CGFloat = isCollapsed ? 56 : 290
+    let sidebarShape = UnevenRoundedRectangle(
+      topLeadingRadius: 0,
+      bottomLeadingRadius: 0,
+      bottomTrailingRadius: 16,
+      topTrailingRadius: 16,
+      style: .continuous
+    )
+
     ZStack(alignment: .bottomLeading) {
-      Color.n0
+      sidebarShape
+        .fill(Color.n0)
+        .shadow(color: .bgShadow2, radius: 2, x: 0, y: 2)
+        .shadow(color: .bgShadow1, radius: 3, x: 0, y: 2)
 
       VStack(alignment: .leading, spacing: 16) {
         SidebarHeaderView(
@@ -81,6 +93,7 @@ public struct MacSidebarView: View {
             selectedCategoryID: selectedCategoryID,
             isSeeAllSelected: isSeeAllSelected,
             hoveredCategoryID: $hoveredCategoryID,
+            presentedMenuCategoryID: $presentedMenuCategoryID,
             onSelectCategory: onSelectCategory,
             onToggleCategoryFavorite: onToggleCategoryFavorite,
             onDeleteCategory: onDeleteCategory
@@ -90,6 +103,7 @@ public struct MacSidebarView: View {
             selectedCategoryID: selectedCategoryID,
             isSeeAllSelected: isSeeAllSelected,
             hoveredCategoryID: $hoveredCategoryID,
+            presentedMenuCategoryID: $presentedMenuCategoryID,
             onAddCategory: onAddCategory,
             onSelectCategory: onSelectCategory,
             onToggleCategoryFavorite: onToggleCategoryFavorite,
@@ -100,6 +114,7 @@ public struct MacSidebarView: View {
       .padding(.top, isCollapsed ? 8 : 16)
       .padding(.horizontal, isCollapsed ? 8 : 16)
       .padding(.bottom, 20)
+      .zIndex(2)
 
       VStack {
         Spacer()
@@ -111,27 +126,60 @@ public struct MacSidebarView: View {
         .frame(height: 72)
         .allowsHitTesting(false)
       }
+      .zIndex(1)
 
       if !isCollapsed {
         SidebarSettingsButton(onSettings: onSettings)
           .padding(.leading, 20)
           .padding(.bottom, 20)
+          .zIndex(1)
       }
     }
     .frame(width: width, alignment: .leading)
     .frame(maxHeight: .infinity, alignment: .topLeading)
     .ignoresSafeArea(edges: .vertical)
     .contentShape(Rectangle())
-    .clipShape(
-      UnevenRoundedRectangle(
-        topLeadingRadius: 0,
-        bottomLeadingRadius: 0,
-        bottomTrailingRadius: 16,
-        topTrailingRadius: 16,
-        style: .continuous
-      )
-    )
-    .shadow(color: .bgShadow2, radius: 2, x: 0, y: 2)
-    .shadow(color: .bgShadow1, radius: 3, x: 0, y: 2)
+    .overlayPreferenceValue(SidebarCategoryMenuAnchorPreferenceKey.self) { anchors in
+      GeometryReader { proxy in
+        if presentedMenuCategoryID != nil {
+          Color.clear
+            .contentShape(Rectangle())
+            .frame(width: 10_000, height: 10_000)
+            .offset(x: -2_000, y: -2_000)
+            .onTapGesture {
+              presentedMenuCategoryID = nil
+            }
+            .zIndex(999)
+        }
+
+        if
+          let categoryID = presentedMenuCategoryID,
+          let anchor = anchors[categoryID],
+          let category = category(id: categoryID)
+        {
+          let rect = proxy[anchor]
+
+          SidebarCategoryMorePopup(
+            favoriteTitle: category.isFavorite ? "즐겨찾기에서 제거하기" : "즐겨찾기에 추가하기",
+            onToggleFavorite: {
+              presentedMenuCategoryID = nil
+              onToggleCategoryFavorite(categoryID)
+            },
+            onOpenInNewTab: { presentedMenuCategoryID = nil },
+            onEdit: { presentedMenuCategoryID = nil },
+            onDelete: {
+              presentedMenuCategoryID = nil
+              onDeleteCategory(categoryID)
+            }
+          )
+          .offset(x: rect.minX, y: rect.minY)
+          .zIndex(1000)
+        }
+      }
+    }
+  }
+
+  private func category(id: UUID) -> CategoryItem? {
+    favoriteCategories.first { $0.id == id } ?? categories.first { $0.id == id }
   }
 }
