@@ -34,41 +34,44 @@ struct RootView: View {
   
   var body: some View {
     HStack(spacing: 0) {
-      MacSidebarView(
-        totalLinkCount: articles.count,
-        favoriteCategories: favoriteCategories,
-        categories: categoriesForList,
-        isSeeAllSelected: isSeeAllSelected,
-        selectedCategoryID: selectedCategoryID,
-        isCollapsed: isSidebarCollapsed,
-        onToggleSidebar: { withAnimation(.easeInOut(duration: 0.2)) { isSidebarCollapsed.toggle() } },
-        onAddLink: {
-          isLinkListEditing = false
-          isSearchOverlayPresented = false
-          isSaveSuccessToastPresented = false
-          searchViewModel.clearSearch()
-          isSeeAllSelected = false
-          selectedCategoryID = nil
-          selectedDetail = .addLink
-        },
-        onSeeAllLinks: {
-          selectedDetail = .linkList
-          isSaveSuccessToastPresented = false
-          isSeeAllSelected = true
-          selectedCategoryID = nil
-          searchViewModel.clearSearch()
-        },
-        onAddCategory: { },
-        onSelectCategory: { category in
-          selectedDetail = .linkList
-          isSaveSuccessToastPresented = false
-          isSeeAllSelected = false
-          selectedCategoryID = category.id
-          searchViewModel.clearSearch()
-        },
-        onSettings: { }
-      )
-      .zIndex(1)
+      if !isSidebarCollapsed {
+        MacSidebarView(
+          totalLinkCount: articles.count,
+          favoriteCategories: favoriteCategories,
+          categories: categoriesForList,
+          isSeeAllSelected: isSeeAllSelected,
+          selectedCategoryID: selectedCategoryID,
+          isCollapsed: isSidebarCollapsed,
+          onToggleSidebar: toggleSidebar,
+          onAddLink: {
+            isLinkListEditing = false
+            isSearchOverlayPresented = false
+            isSaveSuccessToastPresented = false
+            searchViewModel.clearSearch()
+            isSeeAllSelected = false
+            selectedCategoryID = nil
+            selectedDetail = .addLink
+          },
+          onSeeAllLinks: {
+            selectedDetail = .linkList
+            isSaveSuccessToastPresented = false
+            isSeeAllSelected = true
+            selectedCategoryID = nil
+            searchViewModel.clearSearch()
+          },
+          onAddCategory: { },
+          onSelectCategory: { category in
+            selectedDetail = .linkList
+            isSaveSuccessToastPresented = false
+            isSeeAllSelected = false
+            selectedCategoryID = category.id
+            searchViewModel.clearSearch()
+          },
+          onSettings: { }
+        )
+        .transition(.move(edge: .leading).combined(with: .opacity))
+        .zIndex(1)
+      }
       
       ZStack(alignment: .top) {
         VStack(spacing: 0) {
@@ -126,12 +129,28 @@ struct RootView: View {
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
       .background(Color.background)
     }
+    .overlay(alignment: .topLeading) {
+      if isSidebarCollapsed {
+        Button(action: toggleSidebar) {
+          SidebarToggleIcon(isCollapsed: true)
+        }
+        .buttonStyle(.plain)
+        .padding(.top, 16)
+        .padding(.leading, 16)
+      }
+    }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .onAppear {
       searchViewModel.updateArticles(articles)
     }
     .onChange(of: articles) { _, newValue in
       searchViewModel.updateArticles(newValue)
+    }
+  }
+
+  private func toggleSidebar() {
+    withAnimation(.easeInOut(duration: 0.2)) {
+      isSidebarCollapsed.toggle()
     }
   }
   

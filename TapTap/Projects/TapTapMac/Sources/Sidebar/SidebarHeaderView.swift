@@ -39,5 +39,6 @@ struct SidebarHeaderView: View {
       }
       .padding(.bottom, isCollapsed ? 0 : 8)
     }
+    .frame(maxWidth: .infinity, alignment: .topLeading)
   }
 }

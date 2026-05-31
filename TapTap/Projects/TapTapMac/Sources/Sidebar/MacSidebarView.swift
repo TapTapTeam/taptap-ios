@@ -102,11 +102,7 @@ public struct MacSidebarView: View {
         .allowsHitTesting(false)
       }
 
-      if isCollapsed {
-        SidebarSettingsButton(onSettings: onSettings)
-          .padding(.leading, 8)
-          .padding(.bottom, 20)
-      } else {
+      if !isCollapsed {
         SidebarSettingsButton(onSettings: onSettings)
           .padding(.leading, 20)
           .padding(.bottom, 20)
