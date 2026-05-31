@@ -39,7 +39,9 @@ struct SidebarMyLinksView: View {
 
       Button(action: onSeeAllLinks) {
         HStack(spacing: 10) {
-          MacRemoteImage(url: MacSidebarFigmaAsset.link)
+          Image(icon: Icon.linkMac)
+            .resizable()
+            .scaledToFit()
             .frame(width: 24, height: 24)
           Text("모두 보기")
             .font(.B1_SB)
@@ -63,4 +65,3 @@ struct SidebarMyLinksView: View {
     }
   }
 }
-

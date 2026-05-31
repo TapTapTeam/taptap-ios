@@ -12,7 +12,9 @@ struct SidebarSettingsButton: View {
 
   var body: some View {
     Button(action: onSettings) {
-      MacRemoteImage(url: MacSidebarFigmaAsset.settings)
+      Image(icon: Icon.settings)
+        .resizable()
+        .scaledToFit()
         .frame(width: 24, height: 24)
         .frame(width: 32, height: 32)
     }
@@ -28,4 +30,3 @@ struct SidebarSettingsButton: View {
     .shadow(color: .bgShadow3, radius: 8, x: 0, y: 0)
   }
 }
-

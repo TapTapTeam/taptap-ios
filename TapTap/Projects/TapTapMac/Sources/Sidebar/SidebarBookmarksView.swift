@@ -38,8 +38,9 @@ struct SidebarBookmarksView: View {
           )
         }
       }
+      .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.vertical, 6)
     }
+    .frame(maxWidth: .infinity, alignment: .leading)
   }
 }
-

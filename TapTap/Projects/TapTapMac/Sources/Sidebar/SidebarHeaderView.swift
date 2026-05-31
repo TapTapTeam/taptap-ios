@@ -14,15 +14,14 @@ struct SidebarHeaderView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 30) {
       if !isCollapsed {
-        MacRemoteImage(url: MacSidebarFigmaAsset.streetlights)
+        MacSidebarAssetImage(asset: MacSidebarAsset.wordmark)
           .frame(width: 52, height: 12)
       }
 
       HStack(spacing: 12) {
         if !isCollapsed {
           HStack(spacing: 12) {
-            MacRemoteImage(url: MacSidebarFigmaAsset.logo, contentMode: .fill)
-              .frame(width: 36, height: 36)
+            MacSidebarLogoIcon()
               .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
             Text("탭탭")
@@ -42,4 +41,3 @@ struct SidebarHeaderView: View {
     }
   }
 }
-

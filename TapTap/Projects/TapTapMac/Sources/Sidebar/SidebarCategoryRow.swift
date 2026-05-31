@@ -45,13 +45,15 @@ struct SidebarCategoryRow: View {
       }
       .padding(.leading, 12)
       .padding(.trailing, 6)
-      .frame(height: 36)
+      .frame(maxWidth: .infinity, minHeight: 36, maxHeight: 36, alignment: .leading)
+      .contentShape(Rectangle())
       .background(
         RoundedRectangle(cornerRadius: 8, style: .continuous)
           .fill(isSelected ? Color.bl1 : (isHovered ? Color.n20 : Color.clear))
       )
     }
     .buttonStyle(.plain)
+    .frame(maxWidth: .infinity, alignment: .leading)
     .onHover { isHovering in
       if isHovering {
         hoveredCategoryID = category.id
@@ -61,4 +63,3 @@ struct SidebarCategoryRow: View {
     }
   }
 }
-
