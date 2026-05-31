@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 import Core
 import DesignSystem
@@ -13,16 +14,24 @@ import DesignSystem
 public struct AddLinkView: View {
   private let categories: [CategoryItem]
   private let totalLinkCount: Int
+  private let onSave: (ArticleItem) -> Void
+  
+  @Environment(\.modelContext) private var modelContext
   
   @State private var linkURL: String = ""
   @State private var selectedCategoryID: UUID?
+  @State private var isSaving: Bool = false
+  @State private var statusMessage: String?
+  @State private var isStatusError: Bool = false
   
   public init(
     categories: [CategoryItem] = [],
-    totalLinkCount: Int = 0
+    totalLinkCount: Int = 0,
+    onSave: @escaping (ArticleItem) -> Void = { _ in }
   ) {
     self.categories = categories
     self.totalLinkCount = totalLinkCount
+    self.onSave = onSave
   }
   
   public var body: some View {
@@ -52,22 +61,31 @@ private extension AddLinkView {
         Spacer()
         
         Button {
+          Task {
+            await saveLink()
+          }
         } label: {
           HStack(spacing: 6) {
-            Image(systemName: "plus")
-              .font(.system(size: 15, weight: .semibold))
+            if isSaving {
+              ProgressView()
+                .controlSize(.small)
+                .frame(width: 15, height: 15)
+            } else {
+              Image(systemName: "plus")
+                .font(.system(size: 15, weight: .semibold))
+            }
             
-            Text("추가")
+            Text(isSaving ? "추가 중" : "추가")
               .font(.system(size: 16, weight: .semibold))
           }
-          .foregroundStyle(isAddButtonEnabled ? Color.bl6 : Color.caption2)
+          .foregroundStyle(canSubmit ? Color.bl6 : Color.caption2)
           .padding(.horizontal, 14)
           .padding(.vertical, 9)
-          .background(isAddButtonEnabled ? Color.bl1 : Color.n40)
+          .background(canSubmit ? Color.bl1 : Color.n40)
           .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
-        .disabled(!isAddButtonEnabled)
+        .disabled(!canSubmit)
       }
       .padding(.trailing, 32)
     }
@@ -100,8 +118,18 @@ private extension AddLinkView {
           RoundedRectangle(cornerRadius: 12, style: .continuous)
             .strokeBorder(Color.divider1, lineWidth: 1)
         }
+        .onChange(of: linkURL) { _, _ in
+          statusMessage = nil
+        }
+      
+      if let statusMessage {
+        Text(statusMessage)
+          .font(.system(size: 12, weight: .medium))
+          .foregroundStyle(isStatusError ? Color.danger : Color.caption1)
+          .padding(.horizontal, 4)
+      }
     }
-    .frame(height: 85, alignment: .top)
+    .frame(alignment: .top)
   }
   
   var categorySection: some View {
@@ -190,9 +218,72 @@ private extension AddLinkView {
     !linkURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
   }
   
+  var canSubmit: Bool {
+    isAddButtonEnabled && !isSaving
+  }
+  
   func categoryCountText(_ category: CategoryItem) -> String? {
     guard let count = category.links?.count else { return nil }
     return "\(count)개"
+  }
+  
+  func selectedCategory() -> CategoryItem? {
+    guard let selectedCategoryID else { return nil }
+    return categories.first { $0.id == selectedCategoryID }
+  }
+  
+  @MainActor
+  func saveLink() async {
+    let normalizedURLString = normalizedURLString(from: linkURL)
+    
+    guard let url = URL(string: normalizedURLString), url.scheme != nil, url.host != nil else {
+      showStatus("올바른 링크를 입력해주세요", isError: true)
+      return
+    }
+    
+    isSaving = true
+    defer { isSaving = false }
+    
+    do {
+      if try LinkService.shared.urlExists(normalizedURLString) {
+        showStatus("이미 저장된 링크입니다", isError: true)
+        return
+      }
+      
+      let metadata = try await LinkService.shared.extractMetadata(from: url)
+      let article = ArticleItem(
+        urlString: normalizedURLString,
+        title: metadata.title,
+        imageURL: metadata.imageURL?.absoluteString
+      )
+      article.category = selectedCategory()
+      
+      modelContext.insert(article)
+      try modelContext.save()
+      
+      linkURL = ""
+      selectedCategoryID = nil
+      showStatus("링크를 추가했어요", isError: false)
+      onSave(article)
+    } catch {
+      showStatus("링크 추가에 실패했어요", isError: true)
+    }
+  }
+  
+  func normalizedURLString(from rawValue: String) -> String {
+    let trimmedValue = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmedValue.isEmpty else { return trimmedValue }
+    
+    if trimmedValue.contains("://") {
+      return trimmedValue
+    }
+    
+    return "https://\(trimmedValue)"
+  }
+  
+  func showStatus(_ message: String, isError: Bool) {
+    statusMessage = message
+    isStatusError = isError
   }
 }
 

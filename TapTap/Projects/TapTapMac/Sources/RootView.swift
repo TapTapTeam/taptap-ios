@@ -139,7 +139,12 @@ struct RootView: View {
       case .addLink:
         AddLinkView(
           categories: allCategories,
-          totalLinkCount: articles.count
+          totalLinkCount: articles.count,
+          onSave: { _ in
+            selectedDetail = .linkList
+            isSeeAllSelected = true
+            selectedCategoryID = nil
+          }
         )
           .frame(maxWidth: .infinity, maxHeight: .infinity)
       }
