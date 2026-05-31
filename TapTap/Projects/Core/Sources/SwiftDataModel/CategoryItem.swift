@@ -20,4 +20,35 @@ public struct CategoryIcon: Codable, Hashable {
   }
 }
 
+public struct CategoryCommand {
+  private let context: ModelContext
+  
+  public init(context: ModelContext) {
+    self.context = context
+  }
+  
+  public func toggleFavorite(id: UUID) throws {
+    guard let category = try fetchCategory(id: id) else { return }
+    category.isFavorite.toggle()
+    try context.save()
+  }
+  
+  public func deleteCategory(id: UUID) throws {
+    guard let category = try fetchCategory(id: id) else { return }
+    category.links?.forEach { article in
+      article.category = nil
+    }
+    context.delete(category)
+    try context.save()
+  }
+  
+  private func fetchCategory(id: UUID) throws -> CategoryItem? {
+    let descriptor = FetchDescriptor<CategoryItem>(
+      predicate: #Predicate { $0.id == id }
+    )
+    
+    return try context.fetch(descriptor).first
+  }
+}
+
 // CategoryItem은 TapTapSchema.swift에서 VersionedSchema로 정의되어 있습니다.

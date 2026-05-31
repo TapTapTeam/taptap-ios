@@ -15,6 +15,8 @@ struct SidebarCategoryListView: View {
   @Binding var hoveredCategoryID: UUID?
   let onAddCategory: () -> Void
   let onSelectCategory: (CategoryItem) -> Void
+  let onToggleCategoryFavorite: (UUID) -> Void
+  let onDeleteCategory: (UUID) -> Void
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
@@ -28,11 +30,16 @@ struct SidebarCategoryListView: View {
             Color.clear.frame(height: 38)
             ForEach(categories, id: \.id) { category in
               SidebarCategoryRow(
-                category: category,
+                categoryID: category.id,
+                categoryName: category.categoryName,
+                iconNumber: category.icon.number,
+                isFavorite: category.isFavorite,
                 countText: "\((category.links ?? []).count)개",
                 isSelected: selectedCategoryID == category.id && !isSeeAllSelected,
                 hoveredCategoryID: $hoveredCategoryID,
-                onSelectCategory: onSelectCategory
+                onSelectCategory: { _ in onSelectCategory(category) },
+                onToggleFavorite: onToggleCategoryFavorite,
+                onDeleteCategory: onDeleteCategory
               )
             }
           }

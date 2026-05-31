@@ -16,6 +16,7 @@ public struct AddLinkView: View {
   private let totalLinkCount: Int
   private let onSave: (ArticleItem) -> Void
   private let onShowExistingLink: () -> Void
+  private let onAddCategory: () -> Void
   
   @Environment(\.modelContext) private var modelContext
   
@@ -30,12 +31,14 @@ public struct AddLinkView: View {
     categories: [CategoryItem] = [],
     totalLinkCount: Int = 0,
     onSave: @escaping (ArticleItem) -> Void = { _ in },
-    onShowExistingLink: @escaping () -> Void = {}
+    onShowExistingLink: @escaping () -> Void = {},
+    onAddCategory: @escaping () -> Void = {}
   ) {
     self.categories = categories
     self.totalLinkCount = totalLinkCount
     self.onSave = onSave
     self.onShowExistingLink = onShowExistingLink
+    self.onAddCategory = onAddCategory
   }
   
   public var body: some View {
@@ -89,7 +92,9 @@ private extension AddLinkView {
     }
   }
   
-  func addCategoryButtonTapped() {}
+  func addCategoryButtonTapped() {
+    onAddCategory()
+  }
   
   func linkURLChanged() {
     statusMessage = nil

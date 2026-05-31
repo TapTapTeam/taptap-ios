@@ -28,6 +28,10 @@ struct RootView: View {
   @State private var selectedDetail: DetailDestination = .linkList
   @State private var isSaveSuccessToastPresented: Bool = false
   @State private var saveSuccessCategoryName: String = "전체"
+  @State private var isAddCategoryPopoverPresented: Bool = false
+  @State private var newCategoryName: String = ""
+  @State private var selectedNewCategoryIconNumber: Int = 1
+  @State private var isDuplicateCategoryName: Bool = false
   
   @ObservedObject var searchViewModel: SearchViewModel
   @State private var isSearchOverlayPresented: Bool = false
@@ -59,7 +63,7 @@ struct RootView: View {
             selectedCategoryID = nil
             searchViewModel.clearSearch()
           },
-          onAddCategory: { },
+          onAddCategory: showAddCategoryPopover,
           onSelectCategory: { category in
             selectedDetail = .linkList
             isSaveSuccessToastPresented = false
@@ -67,6 +71,8 @@ struct RootView: View {
             selectedCategoryID = category.id
             searchViewModel.clearSearch()
           },
+          onToggleCategoryFavorite: toggleCategoryFavorite,
+          onDeleteCategory: deleteCategory,
           onSettings: { }
         )
         .transition(.move(edge: .leading).combined(with: .opacity))
@@ -139,12 +145,34 @@ struct RootView: View {
         .padding(.leading, 16)
       }
     }
+    .overlay {
+      if isAddCategoryPopoverPresented {
+        Color.bgDim
+          .ignoresSafeArea()
+          .contentShape(Rectangle())
+          .onTapGesture {
+            closeAddCategoryPopover()
+          }
+        
+        AddCategoryPopover(
+          categoryName: $newCategoryName,
+          selectedIconNumber: $selectedNewCategoryIconNumber,
+          isDuplicateName: isDuplicateCategoryName,
+          onClose: closeAddCategoryPopover,
+          onSave: saveNewCategory
+        )
+        .zIndex(30)
+      }
+    }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .onAppear {
       searchViewModel.updateArticles(articles)
     }
     .onChange(of: articles) { _, newValue in
       searchViewModel.updateArticles(newValue)
+    }
+    .onChange(of: newCategoryName) { _, _ in
+      isDuplicateCategoryName = false
     }
   }
 
@@ -160,6 +188,75 @@ struct RootView: View {
   
   private var categoriesForList: [CategoryItem] {
     allCategories.filter { !$0.isFavorite }
+  }
+
+  private func showAddCategoryPopover() {
+    isSearchOverlayPresented = false
+    isSaveSuccessToastPresented = false
+    newCategoryName = ""
+    selectedNewCategoryIconNumber = 1
+    isDuplicateCategoryName = false
+    isAddCategoryPopoverPresented = true
+  }
+
+  private func closeAddCategoryPopover() {
+    isAddCategoryPopoverPresented = false
+    newCategoryName = ""
+    selectedNewCategoryIconNumber = 1
+    isDuplicateCategoryName = false
+  }
+
+  private func saveNewCategory() {
+    let trimmedName = newCategoryName.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmedName.isEmpty else { return }
+
+    let isDuplicate = allCategories.contains {
+      $0.categoryName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == trimmedName.lowercased()
+    } || trimmedName.lowercased() == "전체"
+
+    guard !isDuplicate else {
+      isDuplicateCategoryName = true
+      return
+    }
+
+    let newCategory = CategoryItem(
+      categoryName: trimmedName,
+      icon: CategoryIcon(number: selectedNewCategoryIconNumber)
+    )
+
+    modelContext.insert(newCategory)
+
+    do {
+      try modelContext.save()
+      isSeeAllSelected = false
+      selectedCategoryID = newCategory.id
+      closeAddCategoryPopover()
+    } catch {
+      modelContext.delete(newCategory)
+      isDuplicateCategoryName = true
+    }
+  }
+
+  private func toggleCategoryFavorite(_ categoryID: UUID) {
+    do {
+      try CategoryCommand(context: modelContext).toggleFavorite(id: categoryID)
+    } catch {
+      print("Failed to toggle category favorite: \(error)")
+    }
+  }
+
+  private func deleteCategory(_ categoryID: UUID) {
+    do {
+      if selectedCategoryID == categoryID {
+        selectedDetail = .linkList
+        isSeeAllSelected = true
+        selectedCategoryID = nil
+      }
+      
+      try CategoryCommand(context: modelContext).deleteCategory(id: categoryID)
+    } catch {
+      print("Failed to delete category: \(error)")
+    }
   }
   
   private var detailContent: some View {
@@ -188,7 +285,8 @@ struct RootView: View {
             selectedDetail = .linkList
             isSeeAllSelected = true
             selectedCategoryID = nil
-          }
+          },
+          onAddCategory: showAddCategoryPopover
         )
           .frame(maxWidth: .infinity, maxHeight: .infinity)
       }

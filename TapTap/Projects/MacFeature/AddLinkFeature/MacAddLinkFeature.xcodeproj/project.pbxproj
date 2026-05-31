@@ -8,11 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		01D37453566F73E270ADC4AC /* TuistBundle+MacAddLinkFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F8B56FAA7A5AC683C9C9504 /* TuistBundle+MacAddLinkFeature.swift */; };
+		06680AF4DB939281BF928B1C /* AddLinkMainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09DB26A9BDFA22725315C7D /* AddLinkMainContentView.swift */; };
+		0CF559B9D0014FB6D310045F /* AddLinkCategoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEAA456B2502EB5FEF78CAC /* AddLinkCategoryCard.swift */; };
 		1D5D5297F3C3F1506C4FFB6A /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D071AC581F6BC3DDB4AEE6 /* App.swift */; };
-		1F3A01B941C84D08A9C7B621 /* AddLinkMainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C640882A9124311B8B470AC /* AddLinkMainContentView.swift */; };
 		2560F743D8CCE41B838F6982 /* AddLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A9F09155093C5A5C46F5291 /* AddLinkView.swift */; };
-		2B1F0CE5972B4AFD9B892B66 /* AddLinkCategoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C82726EA3143F28A19D8C0 /* AddLinkCategoryCard.swift */; };
-		36C14603C7684099B5D2E78F /* AddLinkToastViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D35C057ED54D29B04E2E64 /* AddLinkToastViews.swift */; };
 		39D4E88012568387B1D04E51 /* Core_Core.bundle in Resources */ = {isa = PBXBuildFile; fileRef = E1C029EDF2B310920368E9E8 /* Core_Core.bundle */; };
 		484BE41D5AF3CAD3370C4CC6 /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42326CCDAD038E3E54917D25 /* Core.framework */; };
 		48D484FBFB6D723634BE8A1E /* DesignSystem_DesignSystem.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 414EAE793A5F9C6ED43BDF09 /* DesignSystem_DesignSystem.bundle */; };
@@ -22,6 +21,7 @@
 		68A05E1956C962BD13223D69 /* _LottieStub.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3F0071DFD3FBC82E385D814 /* _LottieStub.framework */; };
 		76E6C47D2FE13BBEE5BE349E /* Core_Core.bundle in Resources */ = {isa = PBXBuildFile; fileRef = E1C029EDF2B310920368E9E8 /* Core_Core.bundle */; };
 		782E7FD9B1EE6493A8CAB421 /* _LottieStub.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3F0071DFD3FBC82E385D814 /* _LottieStub.framework */; };
+		78EA98686B8AAAD0B9A3001C /* DesignSystem.framework in Dependencies */ = {isa = PBXBuildFile; fileRef = E3CED1A6850DEDBA7DAED97E /* DesignSystem.framework */; };
 		808E073B2336868F1070C4C9 /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42326CCDAD038E3E54917D25 /* Core.framework */; };
 		8F21318426D25F0D330FEDF3 /* DesignSystem_DesignSystem.bundle in Dependencies */ = {isa = PBXBuildFile; fileRef = 414EAE793A5F9C6ED43BDF09 /* DesignSystem_DesignSystem.bundle */; };
 		9069D19E11786E517AD206AA /* Lottie.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EBD1D0E858AFBD725858922F /* Lottie.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -33,6 +33,7 @@
 		BF7FD844E3A266E1B9894AE2 /* DesignSystem_DesignSystem.bundle in Dependencies */ = {isa = PBXBuildFile; fileRef = 414EAE793A5F9C6ED43BDF09 /* DesignSystem_DesignSystem.bundle */; };
 		CB17C2C86EDC840B83AE1C37 /* MacAddLinkFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF6E53642E4164C67123B6A5 /* MacAddLinkFeature.framework */; };
 		CCE7046EEAD31D4EFA5CDF08 /* Core.framework in Dependencies */ = {isa = PBXBuildFile; fileRef = 42326CCDAD038E3E54917D25 /* Core.framework */; };
+		CE8B01AAAA7796E976CB4342 /* AddLinkToastViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D8CFC9A7D2040BFF57FF38 /* AddLinkToastViews.swift */; };
 		D110F396C91A8C6539E08293 /* DesignSystem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3CED1A6850DEDBA7DAED97E /* DesignSystem.framework */; };
 		D8849A4DE960E32E992E4E71 /* Lottie.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBD1D0E858AFBD725858922F /* Lottie.xcframework */; };
 		E2547D6DDF239F8C759D18A3 /* Lottie.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBD1D0E858AFBD725858922F /* Lottie.xcframework */; };
@@ -84,6 +85,7 @@
 			dstSubfolderSpec = 16;
 			files = (
 				CCE7046EEAD31D4EFA5CDF08 /* Core.framework in Dependencies */,
+				78EA98686B8AAAD0B9A3001C /* DesignSystem.framework in Dependencies */,
 			);
 			name = Dependencies;
 			runOnlyForDeploymentPostprocessing = 1;
@@ -154,19 +156,19 @@
 		619CB9C0E13211DDC439B82D /* MacAddLinkFeature_MacAddLinkFeature-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "MacAddLinkFeature_MacAddLinkFeature-Info.plist"; sourceTree = "<group>"; };
 		6881ABE55B78B3324DAB6ADD /* placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = placeholder.swift; sourceTree = "<group>"; };
 		6E3BCA51273D9519B8A754FE /* MacAddLinkFeature-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "MacAddLinkFeature-Info.plist"; sourceTree = "<group>"; };
-		7C640882A9124311B8B470AC /* AddLinkMainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLinkMainContentView.swift; sourceTree = "<group>"; };
-		83C82726EA3143F28A19D8C0 /* AddLinkCategoryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLinkCategoryCard.swift; sourceTree = "<group>"; };
 		98A436B860A74D172EA6635F /* MacAddLinkFeatureExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacAddLinkFeatureExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A9F09155093C5A5C46F5291 /* AddLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLinkView.swift; sourceTree = "<group>"; };
 		A3F0071DFD3FBC82E385D814 /* _LottieStub.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = _LottieStub.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5CBAC7E341287946B00014F /* AddLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLinkTests.swift; sourceTree = "<group>"; };
 		B79D9FE8A6B18B4EF1BEE0DB /* MacAddLinkFeatureExample-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "MacAddLinkFeatureExample-Info.plist"; sourceTree = "<group>"; };
-		C4D35C057ED54D29B04E2E64 /* AddLinkToastViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLinkToastViews.swift; sourceTree = "<group>"; };
+		DAEAA456B2502EB5FEF78CAC /* AddLinkCategoryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLinkCategoryCard.swift; sourceTree = "<group>"; };
 		DF6E53642E4164C67123B6A5 /* MacAddLinkFeature.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MacAddLinkFeature.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1C029EDF2B310920368E9E8 /* Core_Core.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Core_Core.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3CED1A6850DEDBA7DAED97E /* DesignSystem.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DesignSystem.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBD1D0E858AFBD725858922F /* Lottie.xcframework */ = {isa = PBXFileReference; expectedSignature = "SelfSigned:892F1B43047B50538F2F46EAD92900DD3D4811F3582178C061A5FB20F111CB26"; lastKnownFileType = wrapper.xcframework; path = Lottie.xcframework; sourceTree = "<group>"; };
 		F03D24A174338ED884DE72B0 /* MacAddLinkFeatureTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "MacAddLinkFeatureTests-Info.plist"; sourceTree = "<group>"; };
+		F09DB26A9BDFA22725315C7D /* AddLinkMainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLinkMainContentView.swift; sourceTree = "<group>"; };
+		F2D8CFC9A7D2040BFF57FF38 /* AddLinkToastViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLinkToastViews.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -246,9 +248,9 @@
 		2FF306CFD7B12D6AD85933EA /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				83C82726EA3143F28A19D8C0 /* AddLinkCategoryCard.swift */,
-				7C640882A9124311B8B470AC /* AddLinkMainContentView.swift */,
-				C4D35C057ED54D29B04E2E64 /* AddLinkToastViews.swift */,
+				DAEAA456B2502EB5FEF78CAC /* AddLinkCategoryCard.swift */,
+				F09DB26A9BDFA22725315C7D /* AddLinkMainContentView.swift */,
+				F2D8CFC9A7D2040BFF57FF38 /* AddLinkToastViews.swift */,
 				9A9F09155093C5A5C46F5291 /* AddLinkView.swift */,
 			);
 			path = Sources;
@@ -541,9 +543,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				01D37453566F73E270ADC4AC /* TuistBundle+MacAddLinkFeature.swift in Sources */,
-				2B1F0CE5972B4AFD9B892B66 /* AddLinkCategoryCard.swift in Sources */,
-				1F3A01B941C84D08A9C7B621 /* AddLinkMainContentView.swift in Sources */,
-				36C14603C7684099B5D2E78F /* AddLinkToastViews.swift in Sources */,
+				0CF559B9D0014FB6D310045F /* AddLinkCategoryCard.swift in Sources */,
+				06680AF4DB939281BF928B1C /* AddLinkMainContentView.swift in Sources */,
+				CE8B01AAAA7796E976CB4342 /* AddLinkToastViews.swift in Sources */,
 				2560F743D8CCE41B838F6982 /* AddLinkView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

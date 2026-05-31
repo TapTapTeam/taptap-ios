@@ -50,9 +50,17 @@ public struct CategoryRepository {
       }
   }
   
+  public func toggleFavorite(id: UUID) throws {
+    try CategoryCommand(context: context).toggleFavorite(id: id)
+  }
+  
   // MARK: - Delete
   public func deleteCategory(_ category: CategoryItem) throws {
     context.delete(category)
     try context.save()
+  }
+  
+  public func deleteCategory(id: UUID) throws {
+    try CategoryCommand(context: context).deleteCategory(id: id)
   }
 }

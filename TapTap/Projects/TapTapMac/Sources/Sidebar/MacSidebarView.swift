@@ -21,6 +21,8 @@ public struct MacSidebarView: View {
   public var onSeeAllLinks: () -> Void
   public var onAddCategory: () -> Void
   public var onSelectCategory: (CategoryItem) -> Void
+  public var onToggleCategoryFavorite: (UUID) -> Void
+  public var onDeleteCategory: (UUID) -> Void
   public var onSettings: () -> Void
   
   @State private var hoveredCategoryID: UUID?
@@ -37,6 +39,8 @@ public struct MacSidebarView: View {
     onSeeAllLinks: @escaping () -> Void,
     onAddCategory: @escaping () -> Void,
     onSelectCategory: @escaping (CategoryItem) -> Void,
+    onToggleCategoryFavorite: @escaping (UUID) -> Void,
+    onDeleteCategory: @escaping (UUID) -> Void,
     onSettings: @escaping () -> Void
   ) {
     self.totalLinkCount = totalLinkCount
@@ -50,6 +54,8 @@ public struct MacSidebarView: View {
     self.onSeeAllLinks = onSeeAllLinks
     self.onAddCategory = onAddCategory
     self.onSelectCategory = onSelectCategory
+    self.onToggleCategoryFavorite = onToggleCategoryFavorite
+    self.onDeleteCategory = onDeleteCategory
     self.onSettings = onSettings
   }
 
@@ -75,7 +81,9 @@ public struct MacSidebarView: View {
             selectedCategoryID: selectedCategoryID,
             isSeeAllSelected: isSeeAllSelected,
             hoveredCategoryID: $hoveredCategoryID,
-            onSelectCategory: onSelectCategory
+            onSelectCategory: onSelectCategory,
+            onToggleCategoryFavorite: onToggleCategoryFavorite,
+            onDeleteCategory: onDeleteCategory
           )
           SidebarCategoryListView(
             categories: categories,
@@ -83,7 +91,9 @@ public struct MacSidebarView: View {
             isSeeAllSelected: isSeeAllSelected,
             hoveredCategoryID: $hoveredCategoryID,
             onAddCategory: onAddCategory,
-            onSelectCategory: onSelectCategory
+            onSelectCategory: onSelectCategory,
+            onToggleCategoryFavorite: onToggleCategoryFavorite,
+            onDeleteCategory: onDeleteCategory
           )
         }
       }
