@@ -10,6 +10,7 @@ import SwiftUI
 import Core
 import DesignSystem
 
+import MacAddLinkFeature
 import MacHomeFeature
 import MacLinkListFeature
 import MacSearchFeature
@@ -24,6 +25,7 @@ struct RootView: View {
   @State private var isSeeAllSelected: Bool = true
   @State private var selectedCategoryID: UUID?
   @State private var isLinkListEditing: Bool = false
+  @State private var selectedDetail: DetailDestination = .linkList
   
   @ObservedObject var searchViewModel: SearchViewModel
   @State private var isSearchOverlayPresented: Bool = false
@@ -38,14 +40,23 @@ struct RootView: View {
         selectedCategoryID: selectedCategoryID,
         isCollapsed: isSidebarCollapsed,
         onToggleSidebar: { withAnimation(.easeInOut(duration: 0.2)) { isSidebarCollapsed.toggle() } },
-        onAddLink: { },
+        onAddLink: {
+          isLinkListEditing = false
+          isSearchOverlayPresented = false
+          searchViewModel.clearSearch()
+          isSeeAllSelected = false
+          selectedCategoryID = nil
+          selectedDetail = .addLink
+        },
         onSeeAllLinks: {
+          selectedDetail = .linkList
           isSeeAllSelected = true
           selectedCategoryID = nil
           searchViewModel.clearSearch()
         },
         onAddCategory: { },
         onSelectCategory: { category in
+          selectedDetail = .linkList
           isSeeAllSelected = false
           selectedCategoryID = category.id
           searchViewModel.clearSearch()
@@ -56,7 +67,7 @@ struct RootView: View {
       
       ZStack(alignment: .top) {
         VStack(spacing: 0) {
-          if !isLinkListEditing {
+          if selectedDetail == .linkList, !isLinkListEditing {
             MacToolbar(
               text: $searchViewModel.query,
               onSearchTap: {
@@ -65,8 +76,8 @@ struct RootView: View {
               }
             )
           }
-          
-          if searchViewModel.hasSubmittedSearch {
+
+          if selectedDetail == .linkList, searchViewModel.hasSubmittedSearch {
             SearchView(viewModel: searchViewModel) { item in
               item.lastViewedDate = Date()
               try? modelContext.save()
@@ -76,7 +87,7 @@ struct RootView: View {
             detailContent
           }
         }
-        
+
         if isSearchOverlayPresented {
           Color.black.opacity(0.16)
             .ignoresSafeArea()
@@ -115,15 +126,32 @@ struct RootView: View {
   }
   
   private var detailContent: some View {
-    LinkListContainerView(
-      articles: articles,
-      categories: allCategories,
-      selectedCategoryID: selectedCategoryID,
-      isSeeAllSelected: isSeeAllSelected,
-      isEditing: $isLinkListEditing,
-      onArticleTap: { article in
-        print(article.title)
+    Group {
+      switch selectedDetail {
+      case .linkList:
+        LinkListContainerView(
+          articles: articles,
+          categories: allCategories,
+          selectedCategoryID: selectedCategoryID,
+          isSeeAllSelected: isSeeAllSelected,
+          isEditing: $isLinkListEditing,
+          onArticleTap: { article in
+            print(article.title)
+          }
+        )
+
+      case .addLink:
+        AddLinkView(
+          categories: allCategories,
+          totalLinkCount: articles.count
+        )
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
       }
-    )
+    }
   }
+}
+
+private enum DetailDestination: Equatable {
+  case linkList
+  case addLink
 }
