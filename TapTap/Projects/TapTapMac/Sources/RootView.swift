@@ -148,6 +148,11 @@ struct RootView: View {
             selectedDetail = .linkList
             isSeeAllSelected = true
             selectedCategoryID = nil
+          },
+          onShowExistingLink: {
+            selectedDetail = .linkList
+            isSeeAllSelected = true
+            selectedCategoryID = nil
           }
         )
           .frame(maxWidth: .infinity, maxHeight: .infinity)
