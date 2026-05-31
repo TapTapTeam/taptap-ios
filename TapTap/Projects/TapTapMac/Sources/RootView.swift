@@ -26,6 +26,8 @@ struct RootView: View {
   @State private var selectedCategoryID: UUID?
   @State private var isLinkListEditing: Bool = false
   @State private var selectedDetail: DetailDestination = .linkList
+  @State private var isSaveSuccessToastPresented: Bool = false
+  @State private var saveSuccessCategoryName: String = "전체"
   
   @ObservedObject var searchViewModel: SearchViewModel
   @State private var isSearchOverlayPresented: Bool = false
@@ -43,6 +45,7 @@ struct RootView: View {
         onAddLink: {
           isLinkListEditing = false
           isSearchOverlayPresented = false
+          isSaveSuccessToastPresented = false
           searchViewModel.clearSearch()
           isSeeAllSelected = false
           selectedCategoryID = nil
@@ -50,6 +53,7 @@ struct RootView: View {
         },
         onSeeAllLinks: {
           selectedDetail = .linkList
+          isSaveSuccessToastPresented = false
           isSeeAllSelected = true
           selectedCategoryID = nil
           searchViewModel.clearSearch()
@@ -57,6 +61,7 @@ struct RootView: View {
         onAddCategory: { },
         onSelectCategory: { category in
           selectedDetail = .linkList
+          isSaveSuccessToastPresented = false
           isSeeAllSelected = false
           selectedCategoryID = category.id
           searchViewModel.clearSearch()
@@ -104,6 +109,19 @@ struct RootView: View {
           )
           .zIndex(10)
         }
+        
+        if isSaveSuccessToastPresented {
+          SaveSuccessToast(
+            categoryName: saveSuccessCategoryName,
+            onClose: {
+              isSaveSuccessToastPresented = false
+            }
+          )
+          .frame(maxWidth: 560)
+          .padding(.horizontal, 20)
+          .padding(.top, 60)
+          .zIndex(20)
+        }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
       .background(Color.background)
@@ -144,10 +162,8 @@ struct RootView: View {
         AddLinkView(
           categories: allCategories,
           totalLinkCount: articles.count,
-          onSave: { _ in
-            selectedDetail = .linkList
-            isSeeAllSelected = true
-            selectedCategoryID = nil
+          onSave: { article in
+            showSavedLink(article)
           },
           onShowExistingLink: {
             selectedDetail = .linkList
@@ -159,9 +175,79 @@ struct RootView: View {
       }
     }
   }
+  
+  private func showSavedLink(_ article: ArticleItem) {
+    selectedDetail = .linkList
+    isLinkListEditing = false
+    isSearchOverlayPresented = false
+    searchViewModel.clearSearch()
+    
+    if let category = article.category {
+      isSeeAllSelected = false
+      selectedCategoryID = category.id
+      saveSuccessCategoryName = category.categoryName
+    } else {
+      isSeeAllSelected = true
+      selectedCategoryID = nil
+      saveSuccessCategoryName = "전체"
+    }
+    
+    isSaveSuccessToastPresented = true
+  }
 }
 
 private enum DetailDestination: Equatable {
   case linkList
   case addLink
+}
+
+private struct SaveSuccessToast: View {
+  let categoryName: String
+  let onClose: () -> Void
+  
+  var body: some View {
+    HStack(spacing: 12) {
+      VStack(alignment: .leading, spacing: 2) {
+        Text("링크를 저장했어요!")
+          .font(.system(size: 14, weight: .semibold))
+          .foregroundStyle(Color.text1)
+        
+        Text("\(categoryName)에서 확인할 수 있어요")
+          .font(.system(size: 12, weight: .medium))
+          .foregroundStyle(Color.caption1)
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.leading, 8)
+      .padding(.vertical, 15)
+      
+      ToastCloseButtonWithoutHover {
+        onClose()
+      }
+    }
+    .padding(.horizontal, 16)
+    .background(Color.bl1)
+    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    .overlay {
+      RoundedRectangle(cornerRadius: 12, style: .continuous)
+        .strokeBorder(Color.bl6, lineWidth: 1.5)
+    }
+    .shadow(color: Color.bgShadow5, radius: 8, x: 0, y: 0)
+    .shadow(color: Color.bgShadow5, radius: 4, x: 0, y: 2)
+  }
+}
+
+private struct ToastCloseButtonWithoutHover: View {
+  let onTap: () -> Void
+  
+  var body: some View {
+    Button(action: onTap) {
+      Image(icon: Icon.x)
+        .resizable()
+        .frame(width: 24, height: 24)
+        .foregroundStyle(Color.icon)
+        .frame(width: 40, height: 40)
+        .contentShape(RoundedRectangle(cornerRadius: 8))
+    }
+    .buttonStyle(.plain)
+  }
 }
