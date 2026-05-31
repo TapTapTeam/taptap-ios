@@ -129,4 +129,3 @@ public struct MacSidebarView: View {
     .shadow(color: .bgShadow1, radius: 3, x: 0, y: 2)
   }
 }
-

@@ -36,14 +36,15 @@ struct SidebarCategoryListView: View {
               )
             }
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
           .padding(.bottom, 56)
         }
         .scrollIndicators(.hidden)
 
         SidebarCategorySectionHeader(onAddCategory: onAddCategory)
       }
-      .frame(maxHeight: .infinity)
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+    .frame(maxWidth: .infinity, alignment: .leading)
   }
 }
-

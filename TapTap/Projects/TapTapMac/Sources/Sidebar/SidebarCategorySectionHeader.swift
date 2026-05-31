@@ -47,4 +47,3 @@ struct SidebarCategorySectionHeader: View {
     .frame(height: 40)
   }
 }
-
