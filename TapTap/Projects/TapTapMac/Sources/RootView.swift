@@ -80,28 +80,8 @@ struct RootView: View {
       }
       
       ZStack(alignment: .top) {
-        VStack(spacing: 0) {
-          if selectedDetail == .linkList, !isLinkListEditing {
-            MacToolbar(
-              text: $searchViewModel.query,
-              onSearchTap: {
-                isSearchOverlayPresented = true
-                searchViewModel.focus()
-              }
-            )
-          }
-
-          if selectedDetail == .linkList, searchViewModel.hasSubmittedSearch {
-            SearchView(viewModel: searchViewModel) { item in
-              item.lastViewedDate = Date()
-              try? modelContext.save()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-          } else {
-            detailContent
-          }
-        }
-
+        contentStack
+        
         if isSearchOverlayPresented {
           Color.black.opacity(0.16)
             .ignoresSafeArea()
@@ -188,6 +168,34 @@ struct RootView: View {
   
   private var categoriesForList: [CategoryItem] {
     allCategories.filter { !$0.isFavorite }
+  }
+
+  private var contentStack: some View {
+    VStack(spacing: 0) {
+      if selectedDetail == .linkList, !isLinkListEditing {
+        MacToolbar(
+          text: $searchViewModel.query,
+          onSearchTap: {
+            isSearchOverlayPresented = true
+            searchViewModel.focus()
+          }
+        )
+      }
+
+      if selectedDetail == .linkList, searchViewModel.hasSubmittedSearch {
+        searchContent
+      } else {
+        detailContent
+      }
+    }
+  }
+
+  private var searchContent: some View {
+    SearchView(viewModel: searchViewModel, onArticleTap: { item in
+      item.lastViewedDate = Date()
+      try? modelContext.save()
+    })
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
   }
 
   private func showAddCategoryPopover() {
