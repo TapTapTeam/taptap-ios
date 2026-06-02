@@ -10,7 +10,7 @@ import ComposableArchitecture
 import OnboardingFeature
 
 extension OnboardingCoordinator {
-  @Reducer(state: .equatable, action: .equatable)
+  @Reducer
   public enum Path {
     case onboardingSafariSetting(OnboardingSafariSettingFeature)
     case onboardingHighlightMemo(OnboardingHighlightMemoFeature)
@@ -20,3 +20,7 @@ extension OnboardingCoordinator {
     case onboardingFinish(OnboardingFinishFeature)
   }
 }
+
+extension OnboardingCoordinator.Path.State: Equatable {}
+extension OnboardingCoordinator.Path.Action: Equatable {}
+extension OnboardingCoordinator.Path.CaseScope: ComposableArchitecture._CaseScopeProtocol {}
