@@ -7,31 +7,8 @@
 
 import Foundation
 import Observation
-import SwiftData
 
 import Core
-
-@MainActor
-public protocol LinkListPersistence {
-  func save() throws
-  func delete(_ article: ArticleItem)
-}
-
-public struct SwiftDataLinkListPersistence: LinkListPersistence {
-  private let modelContext: ModelContext
-
-  public init(modelContext: ModelContext) {
-    self.modelContext = modelContext
-  }
-
-  public func save() throws {
-    try modelContext.save()
-  }
-
-  public func delete(_ article: ArticleItem) {
-    modelContext.delete(article)
-  }
-}
 
 /// 링크 리스트 화면의 필터링, 정렬, 선택 상태를 관리하는 ViewModel입니다.
 @MainActor
@@ -53,6 +30,16 @@ public final class LinkListViewModel {
     public let deletedCount: Int
   }
 
+  public struct OpenedLinkTab: Identifiable, Equatable {
+    public let id: String
+    public let title: String
+
+    init(article: ArticleItem) {
+      self.id = article.id
+      self.title = article.title
+    }
+  }
+
   fileprivate struct MovedArticleSnapshot {
     let articleID: String
     let previousCategory: CategoryItem?
@@ -67,6 +54,8 @@ public final class LinkListViewModel {
   public private(set) var isDeleteAlertPresented: Bool = false
   public private(set) var moveToast: MoveToastState?
   public private(set) var deleteToast: DeleteToastState?
+  public private(set) var openedTabs: [OpenedLinkTab] = []
+  public private(set) var selectedTabID: String?
 
   public var isEditing: Bool = false
   public var selectedArticleIDs: Set<String> = [] {
@@ -131,6 +120,11 @@ public final class LinkListViewModel {
       .categoryName ?? "전체"
   }
 
+  public var selectedArticle: ArticleItem? {
+    guard let selectedTabID else { return nil }
+    return articles.first { $0.id == selectedTabID }
+  }
+
   public var deleteAlertTitle: String {
     if pendingDeleteArticles.count > 1 {
       return "\(pendingDeleteArticles.count)개의 링크를 삭제할까요?"
@@ -157,6 +151,33 @@ public final class LinkListViewModel {
     isSingleMovePickerPresented = false
     movingArticle = nil
     isEditing = true
+  }
+
+  public func openArticle(_ article: ArticleItem) {
+    if openedTabs.contains(where: { $0.id == article.id }) {
+      selectedTabID = article.id
+      return
+    }
+
+    openedTabs.append(OpenedLinkTab(article: article))
+    selectedTabID = article.id
+  }
+
+  public func selectTab(_ tabID: String) {
+    guard openedTabs.contains(where: { $0.id == tabID }) else { return }
+    selectedTabID = tabID
+  }
+
+  public func closeTab(_ tabID: String) {
+    guard let closingIndex = openedTabs.firstIndex(where: { $0.id == tabID }) else { return }
+    openedTabs.remove(at: closingIndex)
+
+    guard selectedTabID == tabID else { return }
+    if openedTabs.indices.contains(closingIndex) {
+      selectedTabID = openedTabs[closingIndex].id
+    } else {
+      selectedTabID = openedTabs.last?.id
+    }
   }
 
   public func endEditing() {
@@ -226,6 +247,8 @@ public final class LinkListViewModel {
       self.movingArticle = nil
       isSingleMovePickerPresented = false
     }
+
+    deletedIDs.forEach(closeTab)
 
     if isEditing {
       endEditing()
@@ -358,6 +381,8 @@ public final class LinkListViewModel {
 
 private extension LinkListViewModel {
   func applyFilters() {
+    syncOpenedTabs()
+
     let filteredArticles: [ArticleItem]
 
     if isSeeAllSelected || selectedCategoryID == nil {
@@ -380,6 +405,22 @@ private extension LinkListViewModel {
     }
 
     updateSelectionState()
+  }
+
+  func syncOpenedTabs() {
+    let articleIDs = Set(articles.map(\.id))
+    openedTabs = openedTabs
+      .filter { articleIDs.contains($0.id) }
+      .map { tab in
+        guard let article = articles.first(where: { $0.id == tab.id }) else {
+          return tab
+        }
+        return OpenedLinkTab(article: article)
+      }
+
+    if let selectedTabID, !articleIDs.contains(selectedTabID) {
+      self.selectedTabID = openedTabs.last?.id
+    }
   }
 
   private func showMoveToast(
