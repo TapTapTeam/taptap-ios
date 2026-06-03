@@ -59,4 +59,3 @@ extension AppCoordinator {
 
 extension AppCoordinator.Path.State: Equatable {}
 extension AppCoordinator.Path.Action: Equatable {}
-extension AppCoordinator.Path.CaseScope: ComposableArchitecture._CaseScopeProtocol {}

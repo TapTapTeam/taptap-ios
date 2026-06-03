@@ -13,11 +13,6 @@ struct SidebarHeaderView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 30) {
-      if !isCollapsed {
-        MacSidebarAssetImage(asset: MacSidebarAsset.wordmark)
-          .frame(width: 52, height: 12)
-      }
-
       HStack(spacing: 12) {
         if !isCollapsed {
           HStack(spacing: 12) {
@@ -38,7 +33,14 @@ struct SidebarHeaderView: View {
         .buttonStyle(.plain)
       }
       .padding(.bottom, isCollapsed ? 0 : 8)
+      .padding(.top, 50)
     }
     .frame(maxWidth: .infinity, alignment: .topLeading)
+  }
+}
+
+#Preview {
+  SidebarHeaderView(isCollapsed: false) {
+    
   }
 }

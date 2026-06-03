@@ -23,4 +23,3 @@ extension OnboardingCoordinator {
 
 extension OnboardingCoordinator.Path.State: Equatable {}
 extension OnboardingCoordinator.Path.Action: Equatable {}
-extension OnboardingCoordinator.Path.CaseScope: ComposableArchitecture._CaseScopeProtocol {}

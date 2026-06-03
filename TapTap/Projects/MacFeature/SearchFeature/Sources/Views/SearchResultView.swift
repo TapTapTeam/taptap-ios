@@ -30,7 +30,7 @@ public extension SearchResultView {
           SearchResultCard(
             title: item.title,
             date: formattedDate(item.createAt),
-            category: item.category?.categoryName ?? "-",
+            category: item.category?.categoryName ?? "전체",
             image: item.imageURL ?? "",
             action: {
               onTap(item)
