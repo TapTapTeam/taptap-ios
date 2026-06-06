@@ -8,6 +8,7 @@
 import SwiftUI
 
 import Core
+import MacLinkDetailFeature
 import SwiftData
 
 /// 링크 리스트의 편집, 삭제, 이동 플로우를 관리하는 컨테이너 뷰입니다.
@@ -18,64 +19,33 @@ public struct LinkListContainerView: View {
   private let categories: [CategoryItem]
   private let selectedCategoryID: UUID?
   private let isSeeAllSelected: Bool
-  private let onArticleTap: (ArticleItem) -> Void
   @Binding private var isEditing: Bool
 
   @State private var viewModel = LinkListViewModel()
+  @State private var detailViewModel: LinkDetailViewModel?
   
   public init(
     articles: [ArticleItem],
     categories: [CategoryItem],
     selectedCategoryID: UUID?,
     isSeeAllSelected: Bool,
-    isEditing: Binding<Bool>,
-    onArticleTap: @escaping (ArticleItem) -> Void = { _ in }
+    isEditing: Binding<Bool>
   ) {
     self.articles = articles
     self.categories = categories
     self.selectedCategoryID = selectedCategoryID
     self.isSeeAllSelected = isSeeAllSelected
     self._isEditing = isEditing
-    self.onArticleTap = onArticleTap
   }
   
   public var body: some View {
-    VStack(spacing: 0) {
-      if isEditing {
-        LinkEditToolbar(
-          selectedCount: viewModel.selectedArticleIDs.count,
-          onCancel: viewModel.endEditing,
-          onDelete: viewModel.requestDeleteSelectedLinks,
-          onMove: viewModel.presentMultiMovePicker
-        )
-        .popover(
-          isPresented: multiMovePickerBinding,
-          arrowEdge: .bottom
-        ) {
-          LinkMovePopover(
-            categories: categories,
-            selectedCategoryID: selectedCategoryID,
-            onSelect: viewModel.moveSelectedLinks
-          )
-        }
-      }
-      
-      LinkListView(
-        viewModel: viewModel,
-        onArticleTap: onArticleTap,
-        onMoveTap: viewModel.presentSingleMovePicker,
-        onDeleteTap: viewModel.requestDeleteSingleLink,
-        onEditTap: viewModel.beginEditing
-      )
-      .popover(
-        isPresented: singleMovePickerBinding,
-        arrowEdge: .leading
-      ) {
-        LinkMovePopover(
-          categories: categories,
-          selectedCategoryID: viewModel.movingArticle?.category?.id,
-          onSelect: viewModel.moveSingleLink
-        )
+    ZStack {
+      if let detailViewModel {
+        detailContent(detailViewModel)
+          .transition(.move(edge: .trailing).combined(with: .opacity))
+      } else {
+        listContent
+          .transition(.opacity)
       }
     }
     .overlay(alignment: .top) {
@@ -129,6 +99,9 @@ public struct LinkListContainerView: View {
     .onChange(of: viewModel.isEditing) { _, newValue in
       isEditing = newValue
     }
+    .onChange(of: viewModel.selectedTabID) { _, _ in
+      syncDetailViewModel()
+    }
     .alert(viewModel.deleteAlertTitle, isPresented: deleteAlertBinding) {
       Button("취소", role: .cancel) {
         viewModel.clearPendingDelete()
@@ -147,6 +120,66 @@ public struct LinkListContainerView: View {
 }
 
 private extension LinkListContainerView {
+  var listContent: some View {
+    VStack(spacing: 0) {
+      if isEditing {
+        LinkEditToolbar(
+          selectedCount: viewModel.selectedArticleIDs.count,
+          onCancel: viewModel.endEditing,
+          onDelete: viewModel.requestDeleteSelectedLinks,
+          onMove: viewModel.presentMultiMovePicker
+        )
+        .popover(
+          isPresented: multiMovePickerBinding,
+          arrowEdge: .bottom
+        ) {
+          LinkMovePopover(
+            categories: categories,
+            selectedCategoryID: selectedCategoryID,
+            onSelect: viewModel.moveSelectedLinks
+          )
+        }
+      }
+
+      LinkListView(
+        viewModel: viewModel,
+        onArticleTap: openArticle,
+        onMoveTap: viewModel.presentSingleMovePicker,
+        onDeleteTap: viewModel.requestDeleteSingleLink,
+        onEditTap: viewModel.beginEditing
+      )
+      .popover(
+        isPresented: singleMovePickerBinding,
+        arrowEdge: .leading
+      ) {
+        LinkMovePopover(
+          categories: categories,
+          selectedCategoryID: viewModel.movingArticle?.category?.id,
+          onSelect: viewModel.moveSingleLink
+        )
+      }
+    }
+  }
+
+  func detailContent(_ detailViewModel: LinkDetailViewModel) -> some View {
+    VStack(spacing: 0) {
+      if !viewModel.openedTabs.isEmpty {
+        LinkTabBar(
+          tabs: viewModel.openedTabs,
+          selectedTabID: viewModel.selectedTabID,
+          onSelect: selectTab,
+          onClose: closeTab
+        )
+      }
+
+      LinkDetailView(viewModel: detailViewModel)
+        .onChange(of: detailViewModel.isDeleted) { _, isDeleted in
+          guard isDeleted else { return }
+          closeTab(detailViewModel.article.id)
+        }
+    }
+  }
+
   var multiMovePickerBinding: Binding<Bool> {
     Binding(
       get: { viewModel.isMultiMovePickerPresented },
@@ -187,5 +220,39 @@ private extension LinkListContainerView {
       selectedCategoryID: selectedCategoryID,
       isSeeAllSelected: isSeeAllSelected
     )
+    syncDetailViewModel()
+  }
+
+  func openArticle(_ article: ArticleItem) {
+    viewModel.openArticle(article)
+    syncDetailViewModel()
+  }
+
+  func selectTab(_ tabID: String) {
+    viewModel.selectTab(tabID)
+    syncDetailViewModel()
+  }
+
+  func closeTab(_ tabID: String) {
+    viewModel.closeTab(tabID)
+    syncDetailViewModel()
+  }
+
+  func syncDetailViewModel() {
+    guard let selectedArticle = viewModel.selectedArticle else {
+      detailViewModel = nil
+      return
+    }
+
+    let persistence = SwiftDataLinkDetailPersistence(modelContext: modelContext)
+    if let detailViewModel, detailViewModel.article.id == selectedArticle.id {
+      detailViewModel.updateArticle(selectedArticle)
+      detailViewModel.updatePersistence(persistence)
+    } else {
+      detailViewModel = LinkDetailViewModel(
+        article: selectedArticle,
+        persistence: persistence
+      )
+    }
   }
 }
