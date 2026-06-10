@@ -54,6 +54,7 @@ public struct LinkListContainerView: View {
           LinkActionToast(
             variant: .move,
             count: moveToast.movedCount,
+            title: moveToast.categoryName,
             duration: 3,
             onUndoTap: viewModel.undoMove,
             onCloseTap: viewModel.hideMoveToast
@@ -65,6 +66,7 @@ public struct LinkListContainerView: View {
           LinkActionToast(
             variant: .delete,
             count: deleteToast.deletedCount,
+            title: deleteToast.linkTitle,
             duration: 3,
             onUndoTap: viewModel.undoDelete,
             onCloseTap: viewModel.commitPendingDelete
