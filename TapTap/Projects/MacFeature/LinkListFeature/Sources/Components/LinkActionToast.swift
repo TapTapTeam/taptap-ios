@@ -63,15 +63,15 @@ struct LinkActionToast: View {
       .padding(.leading, 12)
       .padding(.trailing, 18)
     }
-    .frame(maxWidth: .infinity)
+    .frame(maxWidth: 720)
     .frame(height: 72)
     .background(progressBackground)
     .clipShape(RoundedRectangle(cornerRadius: 14))
     .overlay {
       RoundedRectangle(cornerRadius: 14)
-        .strokeBorder(tintColor, lineWidth: 1.5)
+        .strokeBorder(tintColor, lineWidth: 1)
     }
-    .shadow(color: .bgShadow3, radius: 8, x: 0, y: 0)
+    .shadow(color: .bgShadow3, radius: 14, x: 0, y: 0)
     .onAppear {
       progress = 1
       withAnimation(.linear(duration: duration)) {
