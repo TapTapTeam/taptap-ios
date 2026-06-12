@@ -75,7 +75,7 @@ public struct LinkListContainerView: View {
         }
       }
       .padding(.horizontal, 40)
-      .padding(.top, 12)
+      .padding(.top, 20)
       .zIndex(10)
     }
     .animation(.easeInOut(duration: 0.2), value: viewModel.moveToast?.id)
@@ -103,17 +103,6 @@ public struct LinkListContainerView: View {
     }
     .onChange(of: viewModel.selectedTabID) { _, _ in
       syncDetailViewModel()
-    }
-    .alert(viewModel.deleteAlertTitle, isPresented: deleteAlertBinding) {
-      Button("취소", role: .cancel) {
-        viewModel.clearPendingDelete()
-      }
-      
-      Button("삭제", role: .destructive) {
-        viewModel.deletePendingLinks()
-      }
-    } message: {
-      Text("삭제한 링크는 복구할 수 없어요")
     }
     .onDisappear {
       viewModel.dismiss()
@@ -199,17 +188,6 @@ private extension LinkListContainerView {
       set: { isPresented in
         if !isPresented {
           viewModel.dismissSingleMovePicker()
-        }
-      }
-    )
-  }
-
-  var deleteAlertBinding: Binding<Bool> {
-    Binding(
-      get: { viewModel.isDeleteAlertPresented },
-      set: { isPresented in
-        if !isPresented {
-          viewModel.clearPendingDelete()
         }
       }
     )

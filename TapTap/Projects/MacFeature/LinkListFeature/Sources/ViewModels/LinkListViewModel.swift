@@ -53,7 +53,6 @@ public final class LinkListViewModel {
   public private(set) var isMultiMovePickerPresented: Bool = false
   public private(set) var isSingleMovePickerPresented: Bool = false
   public private(set) var movingArticle: ArticleItem?
-  public private(set) var isDeleteAlertPresented: Bool = false
   public private(set) var moveToast: MoveToastState?
   public private(set) var deleteToast: DeleteToastState?
   public private(set) var openedTabs: [OpenedLinkTab] = []
@@ -127,14 +126,6 @@ public final class LinkListViewModel {
     return articles.first { $0.id == selectedTabID }
   }
 
-  public var deleteAlertTitle: String {
-    if pendingDeleteArticles.count > 1 {
-      return "\(pendingDeleteArticles.count)개의 링크를 삭제할까요?"
-    }
-
-    return "선택한 링크를 삭제할까요?"
-  }
-
   public func formattedDate(_ date: Date) -> String {
     DateFormatter.articleDateFormatter.string(from: date)
   }
@@ -186,7 +177,6 @@ public final class LinkListViewModel {
     selectedArticleIDs.removeAll()
     isMultiMovePickerPresented = false
     isSingleMovePickerPresented = false
-    isDeleteAlertPresented = false
     pendingDeleteArticles.removeAll()
     movingArticle = nil
     isEditing = false
@@ -219,12 +209,12 @@ public final class LinkListViewModel {
     guard !selectedArticles.isEmpty else { return }
 
     pendingDeleteArticles = selectedArticles
-    isDeleteAlertPresented = true
+    deletePendingLinks()
   }
 
   public func requestDeleteSingleLink(_ article: ArticleItem) {
     pendingDeleteArticles = [article]
-    isDeleteAlertPresented = true
+    deletePendingLinks()
   }
 
   public func deletePendingLinks() {
@@ -266,7 +256,6 @@ public final class LinkListViewModel {
 
   public func clearPendingDelete() {
     pendingDeleteArticles.removeAll()
-    isDeleteAlertPresented = false
   }
 
   public func presentMultiMovePicker() {
