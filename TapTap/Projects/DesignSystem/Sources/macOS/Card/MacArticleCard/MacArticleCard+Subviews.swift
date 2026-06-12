@@ -143,32 +143,29 @@ extension MacArticleCard {
   }
 
   var selectionIndicator: some View {
-    Button {
-      isSelected.toggle()
-    } label: {
-      ZStack {
+    ZStack {
+      Circle()
+        .stroke(
+          isSelected ? Color.bl6 : Color.n90,
+          lineWidth: 1.5
+        )
+        .frame(width: 20, height: 20)
+
+      if isSelected {
         Circle()
-          .stroke(
-            isSelected ? Color.bl6 : Color.n90,
-            lineWidth: 1.5
-          )
+          .fill(Color.bl6)
           .frame(width: 20, height: 20)
 
-        if isSelected {
-          Circle()
-            .fill(Color.bl6)
-            .frame(width: 20, height: 20)
-
-          DesignSystemAsset.check.swiftUIImage
-            .renderingMode(.template)
-            .resizable()
-            .scaledToFit()
-            .frame(width: 14)
-            .foregroundStyle(.iconW)
-        }
+        DesignSystemAsset.check.swiftUIImage
+          .renderingMode(.template)
+          .resizable()
+          .scaledToFit()
+          .frame(width: 14)
+          .foregroundStyle(.iconW)
       }
     }
-    .buttonStyle(.plain)
+    .frame(width: 32, height: 32)
+    .contentShape(Rectangle())
   }
 }
 

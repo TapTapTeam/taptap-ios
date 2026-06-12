@@ -51,6 +51,9 @@ private extension LinkListHeaderView {
   
   var editHeader: some View {
     HStack(spacing: 0) {
+      Color.clear
+        .frame(width: 45)
+
       Text("\(categoryTitle) (\(totalCount)개)")
         .font(.B2_M)
         .foregroundStyle(.caption2)

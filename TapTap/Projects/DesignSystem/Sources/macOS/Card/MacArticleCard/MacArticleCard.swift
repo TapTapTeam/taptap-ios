@@ -65,31 +65,36 @@ extension MacArticleCard {
         onCardTap?()
       }
     } label: {
-      HStack(spacing: 0) {
-        textContents
-
-        Spacer(minLength: 12)
-
-        rightContents
-      }
-      .frame(maxWidth: .infinity)
-      .frame(height: 110)
-      .background(backgroundLayer)
-      .overlay(borderLayer)
-      .overlay(alignment: .leading) {
+      HStack(spacing: isEditing ? 13 : 0) {
         if isEditing {
           selectionIndicator
-            .offset(x: -33)
             .transition(.opacity.combined(with: .scale(scale: 0.8)))
         }
+
+        cardContent
       }
-      .compositingGroup()
-      .shadow(color: shadowColor, radius: shadowRadius, x: 0, y: 0)
-      .contentShape(RoundedRectangle(cornerRadius: 12))
-      .onHover { isHovered = $0 }
-      .animation(.easeInOut(duration: 0.16), value: visualState)
+      .animation(.easeInOut(duration: 0.16), value: isEditing)
     }
     .buttonStyle(CardButtonStyle { isPressed = $0 })
+  }
+
+  var cardContent: some View {
+    HStack(spacing: 0) {
+      textContents
+
+      Spacer(minLength: 12)
+
+      rightContents
+    }
+    .frame(maxWidth: .infinity)
+    .frame(height: 110)
+    .background(backgroundLayer)
+    .overlay(borderLayer)
+    .compositingGroup()
+    .shadow(color: shadowColor, radius: shadowRadius, x: 0, y: 0)
+    .contentShape(RoundedRectangle(cornerRadius: 12))
+    .onHover { isHovered = $0 }
+    .animation(.easeInOut(duration: 0.16), value: visualState)
   }
 }
 
