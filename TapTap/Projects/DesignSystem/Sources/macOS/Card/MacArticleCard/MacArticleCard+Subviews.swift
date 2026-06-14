@@ -108,38 +108,25 @@ extension MacArticleCard {
     .buttonStyle(.plain)
     .popover(isPresented: $showEditMenu, arrowEdge: .leading) {
       editMenu
+        .presentationBackground(Color.n0)
     }
   }
 
   var editMenu: some View {
-    VStack(alignment: .leading, spacing: 0) {
-      Button {
+    MacPopup(
+      normalImage: Image(systemName: "arrow.up.right.square"),
+      normalTitle: "링크 이동하기",
+      dangerImage: Image(systemName: "trash"),
+      dangerTitle: "링크 삭제하기",
+      onNormalTap: {
         showEditMenu = false
         onMoveTap?()
-      } label: {
-        Label("링크 이동하기", systemImage: "arrow.up.right.square")
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(.horizontal, 16)
-          .padding(.vertical, 12)
-          .foregroundStyle(.primary)
-      }
-      .buttonStyle(.plain)
-
-      Divider()
-
-      Button {
+      },
+      onDangerTap: {
         showEditMenu = false
         onDeleteTap?()
-      } label: {
-        Label("링크 삭제하기", systemImage: "trash")
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(.horizontal, 16)
-          .padding(.vertical, 12)
-          .foregroundStyle(.red)
       }
-      .buttonStyle(.plain)
-    }
-    .frame(width: 180)
+    )
   }
 
   var selectionIndicator: some View {

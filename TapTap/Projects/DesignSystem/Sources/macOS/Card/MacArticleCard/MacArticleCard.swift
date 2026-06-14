@@ -58,24 +58,18 @@ public struct MacArticleCard: View {
 // MARK: - View
 extension MacArticleCard {
   public var body: some View {
-    Button {
+    HStack(spacing: isEditing ? 13 : 0) {
       if isEditing {
-        isSelected.toggle()
-      } else {
-        onCardTap?()
+        selectionIndicator
+          .transition(.opacity.combined(with: .scale(scale: 0.8)))
       }
-    } label: {
-      HStack(spacing: isEditing ? 13 : 0) {
-        if isEditing {
-          selectionIndicator
-            .transition(.opacity.combined(with: .scale(scale: 0.8)))
-        }
 
-        cardContent
-      }
-      .animation(.easeInOut(duration: 0.16), value: isEditing)
+      cardContent
     }
-    .buttonStyle(CardButtonStyle { isPressed = $0 })
+    .animation(.easeInOut(duration: 0.16), value: isEditing)
+    .contentShape(RoundedRectangle(cornerRadius: 12))
+    .onTapGesture(perform: handleCardTap)
+    .simultaneousGesture(pressGesture)
   }
 
   var cardContent: some View {
@@ -95,6 +89,26 @@ extension MacArticleCard {
     .contentShape(RoundedRectangle(cornerRadius: 12))
     .onHover { isHovered = $0 }
     .animation(.easeInOut(duration: 0.16), value: visualState)
+  }
+
+  var pressGesture: some Gesture {
+    DragGesture(minimumDistance: 0)
+      .onChanged { _ in
+        if !isPressed {
+          isPressed = true
+        }
+      }
+      .onEnded { _ in
+        isPressed = false
+      }
+  }
+
+  func handleCardTap() {
+    if isEditing {
+      isSelected.toggle()
+    } else {
+      onCardTap?()
+    }
   }
 }
 
