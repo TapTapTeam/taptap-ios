@@ -114,9 +114,9 @@ extension MacArticleCard {
 
   var editMenu: some View {
     MacPopup(
-      normalImage: Image(systemName: "arrow.up.right.square"),
+      normalImage: DesignSystemAsset.openWindow.swiftUIImage,
       normalTitle: "링크 이동하기",
-      dangerImage: Image(systemName: "trash"),
+      dangerImage: DesignSystemAsset.trash.swiftUIImage,
       dangerTitle: "링크 삭제하기",
       onNormalTap: {
         showEditMenu = false
