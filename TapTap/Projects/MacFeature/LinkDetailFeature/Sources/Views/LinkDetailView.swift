@@ -81,15 +81,18 @@ private extension LinkDetailView {
     ScrollViewReader { proxy in
       ScrollView {
         VStack(alignment: .leading, spacing: 22) {
-          LinkDetailHeaderView(
-            date: viewModel.article.createAt,
-            title: viewModel.article.title
-          )
+          if !viewModel.highlights.isEmpty {
+            LinkDetailHeaderView(
+              date: viewModel.article.createAt,
+              title: viewModel.article.title
+            )
+          }
 
           HighlightListSection(
             highlights: viewModel.highlights,
             commentEditingTarget: viewModel.commentEditingTarget,
             draftCommentText: $viewModel.draftCommentText,
+            onOpenOriginalLink: openOriginalLink,
             onSelect: viewModel.selectHighlight,
             onAddComment: { highlight in
               viewModel.beginCommentAdding(to: highlight)
