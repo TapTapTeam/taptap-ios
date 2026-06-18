@@ -16,7 +16,7 @@ enum LinkDetailDeleteTarget: Equatable {
     case .article:
       return "이 링크를 삭제할까요?"
     case .highlight:
-      return "이 하이라이트를 삭제할까요?"
+      return "해당 하이라이트를 삭제할까요?"
     case .comment:
       return "해당 메모를 삭제할까요?"
     }
@@ -27,7 +27,7 @@ enum LinkDetailDeleteTarget: Equatable {
     case .article:
       return "삭제한 링크는 복구할 수 없어요"
     case .highlight:
-      return "삭제한 하이라이트는 복구할 수 없어요"
+      return "메모도 함께 삭제되며, 삭제한 하이라이트는 복구할 수 없어요"
     case .comment:
       return "삭제된 메모는 복구할 수 없어요"
     }

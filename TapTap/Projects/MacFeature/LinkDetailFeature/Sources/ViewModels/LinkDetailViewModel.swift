@@ -157,7 +157,7 @@ public final class LinkDetailViewModel {
       commentEditingTarget = nil
       draftCommentText = ""
     }
-    saveChanges(successMessage: "하이라이트 메모를 삭제했어요")
+    saveChanges(successMessage: "메모를 삭제했어요")
   }
 
   public func deleteHighlight(_ highlightID: String) {

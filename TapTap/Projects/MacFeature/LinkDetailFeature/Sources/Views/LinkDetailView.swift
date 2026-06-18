@@ -48,7 +48,13 @@ public struct LinkDetailView: View {
       }
 
       if let toastMessage = viewModel.toastMessage {
-        LinkDetailToastView(message: toastMessage)
+        LinkDetailToastView(
+          message: toastMessage,
+          onClose: viewModel.hideToast
+        )
+        .padding(.horizontal, 30)
+        .padding(.top, 32)
+        .zIndex(20)
       }
 
       if let deleteTarget {
