@@ -26,6 +26,7 @@ public struct LinkDetailView: View {
       VStack(spacing: 0) {
         LinkDetailToolbar(
           categoryName: viewModel.article.category?.categoryName ?? "전체",
+          categoryIconNumber: viewModel.article.category?.icon.number ?? 1,
           title: viewModel.article.title,
           onOpenOriginalLink: openOriginalLink,
           onOpenMemo: {
@@ -36,15 +37,18 @@ public struct LinkDetailView: View {
           }
         )
 
-        HStack(spacing: 0) {
-          detailContent
+        GeometryReader { geometry in
+          HStack(spacing: 0) {
+            detailContent
 
-          if isMemoPanelPresented {
-            memoPanel
-              .transition(.move(edge: .trailing).combined(with: .opacity))
+            if isMemoPanelPresented {
+              memoPanel
+                .frame(width: max(360, geometry.size.width * 0.5))
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+            }
           }
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
       }
 
       if let toastMessage = viewModel.toastMessage {
@@ -139,15 +143,10 @@ private extension LinkDetailView {
   var memoPanel: some View {
     LinkMemoEditor(
       text: $viewModel.editedMemo,
-      onSave: {
-        viewModel.saveMemoIfNeeded()
-      },
       onClose: closeMemoPanel
     )
-    .frame(width: 360)
     .frame(maxHeight: .infinity, alignment: .top)
-    .padding(16)
-    .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 0)
+    .shadow(color: Color.black.opacity(0.08), radius: 8, x: -2, y: 0)
   }
 
   func openOriginalLink() {
