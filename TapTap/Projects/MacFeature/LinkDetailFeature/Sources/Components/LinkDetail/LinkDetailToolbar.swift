@@ -12,6 +12,7 @@ import DesignSystem
 /// 카테고리/제목 breadcrumb와 원문, 메모, 삭제 액션을 제공하는 상단 툴바입니다.
 struct LinkDetailToolbar: View {
   let categoryName: String
+  let categoryIconNumber: Int
   let title: String
   let onOpenOriginalLink: () -> Void
   let onOpenMemo: () -> Void
@@ -32,46 +33,50 @@ struct LinkDetailToolbar: View {
           .padding(.horizontal, 14)
           .frame(height: 40)
           .background(Color.n0)
-          .clipShape(RoundedRectangle(cornerRadius: 10))
+          .clipShape(RoundedRectangle(cornerRadius: 12))
       }
       .buttonStyle(.plain)
 
       Button {
         onOpenMemo()
       } label: {
-        Image(systemName: "note.text")
-          .font(.system(size: 18, weight: .semibold))
-          .foregroundStyle(.icon)
-          .frame(width: 50, height: 40)
+        DesignSystemAsset.macEdit.swiftUIImage
+          .resizable()
+          .aspectRatio(contentMode: .fit)
+          .frame(width: 24, height: 24)
+          .foregroundStyle(.textw)
+          .frame(width: 52, height: 40)
           .background(Color.n0)
-          .clipShape(RoundedRectangle(cornerRadius: 10))
+          .clipShape(RoundedRectangle(cornerRadius: 12))
       }
       .buttonStyle(.plain)
 
       Button {
         onDelete()
       } label: {
-        Image(systemName: "trash")
-          .font(.system(size: 18, weight: .semibold))
-          .foregroundStyle(.red)
-          .frame(width: 50, height: 40)
+        DesignSystemAsset.trash.swiftUIImage
+          .resizable()
+          .aspectRatio(contentMode: .fit)
+          .frame(width: 24, height: 24)
+          .foregroundStyle(.danger)
+          .frame(width: 52, height: 40)
           .background(Color.n0)
-          .clipShape(RoundedRectangle(cornerRadius: 10))
+          .clipShape(RoundedRectangle(cornerRadius: 12))
       }
       .buttonStyle(.plain)
     }
     .padding(.horizontal, 12)
     .frame(height: 60)
-    .background(Color.bl1.opacity(0.35))
+    .background(Color.bl1)
   }
 }
 
 private extension LinkDetailToolbar {
   var breadcrumb: some View {
     HStack(spacing: 8) {
-      Image(systemName: "building.columns.fill")
-        .font(.system(size: 15, weight: .semibold))
-        .foregroundStyle(.bl6)
+      DesignSystemAsset.categoryIcon(number: categoryIconNumber)
+        .resizable()
+        .frame(width: 24, height: 24)
 
       Text("\(categoryName) / \(title)")
         .font(.B1_M)

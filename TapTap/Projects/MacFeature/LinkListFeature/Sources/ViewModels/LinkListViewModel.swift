@@ -22,12 +22,14 @@ public final class LinkListViewModel {
   public struct MoveToastState: Identifiable {
     public let id = UUID()
     public let movedCount: Int
+    public let categoryName: String?
     fileprivate let snapshots: [MovedArticleSnapshot]
   }
 
   public struct DeleteToastState: Identifiable {
     public let id = UUID()
     public let deletedCount: Int
+    public let linkTitle: String?
   }
 
   public struct OpenedLinkTab: Identifiable, Equatable {
@@ -51,7 +53,6 @@ public final class LinkListViewModel {
   public private(set) var isMultiMovePickerPresented: Bool = false
   public private(set) var isSingleMovePickerPresented: Bool = false
   public private(set) var movingArticle: ArticleItem?
-  public private(set) var isDeleteAlertPresented: Bool = false
   public private(set) var moveToast: MoveToastState?
   public private(set) var deleteToast: DeleteToastState?
   public private(set) var openedTabs: [OpenedLinkTab] = []
@@ -125,14 +126,6 @@ public final class LinkListViewModel {
     return articles.first { $0.id == selectedTabID }
   }
 
-  public var deleteAlertTitle: String {
-    if pendingDeleteArticles.count > 1 {
-      return "\(pendingDeleteArticles.count)개의 링크를 삭제할까요?"
-    }
-
-    return "선택한 링크를 삭제할까요?"
-  }
-
   public func formattedDate(_ date: Date) -> String {
     DateFormatter.articleDateFormatter.string(from: date)
   }
@@ -184,7 +177,6 @@ public final class LinkListViewModel {
     selectedArticleIDs.removeAll()
     isMultiMovePickerPresented = false
     isSingleMovePickerPresented = false
-    isDeleteAlertPresented = false
     pendingDeleteArticles.removeAll()
     movingArticle = nil
     isEditing = false
@@ -217,12 +209,12 @@ public final class LinkListViewModel {
     guard !selectedArticles.isEmpty else { return }
 
     pendingDeleteArticles = selectedArticles
-    isDeleteAlertPresented = true
+    deletePendingLinks()
   }
 
   public func requestDeleteSingleLink(_ article: ArticleItem) {
     pendingDeleteArticles = [article]
-    isDeleteAlertPresented = true
+    deletePendingLinks()
   }
 
   public func deletePendingLinks() {
@@ -255,13 +247,15 @@ public final class LinkListViewModel {
     }
 
     applyFilters()
-    showDeleteToast(deletedCount: deletedCount)
+    showDeleteToast(
+      deletedCount: deletedCount,
+      linkTitle: targetArticles.count == 1 ? targetArticles.first?.title : nil
+    )
     clearPendingDelete()
   }
 
   public func clearPendingDelete() {
     pendingDeleteArticles.removeAll()
-    isDeleteAlertPresented = false
   }
 
   public func presentMultiMovePicker() {
@@ -287,6 +281,7 @@ public final class LinkListViewModel {
     saveChanges {
       showMoveToast(
         movedCount: targetArticles.count,
+        categoryName: targetArticles.count == 1 ? categoryName(for: category) : nil,
         snapshots: snapshots
       )
       endEditing()
@@ -318,6 +313,7 @@ public final class LinkListViewModel {
     saveChanges {
       showMoveToast(
         movedCount: 1,
+        categoryName: categoryName(for: category),
         snapshots: snapshots
       )
       isSingleMovePickerPresented = false
@@ -425,16 +421,18 @@ private extension LinkListViewModel {
 
   private func showMoveToast(
     movedCount: Int,
+    categoryName: String?,
     snapshots: [MovedArticleSnapshot]
   ) {
     moveToastDismissTask?.cancel()
     moveToast = MoveToastState(
       movedCount: movedCount,
+      categoryName: categoryName,
       snapshots: snapshots
     )
 
     moveToastDismissTask = Task {
-      try? await Task.sleep(nanoseconds: 3_000_000_000)
+      try? await Task.sleep(for: .seconds(3))
       guard !Task.isCancelled else { return }
       await MainActor.run {
         hideMoveToast()
@@ -442,12 +440,18 @@ private extension LinkListViewModel {
     }
   }
 
-  func showDeleteToast(deletedCount: Int) {
+  func showDeleteToast(
+    deletedCount: Int,
+    linkTitle: String?
+  ) {
     deleteToastDismissTask?.cancel()
-    deleteToast = DeleteToastState(deletedCount: deletedCount)
+    deleteToast = DeleteToastState(
+      deletedCount: deletedCount,
+      linkTitle: linkTitle
+    )
 
     deleteToastDismissTask = Task {
-      try? await Task.sleep(nanoseconds: 3_000_000_000)
+      try? await Task.sleep(for: .seconds(3))
       guard !Task.isCancelled else { return }
       await MainActor.run {
         commitPendingDelete()
@@ -459,6 +463,10 @@ private extension LinkListViewModel {
     deleteToastDismissTask?.cancel()
     deleteToastDismissTask = nil
     deleteToast = nil
+  }
+
+  func categoryName(for category: CategoryItem?) -> String {
+    category?.categoryName ?? "전체"
   }
 
   func saveChanges(onSuccess: () -> Void) {

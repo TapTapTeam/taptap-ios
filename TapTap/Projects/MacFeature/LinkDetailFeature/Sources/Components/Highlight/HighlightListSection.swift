@@ -16,6 +16,7 @@ struct HighlightListSection: View {
   let commentEditingTarget: CommentEditingTarget?
   @Binding var draftCommentText: String
 
+  let onOpenOriginalLink: () -> Void
   let onSelect: (HighlightItem) -> Void
   let onAddComment: (HighlightItem) -> Void
   let onSaveComment: (HighlightItem) -> Void
@@ -28,7 +29,7 @@ struct HighlightListSection: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
       if highlights.isEmpty {
-        emptyStateView
+        HighlightEmptyView(onOpenOriginalLink: onOpenOriginalLink)
       } else {
         highlightListView
       }
@@ -52,29 +53,6 @@ struct HighlightListSection: View {
 }
 
 private extension HighlightListSection {
-  var emptyStateView: some View {
-    VStack(alignment: .center, spacing: 26) {
-      DesignSystemAsset.edit.swiftUIImage
-        .renderingMode(.template)
-        .resizable()
-        .aspectRatio(contentMode: .fit)
-        .foregroundStyle(.bl6)
-        .frame(width: 32, height: 32)
-
-      Text("나의 요약본이 존재하지 않아요!")
-        .font(.B1_M_HL)
-        .foregroundStyle(.text1)
-        .frame(maxWidth: .infinity)
-
-      Text("원문을 읽고 중요한 부분에\n하이라이트와 메모를 남겨보세요")
-        .font(.B3_R_HLM)
-        .foregroundStyle(.text1)
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: .infinity)
-    }
-    .padding(.top, 40)
-  }
-
   var highlightListView: some View {
     VStack(spacing: 22) {
       ForEach(HighlightSectionKind.allCases) { kind in

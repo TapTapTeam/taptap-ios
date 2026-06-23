@@ -12,26 +12,28 @@ import DesignSystem
 /// 링크에 붙는 추가 메모를 사이드 패널에서 작성하거나 수정하는 View입니다.
 struct LinkMemoEditor: View {
   @Binding var text: String
-  let onSave: () -> Void
   let onClose: () -> Void
   
   @FocusState private var isFocused: Bool
   
   var body: some View {
-    VStack(alignment: .leading, spacing: 0) {
+    VStack(alignment: .leading, spacing: 10) {
       headerView
-        .padding(.horizontal, 18)
-        .padding(.vertical, 14)
+        .padding(.horizontal, 20)
+        .padding(.top, 16)
+        .frame(height: 32)
       
       Divider()
         .background(Color.n20)
+        .padding(.horizontal, 20)
       
       textEditor
-        .padding(18)
+        .padding(.horizontal, 20)
+        .padding(.bottom, 16)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .background(Color.n0)
-    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .clipShape(UnevenRoundedRectangle(topLeadingRadius: 24))
   }
 }
 
@@ -42,6 +44,7 @@ extension LinkMemoEditor {
         .resizable()
         .aspectRatio(contentMode: .fit)
         .frame(width: 24, height: 24)
+        .padding(.leading, 10)
       
       Text("추가 메모")
         .font(.B1_M)
@@ -80,12 +83,11 @@ extension LinkMemoEditor {
         .foregroundStyle(.text1)
         .focused($isFocused)
         .scrollContentBackground(.hidden)
+        .scrollIndicators(.hidden)
         .padding(8)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Color.clear)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-    .background(Color.background)
-    .clipShape(RoundedRectangle(cornerRadius: 8))
   }
 }

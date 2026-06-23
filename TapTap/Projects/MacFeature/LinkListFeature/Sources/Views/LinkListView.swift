@@ -52,7 +52,7 @@ public struct LinkListView: View {
         articleList
       }
     }
-    .frame(maxWidth: 640)
+    .frame(maxWidth: viewModel.isEditing ? 663 : 640)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
   }
 }
@@ -88,11 +88,12 @@ private extension LinkListView {
               onDeleteTap(article)
             }
           )
-          .frame(maxWidth: viewModel.isEditing ? 570 : 600)
+          .frame(maxWidth: viewModel.isEditing ? 615 : 600)
         }
       }
       .frame(maxWidth: .infinity)
-      .padding(.horizontal, 20)
+      .padding(.horizontal, 24)
+      .padding(.top, 4)
       .padding(.bottom, 24)
     }
   }
