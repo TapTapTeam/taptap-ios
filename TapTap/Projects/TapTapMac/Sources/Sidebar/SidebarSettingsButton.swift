@@ -12,7 +12,7 @@ struct SidebarSettingsButton: View {
 
   var body: some View {
     Button(action: onSettings) {
-      Image(icon: Icon.settings)
+      Image(icon: MacIcon.setting)
         .resizable()
         .scaledToFit()
         .frame(width: 24, height: 24)
