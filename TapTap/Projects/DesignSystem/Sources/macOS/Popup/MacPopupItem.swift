@@ -73,7 +73,6 @@ public struct MacPopupItem: View {
       HStack(spacing: 8) {
         image
           .resizable()
-          .renderingMode(.template)
           .scaledToFit()
           .frame(width: 16, height: 16)
           .foregroundStyle(iconColor)

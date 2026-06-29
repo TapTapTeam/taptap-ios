@@ -40,9 +40,8 @@ struct LinkMemoEditor: View {
 extension LinkMemoEditor {
   private var headerView: some View {
     HStack(spacing: 9) {
-      DesignSystemAsset.macEdit.swiftUIImage
-        .resizable()
-        .aspectRatio(contentMode: .fit)
+      DesignSystemAsset.macSquareEdit.swiftUIImage
+        .scaledToFit()
         .frame(width: 24, height: 24)
         .padding(.leading, 10)
       

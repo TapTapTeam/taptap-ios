@@ -17,47 +17,48 @@ struct LinkDetailToolbar: View {
   let onOpenOriginalLink: () -> Void
   let onOpenMemo: () -> Void
   let onDelete: () -> Void
-
+  
   var body: some View {
     HStack(spacing: 12) {
       breadcrumb
-
+      
       Spacer()
-
+      
       Button {
         onOpenOriginalLink()
       } label: {
-        Label("링크 원문보기", systemImage: "link")
-          .font(.B1_M)
-          .foregroundStyle(.text1)
-          .padding(.horizontal, 14)
-          .frame(height: 40)
-          .background(Color.n0)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+        Label {
+          Text("링크 원문보기")
+            .font(.B1_M)
+            .foregroundStyle(.text1)
+        } icon: {
+          DesignSystemAsset.macLink.swiftUIImage
+            .resizable()
+            .scaledToFit()
+            .frame(width: 16, height: 16)
+        }
+        .padding(.horizontal, 14)
+        .frame(height: 40)
+        .background(Color.n0)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
       }
       .buttonStyle(.plain)
-
+      
       Button {
         onOpenMemo()
       } label: {
-        DesignSystemAsset.macEdit.swiftUIImage
-          .resizable()
-          .aspectRatio(contentMode: .fit)
-          .frame(width: 24, height: 24)
+        DesignSystemAsset.macSquareEdit.swiftUIImage
           .foregroundStyle(.textw)
           .frame(width: 52, height: 40)
           .background(Color.n0)
           .clipShape(RoundedRectangle(cornerRadius: 12))
       }
       .buttonStyle(.plain)
-
+      
       Button {
         onDelete()
       } label: {
-        DesignSystemAsset.trash.swiftUIImage
-          .resizable()
-          .aspectRatio(contentMode: .fit)
-          .frame(width: 24, height: 24)
+        DesignSystemAsset.macTrashBold.swiftUIImage
           .foregroundStyle(.danger)
           .frame(width: 52, height: 40)
           .background(Color.n0)
@@ -77,7 +78,7 @@ private extension LinkDetailToolbar {
       DesignSystemAsset.categoryIcon(number: categoryIconNumber)
         .resizable()
         .frame(width: 24, height: 24)
-
+      
       Text("\(categoryName) / \(title)")
         .font(.B1_M)
         .foregroundStyle(.text1)

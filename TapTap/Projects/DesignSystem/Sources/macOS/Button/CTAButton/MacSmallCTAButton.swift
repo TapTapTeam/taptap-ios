@@ -84,9 +84,9 @@ public extension MacSmallCTAButton {
       onTap()
     } label: {
       HStack(spacing: 4) {
-        Image(icon: Icon.edit)
+        Image(icon: MacIcon.edit)
           .resizable()
-          .renderingMode(.template)
+          .scaledToFit()
           .frame(width: 18, height: 18)
         
         Text(title)
