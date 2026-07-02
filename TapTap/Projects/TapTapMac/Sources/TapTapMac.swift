@@ -31,13 +31,7 @@ struct WindowAccessor: NSViewRepresentable {
     return view
   }
   
-  func updateNSView(_ nsView: NSView, context: Context) {
-    DispatchQueue.main.async {
-      if let window = nsView.window {
-        onWindowAvailable(window)
-      }
-    }
-  }
+  func updateNSView(_ nsView: NSView, context: Context) { }
 }
 
 @main
@@ -56,9 +50,11 @@ struct MacApp: App {
         .background(
           WindowAccessor { window in
             window.delegate = fullScreenDelegate
+            window.minSize = NSSize(width: 640, height: 450) // 최소 사이즈 설정
           }
         )
     }
     .windowStyle(.hiddenTitleBar)
+    .defaultSize(width: 1280, height: 720)
   }
 }
