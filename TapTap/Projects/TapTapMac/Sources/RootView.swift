@@ -36,7 +36,29 @@ struct RootView: View {
   @ObservedObject var searchViewModel: SearchViewModel
   @State private var isSearchOverlayPresented: Bool = false
   
+  @State private var wasAutoCollapsed: Bool = false
+  @State private var currentWidth: CGFloat = 0
+  private let sidebarCollapseThreshold: CGFloat = 860
+  
   var body: some View {
+    GeometryReader { geometry in
+      contentView
+        .onChange(of: geometry.size.width) { _, newWidth in
+          currentWidth = newWidth
+          if newWidth < sidebarCollapseThreshold && !isSidebarCollapsed {
+            withAnimation(.easeInOut(duration: 0.2)) { isSidebarCollapsed = true }
+            wasAutoCollapsed = true
+          }
+          if newWidth >= sidebarCollapseThreshold && isSidebarCollapsed && wasAutoCollapsed {
+            withAnimation(.easeInOut(duration: 0.2)) { isSidebarCollapsed = false }
+            wasAutoCollapsed = false
+          }
+        }
+    }
+    .frame(minWidth: 640, minHeight: 450)
+  }
+  
+  private var contentView: some View {
     HStack(spacing: 0) {
       if !isSidebarCollapsed {
         MacSidebarView(
@@ -154,8 +176,9 @@ struct RootView: View {
     .onChange(of: newCategoryName) { _, _ in
       isDuplicateCategoryName = false
     }
+    
   }
-
+  
   private func toggleSidebar() {
     withAnimation(.easeInOut(duration: 0.2)) {
       isSidebarCollapsed.toggle()
@@ -169,7 +192,7 @@ struct RootView: View {
   private var categoriesForList: [CategoryItem] {
     allCategories.filter { !$0.isFavorite }
   }
-
+  
   private var contentStack: some View {
     VStack(spacing: 0) {
       if selectedDetail == .linkList, !isLinkListEditing {
@@ -182,7 +205,7 @@ struct RootView: View {
           backForwardLeadingPadding: isSidebarCollapsed ? 68 : 20
         )
       }
-
+      
       if selectedDetail == .linkList, searchViewModel.hasSubmittedSearch {
         searchContent
       } else {
@@ -190,7 +213,7 @@ struct RootView: View {
       }
     }
   }
-
+  
   private var searchContent: some View {
     SearchView(viewModel: searchViewModel, onArticleTap: { item in
       item.lastViewedDate = Date()
@@ -198,7 +221,7 @@ struct RootView: View {
     })
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
   }
-
+  
   private func showAddCategoryPopover() {
     isSearchOverlayPresented = false
     isSaveSuccessToastPresented = false
@@ -207,34 +230,34 @@ struct RootView: View {
     isDuplicateCategoryName = false
     isAddCategoryPopoverPresented = true
   }
-
+  
   private func closeAddCategoryPopover() {
     isAddCategoryPopoverPresented = false
     newCategoryName = ""
     selectedNewCategoryIconNumber = 1
     isDuplicateCategoryName = false
   }
-
+  
   private func saveNewCategory() {
     let trimmedName = newCategoryName.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !trimmedName.isEmpty else { return }
-
+    
     let isDuplicate = allCategories.contains {
       $0.categoryName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == trimmedName.lowercased()
     } || trimmedName.lowercased() == "전체"
-
+    
     guard !isDuplicate else {
       isDuplicateCategoryName = true
       return
     }
-
+    
     let newCategory = CategoryItem(
       categoryName: trimmedName,
       icon: CategoryIcon(number: selectedNewCategoryIconNumber)
     )
-
+    
     modelContext.insert(newCategory)
-
+    
     do {
       try modelContext.save()
       isSeeAllSelected = false
@@ -245,7 +268,7 @@ struct RootView: View {
       isDuplicateCategoryName = true
     }
   }
-
+  
   private func toggleCategoryFavorite(_ categoryID: UUID) {
     do {
       try CategoryCommand(context: modelContext).toggleFavorite(id: categoryID)
@@ -253,7 +276,7 @@ struct RootView: View {
       print("Failed to toggle category favorite: \(error)")
     }
   }
-
+  
   private func deleteCategory(_ categoryID: UUID) {
     do {
       if selectedCategoryID == categoryID {
