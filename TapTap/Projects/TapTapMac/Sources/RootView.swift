@@ -144,7 +144,7 @@ struct RootView: View {
         }
         .buttonStyle(.plain)
         .padding(.top, 16)
-        .padding(.leading, 16)
+        .padding(.leading, 12)
       }
     }
     .overlay {
@@ -202,7 +202,7 @@ struct RootView: View {
             isSearchOverlayPresented = true
             searchViewModel.focus()
           },
-          backForwardLeadingPadding: isSidebarCollapsed ? 68 : 20
+          backForwardLeadingPadding: isSidebarCollapsed ? 56 : 20
         )
       }
       
