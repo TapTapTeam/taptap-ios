@@ -178,7 +178,8 @@ struct RootView: View {
           onSearchTap: {
             isSearchOverlayPresented = true
             searchViewModel.focus()
-          }
+          },
+          backForwardLeadingPadding: isSidebarCollapsed ? 68 : 20
         )
       }
 
