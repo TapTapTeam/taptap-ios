@@ -127,8 +127,8 @@ struct RootView: View {
             SidebarToggleIcon(isCollapsed: true)
           }
           .buttonStyle(.plain)
-          .padding(.top, 16)
-          .padding(.leading, 12)
+          .padding(.top, 20)
+          .padding(.leading, 20)
         }
       }
       .overlay {
@@ -215,7 +215,7 @@ struct RootView: View {
             isSearchOverlayPresented = true
             searchViewModel.focus()
           },
-          backForwardLeadingPadding: isSidebarCollapsed ? 56 : 20
+          backForwardLeadingPadding: isSidebarCollapsed ? 72 : 20
         )
       }
       

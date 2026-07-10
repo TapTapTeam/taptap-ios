@@ -49,7 +49,7 @@ struct SidebarToggleIcon: View {
       .resizable()
       .scaledToFit()
       .frame(width: 24, height: 24)
-    .frame(width: 32, height: 32)
+    .frame(width: 40, height: 40)
     .background(
       RoundedRectangle(cornerRadius: 8, style: .continuous)
         .fill(Color.n0)
