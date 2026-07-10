@@ -184,6 +184,7 @@ struct RootView: View {
               }
             )
             .padding(.horizontal, currentWidth <= 720 ? 20 : 0)
+            .padding(.bottom, 20)
             Spacer()
           }
           .frame(maxWidth: .infinity)
