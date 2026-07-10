@@ -14,8 +14,8 @@ public struct SearchRecentLinksView: View {
   private let onTap: (ArticleItem) -> Void
 
   private let columns = [
-    GridItem(.fixed(296), spacing: 8),
-    GridItem(.fixed(296), spacing: 8)
+    GridItem(.flexible(), spacing: 8),
+    GridItem(.flexible(), spacing: 8)
   ]
 
   public init(
@@ -31,7 +31,6 @@ public extension SearchRecentLinksView {
   var body: some View {
     VStack(alignment: .leading) {
       Divider()
-        .padding(.horizontal, -20) // 상위 뷰에서 20만큼 패딩을 주고 있기 때문에 -20 처리
         .padding(.bottom, 12)
       
       HStack {
@@ -40,6 +39,7 @@ public extension SearchRecentLinksView {
           .foregroundStyle(.caption2)
       }
       .padding(.top, 8)
+      .padding(.leading, 20)
       .padding(.bottom, 16)
       
       LazyVGrid(columns: columns, spacing: 8) {
@@ -51,6 +51,7 @@ public extension SearchRecentLinksView {
           )
         }
       }
+      .padding(.horizontal, 20)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
   }

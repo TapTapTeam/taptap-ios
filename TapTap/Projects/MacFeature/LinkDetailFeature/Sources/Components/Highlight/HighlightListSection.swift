@@ -85,9 +85,9 @@ private extension HighlightListSection {
     case let .highlight(highlightID):
       if let highlight = highlights.first(where: { $0.id == highlightID }) {
         MacPopup(
-          normalImage: Image(systemName: "text.badge.plus"),
+          normalImage: Image(icon: MacIcon.plusCircle),
           normalTitle: "메모 추가하기",
-          dangerImage: Image(systemName: "trash"),
+          dangerImage: Image(icon: MacIcon.trashBold),
           dangerTitle: "삭제하기",
           onNormalTap: {
             popupTarget = nil
@@ -104,9 +104,9 @@ private extension HighlightListSection {
       if let highlight = highlights.first(where: { $0.id == highlightID }),
          let comment = highlight.comments.first(where: { $0.id == commentID }) {
         MacPopup(
-          normalImage: Image(systemName: "pencil"),
+          normalImage: Image(icon: MacIcon.edit),
           normalTitle: "수정하기",
-          dangerImage: Image(systemName: "trash"),
+          dangerImage: Image(icon: MacIcon.trashBold),
           dangerTitle: "삭제하기",
           onNormalTap: {
             popupTarget = nil

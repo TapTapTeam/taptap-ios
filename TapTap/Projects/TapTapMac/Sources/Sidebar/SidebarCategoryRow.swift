@@ -104,7 +104,7 @@ struct SidebarCategoryMorePopup: View {
     VStack(alignment: .leading, spacing: 2) {
       SidebarCategoryMorePopupButton(
         title: favoriteTitle,
-        icon: Icon.bookmark,
+        icon: MacIcon.bookmark,
         action: onToggleFavorite
       )
 
@@ -114,19 +114,19 @@ struct SidebarCategoryMorePopup: View {
 
       SidebarCategoryMorePopupButton(
         title: "새 탭에서 열기",
-        icon: Icon.openWindow,
+        icon: MacIcon.openWindow,
         action: onOpenInNewTab
       )
 
       SidebarCategoryMorePopupButton(
         title: "카테고리 편집하기",
-        icon: Icon.macEdit,
+        icon: MacIcon.sidebarEdit,
         action: onEdit
       )
 
       SidebarCategoryMorePopupButton(
         title: "카테고리 삭제하기",
-        icon: Icon.trash,
+        icon: MacIcon.trash,
         foregroundColor: Color.danger,
         backgroundColor: Color.bgDimDanger,
         action: onDelete

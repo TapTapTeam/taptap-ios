@@ -39,7 +39,7 @@ struct SidebarMyLinksView: View {
 
       Button(action: onSeeAllLinks) {
         HStack(spacing: 10) {
-          Image(icon: Icon.linkMac)
+          Image(icon: isSeeAllSelected ? MacIcon.linkActive : MacIcon.linkInactive)
             .resizable()
             .scaledToFit()
             .frame(width: 24, height: 24)
@@ -49,7 +49,7 @@ struct SidebarMyLinksView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
           Text("\(totalLinkCount)개")
             .font(.B2_M)
-            .foregroundStyle(Color.bl8)
+            .foregroundStyle(isSeeAllSelected ? Color.bl8 : Color.caption2)
             .padding(.horizontal, 6)
         }
         .padding(.leading, 12)

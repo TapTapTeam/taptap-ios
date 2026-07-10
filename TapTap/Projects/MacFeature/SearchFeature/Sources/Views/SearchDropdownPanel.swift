@@ -36,12 +36,13 @@ public extension SearchDropdownPanel {
           onClose()
         }
       )
+      .padding(.horizontal, 20)
       .padding(.top, 20)
       
       content
     }
-    .frame(width: 640)
-    .frame(minHeight: 300, alignment: .top)
+    .frame(maxWidth: 640)
+    .frame(minHeight: 300, maxHeight: 713, alignment: .top)
     .background(.n0)
     .clipShape(RoundedRectangle(cornerRadius: 16))
     .onAppear {
@@ -61,14 +62,15 @@ public extension SearchDropdownPanel {
           .padding(.top, 30)
           .padding(.bottom, 20)
       } else {
-        SearchRecentLinksView(
-          items: viewModel.recentLinks,
-          onTap: { _ in onClose() }
-        )
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, 20)
-        .padding(.top, 30)
-        .padding(.bottom, 20)
+        ScrollView {
+          SearchRecentLinksView(
+            items: viewModel.recentLinks,
+            onTap: { _ in onClose() }
+          )
+          .frame(maxWidth: .infinity)
+          .padding(.top, 30)
+          .padding(.bottom, 20)
+        }
       }
 
     case let .recent(items):
@@ -84,15 +86,17 @@ public extension SearchDropdownPanel {
         )
 
         if !viewModel.recentLinks.isEmpty {
-          SearchRecentLinksView(
-            items: viewModel.recentLinks,
-            onTap: { _ in onClose() },
-          )
+          ScrollView {
+            SearchRecentLinksView(
+              items: viewModel.recentLinks,
+              onTap: { _ in onClose() }
+            )
+            .padding(.bottom, 20)
+          }
         }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.top, 30)
-      .padding(.bottom, 20)
 
     case let .related(keywords):
       SearchRelatedView(

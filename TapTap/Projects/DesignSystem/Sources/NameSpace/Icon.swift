@@ -53,13 +53,35 @@ public extension Icon {
   static let linkMac = "linkMac"
   static let link = "link"
   static let plusThin = "plusThin"
-  static let macEdit = "macEdit"
   static let macX = "macX"
   static let smallChevronUp = "small-chevron-up"
   static let history = "history"
   static let openWindow = "openWindow"
   static let sidebarClose = "sidebarClose"
   static let sidebarOpen = "sidebarOpen"
+}
+
+public enum MacIcon {}
+
+public extension MacIcon {
+  static let logo = "mac_logo"
+  static let sidebarOpen = "mac_sidebar_open"
+  static let sidebarClose = "mac_sidebar_close"
+  static let sidebarEdit = "mac_sidebar_edit"
+  static let plus = "mac_plus"
+  static let plusCircle = "mac_plus_circle"
+  static let close = "mac_close"
+  static let more = "mac_more"
+  static let linkActive = "mac_linkActive"
+  static let linkInactive = "mac_linkInactive"
+  static let openWindow = "mac_openWindow"
+  static let trash = "mac_trash"
+  static let bookmark = "mac_bookmark"
+  static let edit = "mac_edit"
+  static let setting = "mac_setting"
+  static let squareEdit = "mac_square_edit"
+  static let trashBold = "mac_trash_bold"
+  static let link = "mac_link"
 }
 
 public extension Image {

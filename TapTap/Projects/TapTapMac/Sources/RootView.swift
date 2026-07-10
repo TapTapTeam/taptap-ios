@@ -36,126 +36,164 @@ struct RootView: View {
   @ObservedObject var searchViewModel: SearchViewModel
   @State private var isSearchOverlayPresented: Bool = false
   
+  @State private var wasAutoCollapsed: Bool = false
+  @State private var currentWidth: CGFloat = 0
+  private let sidebarCollapseThreshold: CGFloat = 860
+  
   var body: some View {
-    HStack(spacing: 0) {
-      if !isSidebarCollapsed {
-        MacSidebarView(
-          totalLinkCount: articles.count,
-          favoriteCategories: favoriteCategories,
-          categories: categoriesForList,
-          isSeeAllSelected: isSeeAllSelected,
-          selectedCategoryID: selectedCategoryID,
-          isCollapsed: isSidebarCollapsed,
-          onToggleSidebar: toggleSidebar,
-          onAddLink: {
-            isLinkListEditing = false
-            isSearchOverlayPresented = false
-            isSaveSuccessToastPresented = false
-            searchViewModel.clearSearch()
-            isSeeAllSelected = false
-            selectedCategoryID = nil
-            selectedDetail = .addLink
-          },
-          onSeeAllLinks: {
-            selectedDetail = .linkList
-            isSaveSuccessToastPresented = false
-            isSeeAllSelected = true
-            selectedCategoryID = nil
-            searchViewModel.clearSearch()
-          },
-          onAddCategory: showAddCategoryPopover,
-          onSelectCategory: { category in
-            selectedDetail = .linkList
-            isSaveSuccessToastPresented = false
-            isSeeAllSelected = false
-            selectedCategoryID = category.id
-            searchViewModel.clearSearch()
-          },
-          onToggleCategoryFavorite: toggleCategoryFavorite,
-          onDeleteCategory: deleteCategory,
-          onSettings: { }
-        )
-        .transition(.move(edge: .leading).combined(with: .opacity))
-        .zIndex(100)
+    GeometryReader { geometry in
+      contentView
+        .onChange(of: geometry.size.width) { _, newWidth in
+          currentWidth = newWidth
+          if newWidth < sidebarCollapseThreshold && !isSidebarCollapsed {
+            withAnimation(.easeInOut(duration: 0.2)) { isSidebarCollapsed = true }
+            wasAutoCollapsed = true
+          }
+          if newWidth >= sidebarCollapseThreshold && isSidebarCollapsed && wasAutoCollapsed {
+            withAnimation(.easeInOut(duration: 0.2)) { isSidebarCollapsed = false }
+            wasAutoCollapsed = false
+          }
+        }
+    }
+    .frame(minWidth: 640, minHeight: 450)
+  }
+  
+  private var contentView: some View {
+    ZStack(alignment: .top) {
+      HStack(spacing: 0) {
+        if !isSidebarCollapsed {
+          MacSidebarView(
+            totalLinkCount: articles.count,
+            favoriteCategories: favoriteCategories,
+            categories: categoriesForList,
+            isSeeAllSelected: isSeeAllSelected,
+            selectedCategoryID: selectedCategoryID,
+            isCollapsed: isSidebarCollapsed,
+            onToggleSidebar: toggleSidebar,
+            onAddLink: {
+              isLinkListEditing = false
+              isSearchOverlayPresented = false
+              isSaveSuccessToastPresented = false
+              searchViewModel.clearSearch()
+              isSeeAllSelected = false
+              selectedCategoryID = nil
+              selectedDetail = .addLink
+            },
+            onSeeAllLinks: {
+              selectedDetail = .linkList
+              isSaveSuccessToastPresented = false
+              isSeeAllSelected = true
+              selectedCategoryID = nil
+              searchViewModel.clearSearch()
+            },
+            onAddCategory: showAddCategoryPopover,
+            onSelectCategory: { category in
+              selectedDetail = .linkList
+              isSaveSuccessToastPresented = false
+              isSeeAllSelected = false
+              selectedCategoryID = category.id
+              searchViewModel.clearSearch()
+            },
+            onToggleCategoryFavorite: toggleCategoryFavorite,
+            onDeleteCategory: deleteCategory,
+            onSettings: { }
+          )
+          .transition(.move(edge: .leading).combined(with: .opacity))
+          .zIndex(100)
+        }
+
+        ZStack(alignment: .top) {
+          contentStack
+
+          if isSaveSuccessToastPresented {
+            SaveSuccessToast(
+              categoryName: saveSuccessCategoryName,
+              onClose: {
+                isSaveSuccessToastPresented = false
+              }
+            )
+            .frame(maxWidth: 560)
+            .padding(.horizontal, 20)
+            .padding(.top, 60)
+            .zIndex(20)
+          }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(Color.background)
       }
-      
-      ZStack(alignment: .top) {
-        contentStack
-        
-        if isSearchOverlayPresented {
-          Color.black.opacity(0.16)
+      .overlay(alignment: .topLeading) {
+        if isSidebarCollapsed {
+          Button(action: toggleSidebar) {
+            SidebarToggleIcon(isCollapsed: true)
+          }
+          .buttonStyle(.plain)
+          .padding(.top, 20)
+          .padding(.leading, 20)
+        }
+      }
+      .overlay {
+        if isAddCategoryPopoverPresented {
+          Color.bgDim
             .ignoresSafeArea()
             .contentShape(Rectangle())
             .onTapGesture {
-              isSearchOverlayPresented = false
+              closeAddCategoryPopover()
             }
-          
-          SearchDropdownPanel(
-            viewModel: searchViewModel,
-            onClose: {
-              isSearchOverlayPresented = false
-            }
+
+          AddCategoryPopover(
+            categoryName: $newCategoryName,
+            selectedIconNumber: $selectedNewCategoryIconNumber,
+            isDuplicateName: isDuplicateCategoryName,
+            onClose: closeAddCategoryPopover,
+            onSave: saveNewCategory
           )
-          .zIndex(10)
-        }
-        
-        if isSaveSuccessToastPresented {
-          SaveSuccessToast(
-            categoryName: saveSuccessCategoryName,
-            onClose: {
-              isSaveSuccessToastPresented = false
-            }
-          )
-          .frame(maxWidth: 560)
-          .padding(.horizontal, 20)
-          .padding(.top, 60)
-          .zIndex(20)
+          .zIndex(30)
         }
       }
-      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-      .background(Color.background)
-    }
-    .overlay(alignment: .topLeading) {
-      if isSidebarCollapsed {
-        Button(action: toggleSidebar) {
-          SidebarToggleIcon(isCollapsed: true)
-        }
-        .buttonStyle(.plain)
-        .padding(.top, 16)
-        .padding(.leading, 16)
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .onAppear {
+        searchViewModel.updateArticles(articles)
       }
-    }
-    .overlay {
-      if isAddCategoryPopoverPresented {
-        Color.bgDim
+      .onChange(of: articles) { _, newValue in
+        searchViewModel.updateArticles(newValue)
+      }
+      .onChange(of: newCategoryName) { _, _ in
+        isDuplicateCategoryName = false
+      }
+
+      if isSearchOverlayPresented {
+        Color.black.opacity(0.16)
           .ignoresSafeArea()
           .contentShape(Rectangle())
           .onTapGesture {
-            closeAddCategoryPopover()
+            isSearchOverlayPresented = false
           }
-        
-        AddCategoryPopover(
-          categoryName: $newCategoryName,
-          selectedIconNumber: $selectedNewCategoryIconNumber,
-          isDuplicateName: isDuplicateCategoryName,
-          onClose: closeAddCategoryPopover,
-          onSave: saveNewCategory
-        )
-        .zIndex(30)
+          .zIndex(1)
+      }
+
+      if isSearchOverlayPresented {
+        HStack(spacing: 0) {
+          if !isSidebarCollapsed {
+            Color.clear.frame(width: 290)
+          }
+          VStack(spacing: 0) {
+            SearchDropdownPanel(
+              viewModel: searchViewModel,
+              onClose: {
+                isSearchOverlayPresented = false
+              }
+            )
+            .padding(.horizontal, currentWidth <= 720 ? 20 : 0)
+            .padding(.bottom, 20)
+            Spacer()
+          }
+          .frame(maxWidth: .infinity)
+        }
+        .zIndex(2)
       }
     }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .onAppear {
-      searchViewModel.updateArticles(articles)
-    }
-    .onChange(of: articles) { _, newValue in
-      searchViewModel.updateArticles(newValue)
-    }
-    .onChange(of: newCategoryName) { _, _ in
-      isDuplicateCategoryName = false
-    }
   }
-
+  
   private func toggleSidebar() {
     withAnimation(.easeInOut(duration: 0.2)) {
       isSidebarCollapsed.toggle()
@@ -169,7 +207,7 @@ struct RootView: View {
   private var categoriesForList: [CategoryItem] {
     allCategories.filter { !$0.isFavorite }
   }
-
+  
   private var contentStack: some View {
     VStack(spacing: 0) {
       if selectedDetail == .linkList, !isLinkListEditing {
@@ -178,10 +216,11 @@ struct RootView: View {
           onSearchTap: {
             isSearchOverlayPresented = true
             searchViewModel.focus()
-          }
+          },
+          backForwardLeadingPadding: isSidebarCollapsed ? 72 : 20
         )
       }
-
+      
       if selectedDetail == .linkList, searchViewModel.hasSubmittedSearch {
         searchContent
       } else {
@@ -189,7 +228,7 @@ struct RootView: View {
       }
     }
   }
-
+  
   private var searchContent: some View {
     SearchView(viewModel: searchViewModel, onArticleTap: { item in
       item.lastViewedDate = Date()
@@ -197,7 +236,7 @@ struct RootView: View {
     })
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
   }
-
+  
   private func showAddCategoryPopover() {
     isSearchOverlayPresented = false
     isSaveSuccessToastPresented = false
@@ -206,34 +245,34 @@ struct RootView: View {
     isDuplicateCategoryName = false
     isAddCategoryPopoverPresented = true
   }
-
+  
   private func closeAddCategoryPopover() {
     isAddCategoryPopoverPresented = false
     newCategoryName = ""
     selectedNewCategoryIconNumber = 1
     isDuplicateCategoryName = false
   }
-
+  
   private func saveNewCategory() {
     let trimmedName = newCategoryName.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !trimmedName.isEmpty else { return }
-
+    
     let isDuplicate = allCategories.contains {
       $0.categoryName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == trimmedName.lowercased()
     } || trimmedName.lowercased() == "전체"
-
+    
     guard !isDuplicate else {
       isDuplicateCategoryName = true
       return
     }
-
+    
     let newCategory = CategoryItem(
       categoryName: trimmedName,
       icon: CategoryIcon(number: selectedNewCategoryIconNumber)
     )
-
+    
     modelContext.insert(newCategory)
-
+    
     do {
       try modelContext.save()
       isSeeAllSelected = false
@@ -244,7 +283,7 @@ struct RootView: View {
       isDuplicateCategoryName = true
     }
   }
-
+  
   private func toggleCategoryFavorite(_ categoryID: UUID) {
     do {
       try CategoryCommand(context: modelContext).toggleFavorite(id: categoryID)
@@ -252,7 +291,7 @@ struct RootView: View {
       print("Failed to toggle category favorite: \(error)")
     }
   }
-
+  
   private func deleteCategory(_ categoryID: UUID) {
     do {
       if selectedCategoryID == categoryID {

@@ -33,7 +33,8 @@ public extension SearchRecentLinksCard {
           Text(title)
             .font(.B1_M)
             .lineLimit(2)
-            .frame(width: 210, height: 42, alignment: .leading)
+            .frame(maxWidth: .infinity)
+            .frame(height: 42, alignment: .leading)
             .foregroundStyle(.text1)
 
           thumbnailView
@@ -53,7 +54,7 @@ public extension SearchRecentLinksCard {
           }
         }
       }
-      .frame(width: 296)
+      .frame(maxWidth: .infinity)
       .contentShape(Rectangle())
       .background(Color.background)
       .buttonStyle(.plain)

@@ -8,6 +8,7 @@ import SwiftUI
 import DesignSystem
 
 enum MacSidebarAsset {
+  static let logo = DesignSystemAsset.macLogo
   static let wordmark = DesignSystemAsset.logo
   static let logoLeft = DesignSystemAsset.logoLeft
   static let logoRight = DesignSystemAsset.logoRight
@@ -33,13 +34,10 @@ struct MacSidebarAssetImage: View {
 
 struct MacSidebarLogoIcon: View {
   var body: some View {
-    HStack(spacing: -2) {
-      MacSidebarAssetImage(asset: MacSidebarAsset.logoLeft)
-        .frame(width: 20, height: 20)
-      MacSidebarAssetImage(asset: MacSidebarAsset.logoRight)
-        .frame(width: 20, height: 20)
-    }
-    .frame(width: 36, height: 36)
+    Image(icon: MacIcon.logo)
+      .resizable()
+      .scaledToFit()
+      .frame(width: 36, height: 36)
   }
 }
 
@@ -47,11 +45,11 @@ struct SidebarToggleIcon: View {
   var isCollapsed: Bool
 
   var body: some View {
-    Image(icon: isCollapsed ? Icon.sidebarOpen : Icon.sidebarClose)
+    Image(icon: isCollapsed ? MacIcon.sidebarOpen : MacIcon.sidebarClose)
       .resizable()
       .scaledToFit()
       .frame(width: 24, height: 24)
-    .frame(width: 32, height: 32)
+    .frame(width: 40, height: 40)
     .background(
       RoundedRectangle(cornerRadius: 8, style: .continuous)
         .fill(Color.n0)
@@ -65,7 +63,7 @@ struct SidebarToggleIcon: View {
 
 struct SidebarPlusIcon: View {
   var body: some View {
-    Image(icon: Icon.plusThin)
+    Image(icon: MacIcon.plus)
       .resizable()
       .scaledToFit()
       .frame(width: 24, height: 24)
@@ -79,7 +77,7 @@ struct SeeMoreButton: View {
         .fill(Color.n30)
         .frame(width: 24, height: 24)
 
-      Image(icon: Icon.moreVertical)
+      Image(icon: MacIcon.more)
         .resizable()
         .scaledToFit()
         .frame(width: 16, height: 16)
