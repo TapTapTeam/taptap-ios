@@ -24,17 +24,24 @@ public struct MacToolbar: View {
     self.backForwardLeadingPadding = backForwardLeadingPadding
   }
   
+  private var navRightEdge: CGFloat {
+    backForwardLeadingPadding + 80 + 12
+  }
+  
   private var searchBarWidth: CGFloat {
-    let navRightEdge = backForwardLeadingPadding + 80
-    let gap: CGFloat = 12
-    let maxWidth = containerWidth - 2 * (navRightEdge + gap)
-    return min(600, max(100, maxWidth))
+    let available = containerWidth - navRightEdge - 20 // 오른쪽 20고정
+    return min(600, max(100, available))
+  }
+  
+  private var searchBarLeadingPadding: CGFloat {
+    let centeredLeft = containerWidth / 2 - searchBarWidth / 2
+    return max(navRightEdge, centeredLeft) // nav+12 이하로는 안 붙음
   }
 }
 
 public extension MacToolbar {
   var body: some View {
-    ZStack {
+    ZStack(alignment: .leading) {
       HStack {
         MacBackForwardButton(
           onBackTap: {},
@@ -49,6 +56,7 @@ public extension MacToolbar {
         onTap: onSearchTap
       )
       .frame(width: searchBarWidth)
+      .padding(.leading, searchBarLeadingPadding)
     }
     .padding(.vertical, 20)
     .background(
