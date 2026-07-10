@@ -40,6 +40,7 @@ public extension SearchRecentLinksView {
           .foregroundStyle(.caption2)
       }
       .padding(.top, 8)
+      .padding(.leading, 20)
       .padding(.bottom, 16)
       
       LazyVGrid(columns: columns, spacing: 8) {
