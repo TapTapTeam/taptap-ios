@@ -183,6 +183,7 @@ struct RootView: View {
                 isSearchOverlayPresented = false
               }
             )
+            .padding(.horizontal, currentWidth <= 720 ? 20 : 0)
             Spacer()
           }
           .frame(maxWidth: .infinity)
