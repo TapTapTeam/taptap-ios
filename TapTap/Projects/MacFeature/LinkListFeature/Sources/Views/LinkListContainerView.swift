@@ -39,13 +39,25 @@ public struct LinkListContainerView: View {
   }
   
   public var body: some View {
-    ZStack {
-      if let detailViewModel {
-        detailContent(detailViewModel)
-          .transition(.move(edge: .trailing).combined(with: .opacity))
-      } else {
-        listContent
-          .transition(.opacity)
+    VStack(spacing: 0) {
+      if !viewModel.openedTabs.isEmpty {
+        LinkTabBar(
+          tabs: viewModel.openedTabs,
+          selectedTabID: viewModel.selectedTabID,
+          onSelect: selectTab,
+          onClose: closeTab,
+          onNewTab: beginNewTabSelection
+        )
+      }
+
+      ZStack {
+        if let detailViewModel {
+          detailContent(detailViewModel)
+            .transition(.move(edge: .trailing).combined(with: .opacity))
+        } else {
+          listContent
+            .transition(.opacity)
+        }
       }
     }
     .overlay(alignment: .top) {
@@ -153,22 +165,12 @@ private extension LinkListContainerView {
   }
 
   func detailContent(_ detailViewModel: LinkDetailViewModel) -> some View {
-    VStack(spacing: 0) {
-      if !viewModel.openedTabs.isEmpty {
-        LinkTabBar(
-          tabs: viewModel.openedTabs,
-          selectedTabID: viewModel.selectedTabID,
-          onSelect: selectTab,
-          onClose: closeTab
-        )
+    LinkDetailView(viewModel: detailViewModel)
+      .onChange(of: detailViewModel.isDeleted) { _, isDeleted in
+        guard isDeleted else { return }
+        viewModel.closeTabs(articleIDs: [detailViewModel.article.id])
+        syncDetailViewModel()
       }
-
-      LinkDetailView(viewModel: detailViewModel)
-        .onChange(of: detailViewModel.isDeleted) { _, isDeleted in
-          guard isDeleted else { return }
-          closeTab(detailViewModel.article.id)
-        }
-    }
   }
 
   var multiMovePickerBinding: Binding<Bool> {
@@ -215,6 +217,11 @@ private extension LinkListContainerView {
 
   func closeTab(_ tabID: String) {
     viewModel.closeTab(tabID)
+    syncDetailViewModel()
+  }
+
+  func beginNewTabSelection() {
+    viewModel.beginNewTabSelection()
     syncDetailViewModel()
   }
 

@@ -34,11 +34,27 @@ public final class LinkListViewModel {
 
   public struct OpenedLinkTab: Identifiable, Equatable {
     public let id: String
+    public let articleID: String?
     public let title: String
 
-    init(article: ArticleItem) {
-      self.id = article.id
+    init(article: ArticleItem, id: String = UUID().uuidString) {
+      self.id = id
+      self.articleID = article.id
       self.title = article.title
+    }
+
+    static func newTab() -> OpenedLinkTab {
+      OpenedLinkTab(
+        id: UUID().uuidString,
+        articleID: nil,
+        title: "새 탭"
+      )
+    }
+
+    private init(id: String, articleID: String?, title: String) {
+      self.id = id
+      self.articleID = articleID
+      self.title = title
     }
   }
 
@@ -57,6 +73,7 @@ public final class LinkListViewModel {
   public private(set) var deleteToast: DeleteToastState?
   public private(set) var openedTabs: [OpenedLinkTab] = []
   public private(set) var selectedTabID: String?
+  public private(set) var isSelectingNewTabArticle: Bool = false
 
   public var isEditing: Bool = false
   public var selectedArticleIDs: Set<String> = [] {
@@ -112,6 +129,10 @@ public final class LinkListViewModel {
   }
 
   public var categoryTitle: String {
+    if isSelectingNewTabArticle {
+      return "전체"
+    }
+
     if isSeeAllSelected {
       return "전체"
     }
@@ -122,8 +143,12 @@ public final class LinkListViewModel {
   }
 
   public var selectedArticle: ArticleItem? {
-    guard let selectedTabID else { return nil }
-    return articles.first { $0.id == selectedTabID }
+    guard
+      let selectedTabID,
+      let articleID = openedTabs.first(where: { $0.id == selectedTabID })?.articleID
+    else { return nil }
+
+    return articles.first { $0.id == articleID }
   }
 
   public func formattedDate(_ date: Date) -> String {
@@ -140,37 +165,74 @@ public final class LinkListViewModel {
   }
 
   public func beginEditing() {
+    isSelectingNewTabArticle = false
     selectedArticleIDs.removeAll()
     isSingleMovePickerPresented = false
     movingArticle = nil
     isEditing = true
   }
 
+  public func beginNewTabSelection() {
+    let tab = OpenedLinkTab.newTab()
+    openedTabs.append(tab)
+    selectedTabID = tab.id
+    isSelectingNewTabArticle = true
+    endEditing()
+    applyFilters()
+  }
+
   public func openArticle(_ article: ArticleItem) {
-    if openedTabs.contains(where: { $0.id == article.id }) {
-      selectedTabID = article.id
+    if let selectedTabID,
+       let selectedIndex = openedTabs.firstIndex(where: { $0.id == selectedTabID }),
+       openedTabs[selectedIndex].articleID == nil {
+      openedTabs[selectedIndex] = OpenedLinkTab(article: article, id: selectedTabID)
+      isSelectingNewTabArticle = false
       return
     }
 
-    openedTabs.append(OpenedLinkTab(article: article))
-    selectedTabID = article.id
+    isSelectingNewTabArticle = false
+
+    if let existingTab = openedTabs.first(where: { $0.articleID == article.id }) {
+      selectedTabID = existingTab.id
+      return
+    }
+
+    let tab = OpenedLinkTab(article: article)
+    openedTabs.append(tab)
+    selectedTabID = tab.id
   }
 
   public func selectTab(_ tabID: String) {
     guard openedTabs.contains(where: { $0.id == tabID }) else { return }
     selectedTabID = tabID
+    isSelectingNewTabArticle = selectedArticle == nil
   }
 
   public func closeTab(_ tabID: String) {
     guard let closingIndex = openedTabs.firstIndex(where: { $0.id == tabID }) else { return }
     openedTabs.remove(at: closingIndex)
 
-    guard selectedTabID == tabID else { return }
+    guard selectedTabID == tabID else {
+      return
+    }
+
     if openedTabs.indices.contains(closingIndex) {
       selectedTabID = openedTabs[closingIndex].id
     } else {
       selectedTabID = openedTabs.last?.id
     }
+    isSelectingNewTabArticle = selectedArticle == nil && selectedTabID != nil
+  }
+
+  public func closeTabs(articleIDs: Set<String>) {
+    let tabIDs = openedTabs
+      .filter { tab in
+        guard let articleID = tab.articleID else { return false }
+        return articleIDs.contains(articleID)
+      }
+      .map(\.id)
+
+    tabIDs.forEach(closeTab)
   }
 
   public func endEditing() {
@@ -183,6 +245,7 @@ public final class LinkListViewModel {
   }
 
   public func handleCategoryContextChange() {
+    isSelectingNewTabArticle = false
     endEditing()
     applyFilters()
   }
@@ -240,7 +303,7 @@ public final class LinkListViewModel {
       isSingleMovePickerPresented = false
     }
 
-    deletedIDs.forEach(closeTab)
+    closeTabs(articleIDs: deletedIDs)
 
     if isEditing {
       endEditing()
@@ -381,7 +444,7 @@ private extension LinkListViewModel {
 
     let filteredArticles: [ArticleItem]
 
-    if isSeeAllSelected || selectedCategoryID == nil {
+    if isSelectingNewTabArticle || isSeeAllSelected || selectedCategoryID == nil {
       filteredArticles = articles
     } else {
       filteredArticles = articles.filter {
@@ -406,18 +469,27 @@ private extension LinkListViewModel {
   func syncOpenedTabs() {
     let articleIDs = Set(articles.map(\.id))
     openedTabs = openedTabs
-      .filter { articleIDs.contains($0.id) }
+      .filter { tab in
+        guard let articleID = tab.articleID else { return true }
+        return articleIDs.contains(articleID)
+      }
       .map { tab in
-        guard let article = articles.first(where: { $0.id == tab.id }) else {
+        guard
+          let articleID = tab.articleID,
+          let article = articles.first(where: { $0.id == articleID })
+        else {
           return tab
         }
-        return OpenedLinkTab(article: article)
+        return OpenedLinkTab(article: article, id: tab.id)
       }
 
-    if let selectedTabID, !articleIDs.contains(selectedTabID) {
+    if let selectedTabID, !openedTabs.contains(where: { $0.id == selectedTabID }) {
       self.selectedTabID = openedTabs.last?.id
     }
+
+    isSelectingNewTabArticle = selectedArticle == nil && selectedTabID != nil
   }
+
 
   private func showMoveToast(
     movedCount: Int,
