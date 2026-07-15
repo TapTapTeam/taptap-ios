@@ -46,6 +46,14 @@ struct RootView: View {
   var body: some View {
     GeometryReader { geometry in
       contentView
+        .onAppear {
+          currentWidth = geometry.size.width
+          currentHeight = geometry.size.height
+          if geometry.size.width < sidebarCollapseThreshold && !isSidebarCollapsed {
+            isSidebarCollapsed = true
+            wasAutoCollapsed = true
+          }
+        }
         .onChange(of: geometry.size.width) { _, newWidth in
           currentWidth = newWidth
           if newWidth < sidebarCollapseThreshold && !isSidebarCollapsed {
