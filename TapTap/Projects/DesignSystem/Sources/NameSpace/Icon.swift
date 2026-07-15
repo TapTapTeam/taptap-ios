@@ -88,6 +88,7 @@ public extension MacIcon {
   static let opensource = "mac_opensource"
   static let shield = "mac_shield"
   static let chevron_right = "mac_chevron_right"
+  static let chevron_left = "mac_chevron_left"
 }
 
 public extension Image {
