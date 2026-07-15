@@ -10,6 +10,7 @@ import DesignSystem
 
 enum SettingDestination: Hashable {
   case privacy
+  case terms
 }
 
 struct SettingAlertView: View {
@@ -45,7 +46,7 @@ struct SettingAlertView: View {
           }
 
           SettingRowButton(icon: MacIcon.file, title: "서비스 이용약관") {
-            print("약관")
+            path.append(SettingDestination.terms)
           }
 
           SettingRowButton(icon: MacIcon.opensource, title: "사용된 오픈 소스") {
@@ -66,6 +67,8 @@ struct SettingAlertView: View {
         switch destination {
         case .privacy:
           SettingPrivacyView(onClose: onClose)
+        case .terms:
+          SettingTermsView(onClose: onClose)
         }
       }
     }
