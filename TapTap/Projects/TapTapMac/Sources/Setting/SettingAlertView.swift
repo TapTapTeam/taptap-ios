@@ -11,6 +11,7 @@ import DesignSystem
 enum SettingDestination: Hashable {
   case privacy
   case terms
+  case opensource
 }
 
 struct SettingAlertView: View {
@@ -50,7 +51,7 @@ struct SettingAlertView: View {
           }
 
           SettingRowButton(icon: MacIcon.opensource, title: "사용된 오픈 소스") {
-            print("오픈소스")
+            path.append(SettingDestination.opensource)
           }
 
           SettingRowButton(icon: MacIcon.heart, title: "TapTap팀") {
@@ -69,6 +70,8 @@ struct SettingAlertView: View {
           SettingPrivacyView(onClose: onClose)
         case .terms:
           SettingTermsView(onClose: onClose)
+        case .opensource:
+          SettingOpensourceView(onClose: onClose)
         }
       }
     }
