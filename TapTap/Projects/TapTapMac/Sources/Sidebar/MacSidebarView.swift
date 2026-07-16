@@ -132,7 +132,7 @@ public struct MacSidebarView: View {
         SidebarSettingsButton(onSettings: onSettings)
           .padding(.leading, 20)
           .padding(.bottom, 20)
-          .zIndex(1)
+          .zIndex(3)
       }
     }
     .frame(width: width, alignment: .leading)

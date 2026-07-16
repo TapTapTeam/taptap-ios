@@ -82,6 +82,13 @@ public extension MacIcon {
   static let squareEdit = "mac_square_edit"
   static let trashBold = "mac_trash_bold"
   static let link = "mac_link"
+  static let file = "mac_file"
+  static let heart = "mac_heart"
+  static let info = "mac_info"
+  static let opensource = "mac_opensource"
+  static let shield = "mac_shield"
+  static let chevron_right = "mac_chevron_right"
+  static let chevron_left = "mac_chevron_left"
 }
 
 public extension Image {

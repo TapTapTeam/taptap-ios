@@ -38,11 +38,22 @@ struct RootView: View {
   
   @State private var wasAutoCollapsed: Bool = false
   @State private var currentWidth: CGFloat = 0
+  @State private var currentHeight: CGFloat = 0
   private let sidebarCollapseThreshold: CGFloat = 860
+  
+  @State private var isSettingAlertPresented: Bool = false
   
   var body: some View {
     GeometryReader { geometry in
       contentView
+        .onAppear {
+          currentWidth = geometry.size.width
+          currentHeight = geometry.size.height
+          if geometry.size.width < sidebarCollapseThreshold && !isSidebarCollapsed {
+            isSidebarCollapsed = true
+            wasAutoCollapsed = true
+          }
+        }
         .onChange(of: geometry.size.width) { _, newWidth in
           currentWidth = newWidth
           if newWidth < sidebarCollapseThreshold && !isSidebarCollapsed {
@@ -53,6 +64,9 @@ struct RootView: View {
             withAnimation(.easeInOut(duration: 0.2)) { isSidebarCollapsed = false }
             wasAutoCollapsed = false
           }
+        }
+        .onChange(of: geometry.size.height) { _, newHeight in
+          currentHeight = newHeight
         }
     }
     .frame(minWidth: 640, minHeight: 450)
@@ -96,15 +110,18 @@ struct RootView: View {
             },
             onToggleCategoryFavorite: toggleCategoryFavorite,
             onDeleteCategory: deleteCategory,
-            onSettings: { }
+            onSettings: {
+              print("tap")
+              isSettingAlertPresented = true
+            }
           )
           .transition(.move(edge: .leading).combined(with: .opacity))
           .zIndex(100)
         }
-
+        
         ZStack(alignment: .top) {
           contentStack
-
+          
           if isSaveSuccessToastPresented {
             SaveSuccessToast(
               categoryName: saveSuccessCategoryName,
@@ -150,6 +167,19 @@ struct RootView: View {
           .zIndex(30)
         }
       }
+      .overlay {
+        if isSettingAlertPresented {
+          Color.bgDim
+            .ignoresSafeArea()
+            .contentShape(Rectangle())
+            .onTapGesture { isSettingAlertPresented = false }
+
+          SettingAlertView(onClose: { isSettingAlertPresented = false })
+            .padding(.horizontal, currentWidth < 600 ? 20 : 0)
+            .padding(.vertical, currentHeight < 640 ? 20 : 0)
+            .zIndex(30)
+        }
+      }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .onAppear {
         searchViewModel.updateArticles(articles)
@@ -160,7 +190,7 @@ struct RootView: View {
       .onChange(of: newCategoryName) { _, _ in
         isDuplicateCategoryName = false
       }
-
+      
       if isSearchOverlayPresented {
         Color.black.opacity(0.16)
           .ignoresSafeArea()
@@ -170,7 +200,7 @@ struct RootView: View {
           }
           .zIndex(1)
       }
-
+      
       if isSearchOverlayPresented {
         HStack(spacing: 0) {
           if !isSidebarCollapsed {
