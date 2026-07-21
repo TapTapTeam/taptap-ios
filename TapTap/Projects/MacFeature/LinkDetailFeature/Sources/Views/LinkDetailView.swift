@@ -61,6 +61,19 @@ public struct LinkDetailView: View {
         .zIndex(20)
       }
 
+      if let deleteToastMessage = viewModel.deleteToastMessage {
+        LinkActionToast(
+          variant: .delete,
+          message: deleteToastMessage,
+          duration: 3,
+          onUndoTap: nil,
+          onCloseTap: viewModel.hideDeleteToast
+        )
+        .padding(.horizontal, 30)
+        .padding(.top, 32)
+        .zIndex(20)
+      }
+
       if let deleteTarget {
         MacAlertDialog(
           title: deleteTarget.alertTitle,
@@ -82,6 +95,7 @@ public struct LinkDetailView: View {
       }
     }
     .animation(.easeInOut(duration: 0.2), value: viewModel.toastMessage)
+    .animation(.easeInOut(duration: 0.2), value: viewModel.deleteToastMessage)
     .animation(.easeInOut(duration: 0.2), value: isMemoPanelPresented)
   }
 }

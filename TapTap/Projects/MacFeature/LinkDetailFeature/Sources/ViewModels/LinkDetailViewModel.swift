@@ -22,9 +22,11 @@ public final class LinkDetailViewModel {
   public var draftCommentText: String = ""
   public private(set) var isDeleted: Bool = false
   public private(set) var toastMessage: String?
+  public private(set) var deleteToastMessage: String?
 
   @ObservationIgnored private var persistence: (any LinkDetailPersistence)?
   @ObservationIgnored private var toastDismissTask: Task<Void, Never>?
+  @ObservationIgnored private var deleteToastDismissTask: Task<Void, Never>?
 
   public init(
     article: ArticleItem,
@@ -37,6 +39,7 @@ public final class LinkDetailViewModel {
 
   deinit {
     toastDismissTask?.cancel()
+    deleteToastDismissTask?.cancel()
   }
 
   public var highlights: [HighlightItem] {
@@ -67,7 +70,11 @@ public final class LinkDetailViewModel {
     guard nextMemo != article.userMemo else { return }
 
     article.userMemo = nextMemo
-    saveChanges(successMessage: showsToast ? "메모를 저장했어요" : nil)
+    saveChanges {
+      if showsToast {
+        showToast("메모를 저장했어요")
+      }
+    }
   }
 
   public func deleteArticle() {
@@ -81,7 +88,6 @@ public final class LinkDetailViewModel {
       persistence.delete(article)
       try persistence.save()
       isDeleted = true
-      showToast("링크를 삭제했어요")
     } catch {
       showToast("삭제하지 못했어요")
       print("delete link failed: \(error)")
@@ -145,7 +151,7 @@ public final class LinkDetailViewModel {
     commentEditingTarget = nil
     draftCommentType = ""
     draftCommentText = ""
-    saveChanges(successMessage: nil)
+    saveChanges()
   }
 
   public func deleteComment(
@@ -157,7 +163,9 @@ public final class LinkDetailViewModel {
       commentEditingTarget = nil
       draftCommentText = ""
     }
-    saveChanges(successMessage: "메모를 삭제했어요")
+    saveChanges {
+      showDeleteToast("메모를 삭제했어요")
+    }
   }
 
   public func deleteHighlight(_ highlightID: String) {
@@ -169,7 +177,9 @@ public final class LinkDetailViewModel {
 
     article.highlights?.removeAll { $0.id == highlightID }
     persistence?.delete(highlight)
-    saveChanges(successMessage: "하이라이트를 삭제했어요")
+    saveChanges {
+      showDeleteToast("하이라이트를 삭제했어요")
+    }
   }
 
   public func hideToast() {
@@ -177,15 +187,19 @@ public final class LinkDetailViewModel {
     toastDismissTask = nil
     toastMessage = nil
   }
+
+  public func hideDeleteToast() {
+    deleteToastDismissTask?.cancel()
+    deleteToastDismissTask = nil
+    deleteToastMessage = nil
+  }
 }
 
 private extension LinkDetailViewModel {
-  func saveChanges(successMessage: String?) {
+  func saveChanges(onSuccess: () -> Void = {}) {
     do {
       try persistence?.save()
-      if let successMessage {
-        showToast(successMessage)
-      }
+      onSuccess()
     } catch {
       showToast("저장하지 못했어요")
       print("save link detail failed: \(error)")
@@ -201,6 +215,19 @@ private extension LinkDetailViewModel {
       guard !Task.isCancelled else { return }
       await MainActor.run {
         hideToast()
+      }
+    }
+  }
+
+  func showDeleteToast(_ message: String) {
+    deleteToastDismissTask?.cancel()
+    deleteToastMessage = message
+
+    deleteToastDismissTask = Task {
+      try? await Task.sleep(for: .seconds(3))
+      guard !Task.isCancelled else { return }
+      await MainActor.run {
+        hideDeleteToast()
       }
     }
   }
