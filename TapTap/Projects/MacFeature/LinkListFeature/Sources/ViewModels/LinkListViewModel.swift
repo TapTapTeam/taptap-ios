@@ -32,6 +32,11 @@ public final class LinkListViewModel {
     public let linkTitle: String?
   }
 
+  public struct ArticleDeleteToastState: Identifiable {
+    public let id = UUID()
+    public let message: String
+  }
+
   public struct OpenedLinkTab: Identifiable, Equatable {
     public let id: String
     public let articleID: String?
@@ -47,7 +52,7 @@ public final class LinkListViewModel {
       OpenedLinkTab(
         id: UUID().uuidString,
         articleID: nil,
-        title: "새 탭"
+        title: "모든 링크"
       )
     }
 
@@ -71,6 +76,7 @@ public final class LinkListViewModel {
   public private(set) var movingArticle: ArticleItem?
   public private(set) var moveToast: MoveToastState?
   public private(set) var deleteToast: DeleteToastState?
+  public private(set) var articleDeleteToast: ArticleDeleteToastState?
   public private(set) var openedTabs: [OpenedLinkTab] = []
   public private(set) var selectedTabID: String?
   public private(set) var isSelectingNewTabArticle: Bool = false
@@ -98,12 +104,14 @@ public final class LinkListViewModel {
 
   @ObservationIgnored private var moveToastDismissTask: Task<Void, Never>?
   @ObservationIgnored private var deleteToastDismissTask: Task<Void, Never>?
+  @ObservationIgnored private var articleDeleteToastDismissTask: Task<Void, Never>?
 
   public init() {}
 
   deinit {
     moveToastDismissTask?.cancel()
     deleteToastDismissTask?.cancel()
+    articleDeleteToastDismissTask?.cancel()
   }
 
   public func updatePersistence(_ persistence: any LinkListPersistence) {
@@ -430,6 +438,25 @@ public final class LinkListViewModel {
       hideMoveToast()
       applyFilters()
     }
+  }
+
+  public func showArticleDeleteToast(title: String) {
+    articleDeleteToastDismissTask?.cancel()
+    articleDeleteToast = ArticleDeleteToastState(message: "'\(title)'을 삭제했어요")
+
+    articleDeleteToastDismissTask = Task {
+      try? await Task.sleep(for: .seconds(3))
+      guard !Task.isCancelled else { return }
+      await MainActor.run {
+        hideArticleDeleteToast()
+      }
+    }
+  }
+
+  public func hideArticleDeleteToast() {
+    articleDeleteToastDismissTask?.cancel()
+    articleDeleteToastDismissTask = nil
+    articleDeleteToast = nil
   }
 
   public func dismiss() {
