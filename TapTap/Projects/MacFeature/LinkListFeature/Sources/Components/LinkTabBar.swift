@@ -84,7 +84,9 @@ private extension LinkTabBar {
   }
 
   func tabItem(_ tab: LinkListViewModel.OpenedLinkTab, width: CGFloat) -> some View {
-    HStack(spacing: 10) {
+    let isSelected = tab.id == selectedTabID
+
+    return HStack(spacing: 10) {
       Text(tab.title)
         .font(.C1)
         .foregroundStyle(.text1)
@@ -92,22 +94,26 @@ private extension LinkTabBar {
 
       Spacer(minLength: 8)
 
-      Button {
-        onClose(tab.id)
-      } label: {
-        DesignSystemAsset.macX.swiftUIImage
-          .resizable()
-          .aspectRatio(contentMode: .fit)
-          .foregroundStyle(.iconGray)
-          .frame(width: 14, height: 14)
+      if isSelected {
+        Button {
+          onClose(tab.id)
+        } label: {
+          DesignSystemAsset.macX.swiftUIImage
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .foregroundStyle(.iconGray)
+            .frame(width: 14, height: 14)
+        }
+        .buttonStyle(.plain)
       }
-      .buttonStyle(.plain)
     }
     .padding(.horizontal, 14)
-    .frame(width: width, height: 33)
-    .background(tab.id == selectedTabID ? Color.n0 : Color.n10)
+    .frame(width: width, height: 36)
+    .background(isSelected ? Color.n0 : Color.n10)
     .overlay(alignment: .trailing) {
-      Divider()
+      Rectangle()
+        .fill(Color.divider2)
+        .frame(width: 1)
     }
     .contentShape(Rectangle())
     .onTapGesture {
