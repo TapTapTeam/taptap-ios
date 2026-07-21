@@ -79,10 +79,20 @@ private extension LinkDetailToolbar {
         .resizable()
         .frame(width: 24, height: 24)
       
-      Text("\(categoryName) / \(title)")
-        .font(.B1_M)
-        .foregroundStyle(.text1)
-        .lineLimit(1)
+      HStack(spacing: 0) {
+        Text("\(categoryName)  ")
+          .font(.B1_M)
+          .foregroundStyle(.text1)
+          .lineLimit(1)
+        Text("/")
+          .font(.B1_M)
+          .foregroundStyle(.caption3)
+          .lineLimit(1)
+        Text("  \(title)")
+          .font(.B1_M)
+          .foregroundStyle(.text1)
+          .lineLimit(1)
+      }
     }
   }
 }
