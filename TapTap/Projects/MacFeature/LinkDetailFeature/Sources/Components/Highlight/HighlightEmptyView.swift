@@ -14,7 +14,7 @@ struct HighlightEmptyView: View {
 
   var body: some View {
     VStack(alignment: .center, spacing: 10) {
-      DesignSystemAsset.macEmptyImage.swiftUIImage
+      DesignSystemAsset.emptyImage.swiftUIImage
         .resizable()
         .scaledToFit()
         .frame(width: 160, height: 160)

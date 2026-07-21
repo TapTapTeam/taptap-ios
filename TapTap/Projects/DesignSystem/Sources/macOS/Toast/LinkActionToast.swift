@@ -1,31 +1,60 @@
 //
 //  LinkActionToast.swift
-//  MacLinkListFeature
+//  DesignSystem
 //
 //  Created by 이승진 on 4/28/26.
 //
 
+#if os(macOS)
 import SwiftUI
 
-import DesignSystem
-
-/// 링크 이동/삭제 완료 후 사용자 액션을 안내하는 토스트입니다.
-struct LinkActionToast: View {
-  enum Variant {
+/// 링크 이동/삭제 등 액션 완료 후 사용자에게 안내하는 공용 토스트입니다.
+public struct LinkActionToast: View {
+  public enum Variant {
     case move
     case delete
   }
-  
-  let variant: Variant
-  let count: Int
-  let title: String?
-  let duration: TimeInterval
-  let onUndoTap: (() -> Void)?
-  let onCloseTap: () -> Void
-  
+
+  private let variant: Variant
+  private let message: String
+  private let duration: TimeInterval
+  private let onUndoTap: (() -> Void)?
+  private let onCloseTap: () -> Void
+
   @State private var progress: CGFloat = 1
-  
-  var body: some View {
+
+  public init(
+    variant: Variant,
+    message: String,
+    duration: TimeInterval,
+    onUndoTap: (() -> Void)?,
+    onCloseTap: @escaping () -> Void
+  ) {
+    self.variant = variant
+    self.message = message
+    self.duration = duration
+    self.onUndoTap = onUndoTap
+    self.onCloseTap = onCloseTap
+  }
+
+  public init(
+    variant: Variant,
+    count: Int,
+    title: String?,
+    duration: TimeInterval,
+    onUndoTap: (() -> Void)?,
+    onCloseTap: @escaping () -> Void
+  ) {
+    self.init(
+      variant: variant,
+      message: Self.defaultMessage(variant: variant, count: count, title: title),
+      duration: duration,
+      onUndoTap: onUndoTap,
+      onCloseTap: onCloseTap
+    )
+  }
+
+  public var body: some View {
     HStack(spacing: 0) {
       Text(message)
         .font(.H4_SB)
@@ -33,7 +62,7 @@ struct LinkActionToast: View {
         .lineLimit(1)
         .truncationMode(.tail)
         .padding(.leading, 36)
-      
+
       Spacer(minLength: 16)
 
       if let onUndoTap {
@@ -48,7 +77,7 @@ struct LinkActionToast: View {
         }
         .buttonStyle(.plain)
       }
-      
+
       Button {
         onCloseTap()
       } label: {
@@ -82,21 +111,6 @@ struct LinkActionToast: View {
 }
 
 private extension LinkActionToast {
-  var message: String {
-    switch variant {
-    case .move:
-      if count == 1, let title {
-        return "링크를 \(title)\(roPostposition(for: title)) 이동했어요"
-      }
-      return "\(count)개의 링크를 이동했어요"
-    case .delete:
-      if count == 1, let title {
-        return "'\(title)'을 삭제했어요"
-      }
-      return "\(count)개의 링크를 삭제했어요"
-    }
-  }
-
   var tintColor: Color {
     switch variant {
     case .move:
@@ -105,7 +119,7 @@ private extension LinkActionToast {
       return .danger
     }
   }
-  
+
   var backgroundColor: Color {
     switch variant {
     case .move:
@@ -127,7 +141,22 @@ private extension LinkActionToast {
     }
   }
 
-  func roPostposition(for text: String) -> String {
+  static func defaultMessage(variant: Variant, count: Int, title: String?) -> String {
+    switch variant {
+    case .move:
+      if count == 1, let title {
+        return "링크를 \(title)\(roPostposition(for: title)) 이동했어요"
+      }
+      return "\(count)개의 링크를 이동했어요"
+    case .delete:
+      if count == 1, let title {
+        return "'\(title)'을 삭제했어요"
+      }
+      return "\(count)개의 링크를 삭제했어요"
+    }
+  }
+
+  static func roPostposition(for text: String) -> String {
     guard let scalar = text.unicodeScalars.last else { return "으로" }
     let value = scalar.value
     guard (0xAC00...0xD7A3).contains(value) else { return "으로" }
@@ -137,6 +166,7 @@ private extension LinkActionToast {
   }
 }
 
+#if DEBUG
 #Preview {
   VStack(spacing: 16) {
     LinkActionToast(
@@ -147,7 +177,7 @@ private extension LinkActionToast {
       onUndoTap: {},
       onCloseTap: {}
     )
-    
+
     LinkActionToast(
       variant: .delete,
       count: 3,
@@ -159,3 +189,6 @@ private extension LinkActionToast {
   }
   .padding()
 }
+#endif
+
+#endif

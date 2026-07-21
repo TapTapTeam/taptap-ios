@@ -112,12 +112,12 @@ private struct HighlightCommentBlock: View {
       .background(Color.n20)
       .overlay {
         if isHovered {
-          RoundedRectangle(cornerRadius: 6)
+          RoundedRectangle(cornerRadius: 8)
             .fill(Color.bgDimHover)
         }
       }
-      .clipShape(RoundedRectangle(cornerRadius: 6))
-      .contentShape(RoundedRectangle(cornerRadius: 6))
+      .clipShape(RoundedRectangle(cornerRadius: 12))
+      .contentShape(RoundedRectangle(cornerRadius: 12))
       .onHover { hovering in
         isHovered = hovering
       }

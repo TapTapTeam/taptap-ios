@@ -150,8 +150,8 @@ private struct HighlightSentenceBlock: View {
             .fill(Color.bgDimHover)
         }
       }
-      .clipShape(RoundedRectangle(cornerRadius: 8))
-      .contentShape(RoundedRectangle(cornerRadius: 8))
+      .clipShape(RoundedRectangle(cornerRadius: 12))
+      .contentShape(RoundedRectangle(cornerRadius: 12))
       .fixedSize(horizontal: false, vertical: true)
       .onHover { hovering in
         isHovered = hovering
