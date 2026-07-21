@@ -8,6 +8,7 @@
 import SwiftUI
 
 import Core
+import DesignSystem
 import MacLinkDetailFeature
 import SwiftData
 
@@ -85,6 +86,17 @@ public struct LinkListContainerView: View {
           )
           .transition(.move(edge: .top).combined(with: .opacity))
         }
+
+        if let articleDeleteToast = viewModel.articleDeleteToast {
+          LinkActionToast(
+            variant: .delete,
+            message: articleDeleteToast.message,
+            duration: 3,
+            onUndoTap: nil,
+            onCloseTap: viewModel.hideArticleDeleteToast
+          )
+          .transition(.move(edge: .top).combined(with: .opacity))
+        }
       }
       .padding(.horizontal, 40)
       .padding(.top, 20)
@@ -92,6 +104,7 @@ public struct LinkListContainerView: View {
     }
     .animation(.easeInOut(duration: 0.2), value: viewModel.moveToast?.id)
     .animation(.easeInOut(duration: 0.2), value: viewModel.deleteToast?.id)
+    .animation(.easeInOut(duration: 0.2), value: viewModel.articleDeleteToast?.id)
     .onAppear {
       viewModel.updatePersistence(SwiftDataLinkListPersistence(modelContext: modelContext))
       updateViewModel()
@@ -162,12 +175,14 @@ private extension LinkListContainerView {
         )
       }
     }
+    .padding(.top, 10)
   }
 
   func detailContent(_ detailViewModel: LinkDetailViewModel) -> some View {
     LinkDetailView(viewModel: detailViewModel)
       .onChange(of: detailViewModel.isDeleted) { _, isDeleted in
         guard isDeleted else { return }
+        viewModel.showArticleDeleteToast(title: detailViewModel.article.title)
         viewModel.closeTabs(articleIDs: [detailViewModel.article.id])
         syncDetailViewModel()
       }
