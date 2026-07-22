@@ -50,39 +50,41 @@ extension ShareSettingView {
             }
             .opacity(isReady ? 0 : 1)
             
-            CustomVideoView(
-              url: URL(string: Constants.settingShareURL)!,
-              onReady: { isReady = true },
-              videoGravity: .resizeAspect
-            )
-            .frame(width: 279, height: 450)
-            .opacity(isReady ? 1: 0)
-            .clipped()
-            .cornerRadius(42)
-            .overlay {
-              RoundedRectangle(cornerRadius: 42)
-                .stroke(Color.divider2, lineWidth: 3)
-                .offset(y: -2)
-            }
-            .padding(.horizontal, 20)
-            .overlay(
-              Rectangle()
-                .foregroundStyle(.clear)
-                .background(
-                  LinearGradient(
-                    stops: [
-                      Gradient.Stop(color: .bgButtonGrad1, location: 0.00),
-                      Gradient.Stop(color: .bgButtonGrad2, location: 0.16),
-                      Gradient.Stop(color: .bgButtonGrad3, location: 0.73),
-                      Gradient.Stop(color: .bgButtonGrad4, location: 1.00),
-                    ],
-                    startPoint: UnitPoint(x: 0.47, y: 0.1),
-                    endPoint: UnitPoint(x: 0.47, y: 0.15)
+            if let videoURL = Constants.settingShareVideoURL {
+              CustomVideoView(
+                url: videoURL,
+                onReady: { isReady = true },
+                videoGravity: .resizeAspect
+              )
+              .frame(width: 279, height: 450)
+              .opacity(isReady ? 1: 0)
+              .clipped()
+              .cornerRadius(42)
+              .overlay {
+                RoundedRectangle(cornerRadius: 42)
+                  .stroke(Color.divider2, lineWidth: 3)
+                  .offset(y: -2)
+              }
+              .padding(.horizontal, 20)
+              .overlay(
+                Rectangle()
+                  .foregroundStyle(.clear)
+                  .background(
+                    LinearGradient(
+                      stops: [
+                        Gradient.Stop(color: .bgButtonGrad1, location: 0.00),
+                        Gradient.Stop(color: .bgButtonGrad2, location: 0.16),
+                        Gradient.Stop(color: .bgButtonGrad3, location: 0.73),
+                        Gradient.Stop(color: .bgButtonGrad4, location: 1.00),
+                      ],
+                      startPoint: UnitPoint(x: 0.47, y: 0.1),
+                      endPoint: UnitPoint(x: 0.47, y: 0.15)
+                    )
                   )
-                )
-                .offset(y: -10)
-            )
-            .padding(.bottom, 130)
+                  .offset(y: -10)
+              )
+              .padding(.bottom, 130)
+            }
           }
         }
       }

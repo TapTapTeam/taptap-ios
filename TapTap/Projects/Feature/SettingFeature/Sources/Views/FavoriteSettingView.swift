@@ -48,18 +48,20 @@ extension FavoriteSettingView {
             }
             .opacity(isReady ? 0 : 1)
             
-            CustomVideoView(
-              url: URL(string: Constants.settingFavoriteURL)!,
-              onReady: { isReady = true }, videoGravity: .resizeAspectFill
-            )
-            .opacity(isReady ? 1: 0)
-            .cornerRadius(32)
-            .clipped()
-            .overlay {
-              RoundedRectangle(cornerRadius: 32)
-                .stroke(Color.divider2, lineWidth: 3)
+            if let videoURL = Constants.settingFavoriteVideoURL {
+              CustomVideoView(
+                url: videoURL,
+                onReady: { isReady = true }, videoGravity: .resizeAspectFill
+              )
+              .opacity(isReady ? 1: 0)
+              .cornerRadius(32)
+              .clipped()
+              .overlay {
+                RoundedRectangle(cornerRadius: 32)
+                  .stroke(Color.divider2, lineWidth: 3)
+              }
+              .padding(14)
             }
-            .padding(14)
           }
         }
         .padding(.horizontal, 52)
