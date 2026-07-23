@@ -41,16 +41,16 @@ extension OnboardingShareGuideView: View {
             .padding(.top, 28)
           
           ZStack {
-            ZStack(alignment: .center) {
-              Color.background.ignoresSafeArea()
-              Image(systemName: "progress.indicator")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 24, height: 24)
-            }
-            .opacity(isReady ? 0 : 1)
-            
             if let videoURL = Constants.settingShareVideoURL {
+              ZStack(alignment: .center) {
+                Color.background.ignoresSafeArea()
+                Image(systemName: "progress.indicator")
+                  .resizable()
+                  .scaledToFit()
+                  .frame(width: 24, height: 24)
+              }
+              .opacity(isReady ? 0 : 1)
+
               CustomVideoView(
                 url: videoURL,
                 onReady: { isReady = true },
@@ -84,6 +84,10 @@ extension OnboardingShareGuideView: View {
                   .offset(y: -10)
               )
               .padding(.bottom, 130)
+            } else {
+              Text("동영상을 불러올 수 없어요")
+                .font(.B1_M)
+                .foregroundStyle(.caption1)
             }
           }
         }
