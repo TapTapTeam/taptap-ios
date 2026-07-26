@@ -39,27 +39,33 @@ extension FavoriteSettingView {
             .multilineTextAlignment(.center)
           
           ZStack {
-            ZStack(alignment: .center) {
-              Color.background.ignoresSafeArea()
-              Image(systemName: "progress.indicator")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 24, height: 24)
+            if let videoURL = Constants.settingFavoriteVideoURL {
+              ZStack(alignment: .center) {
+                Color.background.ignoresSafeArea()
+                Image(systemName: "progress.indicator")
+                  .resizable()
+                  .scaledToFit()
+                  .frame(width: 24, height: 24)
+              }
+              .opacity(isReady ? 0 : 1)
+
+              CustomVideoView(
+                url: videoURL,
+                onReady: { isReady = true }, videoGravity: .resizeAspectFill
+              )
+              .opacity(isReady ? 1: 0)
+              .cornerRadius(32)
+              .clipped()
+              .overlay {
+                RoundedRectangle(cornerRadius: 32)
+                  .stroke(Color.divider2, lineWidth: 3)
+              }
+              .padding(14)
+            } else {
+              Text("동영상을 불러올 수 없어요")
+                .font(.B1_M)
+                .foregroundStyle(.caption1)
             }
-            .opacity(isReady ? 0 : 1)
-            
-            CustomVideoView(
-              url: URL(string: Constants.settingFavoriteURL)!,
-              onReady: { isReady = true }, videoGravity: .resizeAspectFill
-            )
-            .opacity(isReady ? 1: 0)
-            .cornerRadius(32)
-            .clipped()
-            .overlay {
-              RoundedRectangle(cornerRadius: 32)
-                .stroke(Color.divider2, lineWidth: 3)
-            }
-            .padding(14)
           }
         }
         .padding(.horizontal, 52)

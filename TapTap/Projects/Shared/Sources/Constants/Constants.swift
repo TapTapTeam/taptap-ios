@@ -117,11 +117,7 @@ public struct Constants {
     """
   }
   
-  public static let settingFavoriteURL = "https://ufdmncttkcavcwpeysie.supabase.co/storage/v1/object/public/test/SettingFavorite2.mov"
-  
-  public static let settingExtensionURL_light = "https://ufdmncttkcavcwpeysie.supabase.co/storage/v1/object/public/test/ExtensionGuide_Light2.mov"
-  
-  public static let settingExtensionURL_dark = "https://ufdmncttkcavcwpeysie.supabase.co/storage/v1/object/public/test/ExtensionGuide_Dark2.mov"
-  
-  public static let settingShareURL = "https://ufdmncttkcavcwpeysie.supabase.co/storage/v1/object/public/test/SafariShare2.mov"
+  public static let settingFavoriteVideoURL = Bundle.module.url(forResource: "SettingFavorite", withExtension: "mov")
+
+  public static let settingShareVideoURL = Bundle.module.url(forResource: "SafariShare", withExtension: "mov")
 }
