@@ -68,13 +68,6 @@ extension TargetDependency {
   }
 }
 
-// MARK: - macOS Feature
-extension TargetDependency {
-  public static func macHomeFeature() -> TargetDependency {
-    .project(target: MacFeatureModule.MacHomeFeature.rawValue, path: .relativeToRoot("Projects/MacFeature/HomeFeature"))
-  }
-}
-
 extension TargetDependency {
   public static func macSearchFeature() -> TargetDependency {
     .project(target: MacFeatureModule.MacSearchFeature.rawValue, path: .relativeToRoot("Projects/MacFeature/SearchFeature"))

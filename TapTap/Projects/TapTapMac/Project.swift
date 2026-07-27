@@ -24,7 +24,6 @@ let project = Project.project(
         .designSystem(),
         .macSearchFeature(),
         .macAddLinkFeature(),
-        .macHomeFeature(),
         .macLinkListFeature(),
         .macLinkDetailFeature()
       ]

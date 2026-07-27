@@ -1,6 +1,6 @@
 //
 //  SidebarCategoryRow.swift
-//  MacHomeFeature
+//  TapTapMac
 //
 
 import SwiftUI

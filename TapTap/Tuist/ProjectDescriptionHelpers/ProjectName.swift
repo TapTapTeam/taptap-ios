@@ -31,7 +31,6 @@ public enum FeatureModule: String {
 public enum MacFeatureModule: String {
   case MacSearchFeature
   case MacAddLinkFeature
-  case MacHomeFeature
   case MacLinkListFeature
   case MacLinkDetailFeature
 }

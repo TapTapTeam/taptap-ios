@@ -11,7 +11,6 @@ import Core
 import DesignSystem
 
 import MacAddLinkFeature
-import MacHomeFeature
 import MacLinkListFeature
 import MacSearchFeature
 
