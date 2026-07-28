@@ -21,8 +21,7 @@ struct RootView: View {
   @Query(sort: \ArticleItem.lastViewedDate, order: .reverse) private var articles: [ArticleItem]
   
   @State private var isSidebarCollapsed: Bool = false
-  @State private var isSeeAllSelected: Bool = true
-  @State private var selectedCategoryID: UUID?
+  @State private var sidebarSelection: SidebarSelection = .allLinks
   @State private var isLinkListEditing: Bool = false
   @State private var selectedDetail: DetailDestination = .linkList
   @State private var isSaveSuccessToastPresented: Bool = false
@@ -41,6 +40,15 @@ struct RootView: View {
   private let sidebarCollapseThreshold: CGFloat = 860
   
   @State private var isSettingAlertPresented: Bool = false
+
+  private var isSeeAllSelected: Bool {
+    sidebarSelection == .allLinks
+  }
+
+  private var selectedCategoryID: UUID? {
+    guard case let .category(categoryID) = sidebarSelection else { return nil }
+    return categoryID
+  }
   
   var body: some View {
     GeometryReader { geometry in
@@ -84,28 +92,14 @@ struct RootView: View {
             isCollapsed: isSidebarCollapsed,
             onToggleSidebar: toggleSidebar,
             onAddLink: {
-              isLinkListEditing = false
-              isSearchOverlayPresented = false
-              isSaveSuccessToastPresented = false
-              searchViewModel.clearSearch()
-              isSeeAllSelected = false
-              selectedCategoryID = nil
-              selectedDetail = .addLink
+              navigate(to: .addLink, selection: .none, resetEditing: true, resetSearchOverlay: true)
             },
             onSeeAllLinks: {
-              selectedDetail = .linkList
-              isSaveSuccessToastPresented = false
-              isSeeAllSelected = true
-              selectedCategoryID = nil
-              searchViewModel.clearSearch()
+              navigate(to: .linkList, selection: .allLinks)
             },
             onAddCategory: showAddCategoryPopover,
             onSelectCategory: { category in
-              selectedDetail = .linkList
-              isSaveSuccessToastPresented = false
-              isSeeAllSelected = false
-              selectedCategoryID = category.id
-              searchViewModel.clearSearch()
+              navigate(to: .linkList, selection: .category(category.id))
             },
             onToggleCategoryFavorite: toggleCategoryFavorite,
             onDeleteCategory: deleteCategory,
@@ -228,6 +222,34 @@ struct RootView: View {
       isSidebarCollapsed.toggle()
     }
   }
+
+  private func navigate(
+    to destination: DetailDestination,
+    selection: SidebarSelection,
+    resetEditing: Bool = false,
+    resetSearchOverlay: Bool = false,
+    resetSaveToast: Bool = true,
+    resetSearch: Bool = true
+  ) {
+    selectedDetail = destination
+    sidebarSelection = selection
+
+    if resetSaveToast {
+      isSaveSuccessToastPresented = false
+    }
+
+    if resetSearch {
+      searchViewModel.clearSearch()
+    }
+
+    if resetEditing {
+      isLinkListEditing = false
+    }
+
+    if resetSearchOverlay {
+      isSearchOverlayPresented = false
+    }
+  }
   
   private var favoriteCategories: [CategoryItem] {
     allCategories.filter(\.isFavorite)
@@ -304,8 +326,7 @@ struct RootView: View {
     
     do {
       try modelContext.save()
-      isSeeAllSelected = false
-      selectedCategoryID = newCategory.id
+      sidebarSelection = .category(newCategory.id)
       closeAddCategoryPopover()
     } catch {
       modelContext.delete(newCategory)
@@ -324,9 +345,12 @@ struct RootView: View {
   private func deleteCategory(_ categoryID: UUID) {
     do {
       if selectedCategoryID == categoryID {
-        selectedDetail = .linkList
-        isSeeAllSelected = true
-        selectedCategoryID = nil
+        navigate(
+          to: .linkList,
+          selection: .allLinks,
+          resetSaveToast: false,
+          resetSearch: false
+        )
       }
       
       try CategoryCommand(context: modelContext).deleteCategory(id: categoryID)
@@ -352,12 +376,10 @@ struct RootView: View {
     searchViewModel.clearSearch()
     
     if let category = article.category {
-      isSeeAllSelected = false
-      selectedCategoryID = category.id
+      sidebarSelection = .category(category.id)
       saveSuccessCategoryName = category.categoryName
     } else {
-      isSeeAllSelected = true
-      selectedCategoryID = nil
+      sidebarSelection = .allLinks
       saveSuccessCategoryName = "전체"
     }
     
@@ -368,6 +390,12 @@ struct RootView: View {
 private enum DetailDestination: Equatable {
   case linkList
   case addLink
+}
+
+private enum SidebarSelection: Equatable {
+  case allLinks
+  case category(UUID)
+  case none
 }
 
 private struct SaveSuccessToast: View {
