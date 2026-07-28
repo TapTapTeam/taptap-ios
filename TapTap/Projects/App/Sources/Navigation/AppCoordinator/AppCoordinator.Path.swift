@@ -17,7 +17,7 @@ import SearchFeature
 import SettingFeature
 
 extension AppCoordinator {
-  @Reducer(state: .equatable, action: .equatable)
+  @Reducer
   public enum Path {
     // AddLink
     case addLink(AddLinkFeature)
@@ -56,3 +56,6 @@ extension AppCoordinator {
     case openSourceList(OpenSourceListFeature)
   }
 }
+
+extension AppCoordinator.Path.State: Equatable {}
+extension AppCoordinator.Path.Action: Equatable {}

@@ -13,8 +13,11 @@ struct SidebarCategoryListView: View {
   let selectedCategoryID: UUID?
   let isSeeAllSelected: Bool
   @Binding var hoveredCategoryID: UUID?
+  @Binding var presentedMenuCategoryID: UUID?
   let onAddCategory: () -> Void
   let onSelectCategory: (CategoryItem) -> Void
+  let onToggleCategoryFavorite: (UUID) -> Void
+  let onDeleteCategory: (UUID) -> Void
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
@@ -28,22 +31,29 @@ struct SidebarCategoryListView: View {
             Color.clear.frame(height: 38)
             ForEach(categories, id: \.id) { category in
               SidebarCategoryRow(
-                category: category,
+                categoryID: category.id,
+                categoryName: category.categoryName,
+                iconNumber: category.icon.number,
+                isFavorite: category.isFavorite,
                 countText: "\((category.links ?? []).count)개",
                 isSelected: selectedCategoryID == category.id && !isSeeAllSelected,
                 hoveredCategoryID: $hoveredCategoryID,
-                onSelectCategory: onSelectCategory
+                presentedMenuCategoryID: $presentedMenuCategoryID,
+                onSelectCategory: { _ in onSelectCategory(category) },
+                onToggleFavorite: onToggleCategoryFavorite,
+                onDeleteCategory: onDeleteCategory
               )
             }
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
           .padding(.bottom, 56)
         }
         .scrollIndicators(.hidden)
 
         SidebarCategorySectionHeader(onAddCategory: onAddCategory)
       }
-      .frame(maxHeight: .infinity)
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+    .frame(maxWidth: .infinity, alignment: .leading)
   }
 }
-

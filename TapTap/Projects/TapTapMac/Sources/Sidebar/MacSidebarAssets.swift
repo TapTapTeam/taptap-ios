@@ -7,14 +7,11 @@ import SwiftUI
 
 import DesignSystem
 
-enum MacSidebarFigmaAsset {
-  static let streetlights = URL(string: "https://www.figma.com/api/mcp/asset/e2f49374-962a-4a89-839b-9a65dc9b4e2d")!
-  static let logo = URL(string: "https://www.figma.com/api/mcp/asset/2854f629-ba6c-40dd-99bb-5550f318070c")!
-  static let sidebarToggle = URL(string: "https://www.figma.com/api/mcp/asset/03d8d5ba-29b7-490f-b6fc-e547c77bf340")!
-  static let plusVector2 = URL(string: "https://www.figma.com/api/mcp/asset/4ac77856-c2e7-4ab8-8973-5be37d17d083")!
-  static let plusVector3 = URL(string: "https://www.figma.com/api/mcp/asset/90080e26-b051-479c-8fb8-3e38d51957ac")!
-  static let link = URL(string: "https://www.figma.com/api/mcp/asset/fac4149c-463d-47c4-9aba-2224c1017535")!
-  static let settings = URL(string: "https://www.figma.com/api/mcp/asset/4d0544d6-a774-464a-952c-d79643021759")!
+enum MacSidebarAsset {
+  static let logo = DesignSystemAsset.macLogo
+  static let wordmark = DesignSystemAsset.logo
+  static let logoLeft = DesignSystemAsset.logoLeft
+  static let logoRight = DesignSystemAsset.logoRight
 }
 
 enum SidebarForeground {
@@ -24,34 +21,23 @@ enum SidebarForeground {
   static let iconGray = Color.iconGray
 }
 
-struct MacRemoteImage: View {
-  let url: URL?
+struct MacSidebarAssetImage: View {
+  let asset: DesignSystemImages
   var contentMode: ContentMode = .fit
-  var showsPlaceholder: Bool = false
 
   var body: some View {
-    AsyncImage(url: url) { phase in
-      switch phase {
-      case .success(let image):
-        image
-          .resizable()
-          .aspectRatio(contentMode: contentMode)
-      case .failure:
-        if showsPlaceholder {
-          Color.n20
-        } else {
-          Color.clear
-        }
-      case .empty:
-        if showsPlaceholder {
-          Color.n20.opacity(0.6)
-        } else {
-          Color.clear
-        }
-      @unknown default:
-        Color.clear
-      }
-    }
+    asset.swiftUIImage
+      .resizable()
+      .aspectRatio(contentMode: contentMode)
+  }
+}
+
+struct MacSidebarLogoIcon: View {
+  var body: some View {
+    Image(icon: MacIcon.logo)
+      .resizable()
+      .scaledToFit()
+      .frame(width: 36, height: 36)
   }
 }
 
@@ -59,16 +45,11 @@ struct SidebarToggleIcon: View {
   var isCollapsed: Bool
 
   var body: some View {
-    ZStack {
-      Image(systemName: "sidebar.leading")
-        .font(.system(size: 14, weight: .medium))
-        .foregroundStyle(SidebarForeground.iconGray)
-
-      MacRemoteImage(url: MacSidebarFigmaAsset.sidebarToggle, showsPlaceholder: false)
-        .scaleEffect(x: isCollapsed ? -1 : 1, y: 1)
-        .frame(width: 24, height: 24)
-    }
-    .frame(width: 32, height: 32)
+    Image(icon: isCollapsed ? MacIcon.sidebarOpen : MacIcon.sidebarClose)
+      .resizable()
+      .scaledToFit()
+      .frame(width: 24, height: 24)
+    .frame(width: 40, height: 40)
     .background(
       RoundedRectangle(cornerRadius: 8, style: .continuous)
         .fill(Color.n0)
@@ -82,15 +63,10 @@ struct SidebarToggleIcon: View {
 
 struct SidebarPlusIcon: View {
   var body: some View {
-    ZStack {
-      MacRemoteImage(url: MacSidebarFigmaAsset.plusVector2)
-        .frame(width: 10, height: 10)
-        .rotationEffect(.degrees(45))
-      MacRemoteImage(url: MacSidebarFigmaAsset.plusVector3)
-        .frame(width: 10, height: 10)
-        .rotationEffect(.degrees(45))
-    }
-    .frame(width: 12, height: 12)
+    Image(icon: MacIcon.plus)
+      .resizable()
+      .scaledToFit()
+      .frame(width: 24, height: 24)
   }
 }
 
@@ -101,14 +77,12 @@ struct SeeMoreButton: View {
         .fill(Color.n30)
         .frame(width: 24, height: 24)
 
-      HStack(spacing: 3.5) {
-        Circle().fill(SidebarForeground.caption2).frame(width: 2, height: 2)
-        Circle().fill(SidebarForeground.caption2).frame(width: 2, height: 2)
-        Circle().fill(SidebarForeground.caption2).frame(width: 2, height: 2)
-      }
+      Image(icon: MacIcon.more)
+        .resizable()
+        .scaledToFit()
+        .frame(width: 16, height: 16)
     }
     .frame(width: 24, height: 24)
     .accessibilityLabel("더보기")
   }
 }
-

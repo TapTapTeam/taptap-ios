@@ -34,7 +34,8 @@ public struct MacSearchBarButton: View {
       }
       .padding(.vertical, 4)
       .padding(.horizontal, 10)
-      .frame(width: 600, height: 40)
+      .frame(maxWidth: .infinity)
+      .frame(height: 40)
       .background(.n30)
       .clipShape(RoundedRectangle(cornerRadius: 12))
     }

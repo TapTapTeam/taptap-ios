@@ -39,7 +39,9 @@ struct SidebarMyLinksView: View {
 
       Button(action: onSeeAllLinks) {
         HStack(spacing: 10) {
-          MacRemoteImage(url: MacSidebarFigmaAsset.link)
+          Image(icon: isSeeAllSelected ? MacIcon.linkActive : MacIcon.linkInactive)
+            .resizable()
+            .scaledToFit()
             .frame(width: 24, height: 24)
           Text("모두 보기")
             .font(.B1_SB)
@@ -47,7 +49,7 @@ struct SidebarMyLinksView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
           Text("\(totalLinkCount)개")
             .font(.B2_M)
-            .foregroundStyle(Color.bl8)
+            .foregroundStyle(isSeeAllSelected ? Color.bl8 : Color.caption2)
             .padding(.horizontal, 6)
         }
         .padding(.leading, 12)
@@ -63,4 +65,3 @@ struct SidebarMyLinksView: View {
     }
   }
 }
-

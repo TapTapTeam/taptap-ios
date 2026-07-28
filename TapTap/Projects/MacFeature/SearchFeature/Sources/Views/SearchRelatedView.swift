@@ -28,15 +28,11 @@ public extension SearchRelatedView {
   var body: some View {
     VStack(alignment: .leading, spacing: 4) {
       ForEach(keywords, id: \.self) { keyword in
-        Button {
-          onTap(keyword)
-        } label: {
-          SearchRelatedKeywordText(
-            fullText: keyword,
-            query: query
-          )
-        }
-        .buttonStyle(.plain)
+        SearchRelatedRowView(
+          keyword: keyword,
+          query: query,
+          onTap: onTap
+        )
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)

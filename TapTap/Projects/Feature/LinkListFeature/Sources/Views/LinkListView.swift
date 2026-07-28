@@ -22,7 +22,6 @@ public struct LinkListView {
   }
   
   @State private var showScrollToTopButton: Bool = false
-  @State private var initialOffsetY: CGFloat? = nil
 }
 
 // MARK: - View
@@ -160,27 +159,13 @@ extension LinkListView: View {
             action: \.articleList
           )
         )
-        
-        GeometryReader { geo in
-          Color.clear
-            .preference(
-              key: ScrollOffsetPreferenceKey.self,
-              value: geo.frame(in: .named("scroll")).minY
-            )
-        }
-        .frame(height: 0)
       }
     }
-    .coordinateSpace(name: "scroll")
-    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { offsetY in
-      if initialOffsetY == nil {
-        initialOffsetY = offsetY
-      }
-      
-      guard let base = initialOffsetY else { return }
-      
+    .onScrollGeometryChange(for: CGFloat.self) { geometry in
+      geometry.contentOffset.y
+    } action: { _, offsetY in
       withAnimation(.easeInOut(duration: 0.2)) {
-        showScrollToTopButton = offsetY < base + 300
+        showScrollToTopButton = offsetY > 200
       }
     }
     .refreshable {
@@ -218,14 +203,6 @@ extension LinkListView: View {
     case .alert:
       return .bl3
     }
-  }
-}
-
-/// ScrollView의 스크롤 오프셋을 추적하기 위한 PreferenceKey
-private struct ScrollOffsetPreferenceKey: PreferenceKey {
-  static var defaultValue: CGFloat = 0
-  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-    value = nextValue()
   }
 }
 

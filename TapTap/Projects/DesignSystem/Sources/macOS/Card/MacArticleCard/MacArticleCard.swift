@@ -58,38 +58,57 @@ public struct MacArticleCard: View {
 // MARK: - View
 extension MacArticleCard {
   public var body: some View {
-    Button {
+    HStack(spacing: isEditing ? 13 : 0) {
       if isEditing {
-        isSelected.toggle()
-      } else {
-        onCardTap?()
+        selectionIndicator
+          .transition(.opacity.combined(with: .scale(scale: 0.8)))
       }
-    } label: {
-      HStack(spacing: 0) {
-        textContents
 
-        Spacer(minLength: 12)
+      cardContent
+    }
+    .animation(.easeInOut(duration: 0.16), value: isEditing)
+    .contentShape(RoundedRectangle(cornerRadius: 12))
+    .onTapGesture(perform: handleCardTap)
+    .simultaneousGesture(pressGesture)
+  }
 
-        rightContents
-      }
-      .frame(maxWidth: .infinity)
-      .frame(height: 110)
-      .background(backgroundLayer)
-      .overlay(borderLayer)
-      .overlay(alignment: .leading) {
-        if isEditing {
-          selectionIndicator
-            .offset(x: -33)
-            .transition(.opacity.combined(with: .scale(scale: 0.8)))
+  var cardContent: some View {
+    HStack(spacing: 0) {
+      textContents
+
+      Spacer(minLength: 12)
+
+      rightContents
+    }
+    .frame(maxWidth: .infinity)
+    .frame(height: 110)
+    .background(backgroundLayer)
+    .overlay(borderLayer)
+    .compositingGroup()
+    .shadow(color: shadowColor, radius: shadowRadius, x: 0, y: 0)
+    .contentShape(RoundedRectangle(cornerRadius: 12))
+    .onHover { isHovered = $0 }
+    .animation(.easeInOut(duration: 0.16), value: visualState)
+  }
+
+  var pressGesture: some Gesture {
+    DragGesture(minimumDistance: 0)
+      .onChanged { _ in
+        if !isPressed {
+          isPressed = true
         }
       }
-      .compositingGroup()
-      .shadow(color: shadowColor, radius: shadowRadius, x: 0, y: 0)
-      .contentShape(RoundedRectangle(cornerRadius: 12))
-      .onHover { isHovered = $0 }
-      .animation(.easeInOut(duration: 0.16), value: visualState)
+      .onEnded { _ in
+        isPressed = false
+      }
+  }
+
+  func handleCardTap() {
+    if isEditing {
+      isSelected.toggle()
+    } else {
+      onCardTap?()
     }
-    .buttonStyle(CardButtonStyle { isPressed = $0 })
   }
 }
 

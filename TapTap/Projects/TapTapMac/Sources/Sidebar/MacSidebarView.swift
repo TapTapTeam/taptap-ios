@@ -21,9 +21,12 @@ public struct MacSidebarView: View {
   public var onSeeAllLinks: () -> Void
   public var onAddCategory: () -> Void
   public var onSelectCategory: (CategoryItem) -> Void
+  public var onToggleCategoryFavorite: (UUID) -> Void
+  public var onDeleteCategory: (UUID) -> Void
   public var onSettings: () -> Void
   
   @State private var hoveredCategoryID: UUID?
+  @State private var presentedMenuCategoryID: UUID?
 
   public init(
     totalLinkCount: Int,
@@ -37,6 +40,8 @@ public struct MacSidebarView: View {
     onSeeAllLinks: @escaping () -> Void,
     onAddCategory: @escaping () -> Void,
     onSelectCategory: @escaping (CategoryItem) -> Void,
+    onToggleCategoryFavorite: @escaping (UUID) -> Void,
+    onDeleteCategory: @escaping (UUID) -> Void,
     onSettings: @escaping () -> Void
   ) {
     self.totalLinkCount = totalLinkCount
@@ -50,13 +55,26 @@ public struct MacSidebarView: View {
     self.onSeeAllLinks = onSeeAllLinks
     self.onAddCategory = onAddCategory
     self.onSelectCategory = onSelectCategory
+    self.onToggleCategoryFavorite = onToggleCategoryFavorite
+    self.onDeleteCategory = onDeleteCategory
     self.onSettings = onSettings
   }
 
   public var body: some View {
     let width: CGFloat = isCollapsed ? 56 : 290
+    let sidebarShape = UnevenRoundedRectangle(
+      topLeadingRadius: 0,
+      bottomLeadingRadius: 0,
+      bottomTrailingRadius: 16,
+      topTrailingRadius: 16,
+      style: .continuous
+    )
+
     ZStack(alignment: .bottomLeading) {
-      Color.n0
+      sidebarShape
+        .fill(Color.n0)
+        .shadow(color: .bgShadow2, radius: 2, x: 0, y: 2)
+        .shadow(color: .bgShadow1, radius: 3, x: 0, y: 2)
 
       VStack(alignment: .leading, spacing: 16) {
         SidebarHeaderView(
@@ -75,58 +93,100 @@ public struct MacSidebarView: View {
             selectedCategoryID: selectedCategoryID,
             isSeeAllSelected: isSeeAllSelected,
             hoveredCategoryID: $hoveredCategoryID,
-            onSelectCategory: onSelectCategory
+            presentedMenuCategoryID: $presentedMenuCategoryID,
+            onSelectCategory: onSelectCategory,
+            onToggleCategoryFavorite: onToggleCategoryFavorite,
+            onDeleteCategory: onDeleteCategory
           )
           SidebarCategoryListView(
             categories: categories,
             selectedCategoryID: selectedCategoryID,
             isSeeAllSelected: isSeeAllSelected,
             hoveredCategoryID: $hoveredCategoryID,
+            presentedMenuCategoryID: $presentedMenuCategoryID,
             onAddCategory: onAddCategory,
-            onSelectCategory: onSelectCategory
+            onSelectCategory: onSelectCategory,
+            onToggleCategoryFavorite: onToggleCategoryFavorite,
+            onDeleteCategory: onDeleteCategory
           )
         }
       }
       .padding(.top, isCollapsed ? 8 : 16)
       .padding(.horizontal, isCollapsed ? 8 : 16)
       .padding(.bottom, 20)
+      .zIndex(2)
 
+      // 카테고리 목록 위에 얹혀 하단으로 스크롤되는 행을 흐리게 없앤다.
+      // 반드시 콘텐츠(zIndex 2)보다 위, 설정 버튼(zIndex 4)보다 아래여야 보인다.
       VStack {
         Spacer()
         LinearGradient(
-          colors: [Color.bgButtonGrad4, Color.n0],
-          startPoint: .top,
-          endPoint: .bottom
+          stops: [
+            Gradient.Stop(color: .bgButtonGrad4, location: 0.0),
+            Gradient.Stop(color: .n0, location: 0.7)
+          ],
+          startPoint: UnitPoint(x: 0.44, y: 0),
+          endPoint: UnitPoint(x: 0.44, y: 1)
         )
         .frame(height: 72)
-        .allowsHitTesting(false)
+        .blur(radius: 4)
       }
+      .clipShape(sidebarShape)
+      .allowsHitTesting(false)
+      .zIndex(3)
 
-      if isCollapsed {
-        SidebarSettingsButton(onSettings: onSettings)
-          .padding(.leading, 8)
-          .padding(.bottom, 20)
-      } else {
+      if !isCollapsed {
         SidebarSettingsButton(onSettings: onSettings)
           .padding(.leading, 20)
           .padding(.bottom, 20)
+          .zIndex(4)
       }
     }
     .frame(width: width, alignment: .leading)
     .frame(maxHeight: .infinity, alignment: .topLeading)
     .ignoresSafeArea(edges: .vertical)
     .contentShape(Rectangle())
-    .clipShape(
-      UnevenRoundedRectangle(
-        topLeadingRadius: 0,
-        bottomLeadingRadius: 0,
-        bottomTrailingRadius: 16,
-        topTrailingRadius: 16,
-        style: .continuous
-      )
-    )
-    .shadow(color: .bgShadow2, radius: 2, x: 0, y: 2)
-    .shadow(color: .bgShadow1, radius: 3, x: 0, y: 2)
+    .overlayPreferenceValue(SidebarCategoryMenuAnchorPreferenceKey.self) { anchors in
+      GeometryReader { proxy in
+        if presentedMenuCategoryID != nil {
+          Color.clear
+            .contentShape(Rectangle())
+            .frame(width: 10_000, height: 10_000)
+            .offset(x: -2_000, y: -2_000)
+            .onTapGesture {
+              presentedMenuCategoryID = nil
+            }
+            .zIndex(999)
+        }
+
+        if
+          let categoryID = presentedMenuCategoryID,
+          let anchor = anchors[categoryID],
+          let category = category(id: categoryID)
+        {
+          let rect = proxy[anchor]
+
+          SidebarCategoryMorePopup(
+            favoriteTitle: category.isFavorite ? "즐겨찾기에서 제거하기" : "즐겨찾기에 추가하기",
+            onToggleFavorite: {
+              presentedMenuCategoryID = nil
+              onToggleCategoryFavorite(categoryID)
+            },
+            onOpenInNewTab: { presentedMenuCategoryID = nil },
+            onEdit: { presentedMenuCategoryID = nil },
+            onDelete: {
+              presentedMenuCategoryID = nil
+              onDeleteCategory(categoryID)
+            }
+          )
+          .offset(x: rect.minX, y: rect.minY)
+          .zIndex(1000)
+        }
+      }
+    }
+  }
+
+  private func category(id: UUID) -> CategoryItem? {
+    favoriteCategories.first { $0.id == id } ?? categories.first { $0.id == id }
   }
 }
-

@@ -46,7 +46,7 @@ extension MacArticleCard {
         .padding(.vertical, 10)
         .padding(.trailing, 10)
 
-      if visualState == .defaultHover {
+      if !isEditing && (visualState == .defaultHover || showEditMenu) {
         editButton
           .padding(.trailing, 18)
           .padding(.bottom, 18)
@@ -108,67 +108,51 @@ extension MacArticleCard {
     .buttonStyle(.plain)
     .popover(isPresented: $showEditMenu, arrowEdge: .leading) {
       editMenu
+        .presentationBackground(Color.n0)
     }
   }
 
   var editMenu: some View {
-    VStack(alignment: .leading, spacing: 0) {
-      Button {
+    MacPopup(
+      normalImage: DesignSystemAsset.openWindow.swiftUIImage,
+      normalTitle: "링크 이동하기",
+      dangerImage: DesignSystemAsset.trash.swiftUIImage,
+      dangerTitle: "링크 삭제하기",
+      onNormalTap: {
         showEditMenu = false
         onMoveTap?()
-      } label: {
-        Label("링크 이동하기", systemImage: "arrow.up.right.square")
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(.horizontal, 16)
-          .padding(.vertical, 12)
-          .foregroundStyle(.primary)
-      }
-      .buttonStyle(.plain)
-
-      Divider()
-
-      Button {
+      },
+      onDangerTap: {
         showEditMenu = false
         onDeleteTap?()
-      } label: {
-        Label("링크 삭제하기", systemImage: "trash")
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(.horizontal, 16)
-          .padding(.vertical, 12)
-          .foregroundStyle(.red)
       }
-      .buttonStyle(.plain)
-    }
-    .frame(width: 180)
+    )
   }
 
   var selectionIndicator: some View {
-    Button {
-      isSelected.toggle()
-    } label: {
-      ZStack {
+    ZStack {
+      Circle()
+        .stroke(
+          isSelected ? Color.bl6 : Color.n90,
+          lineWidth: 1.5
+        )
+        .frame(width: 20, height: 20)
+
+      if isSelected {
         Circle()
-          .stroke(
-            isSelected ? Color.bl6 : Color.n90,
-            lineWidth: 1.5
-          )
+          .fill(Color.bl6)
           .frame(width: 20, height: 20)
 
-        if isSelected {
-          Circle()
-            .fill(Color.bl6)
-            .frame(width: 20, height: 20)
-
-          DesignSystemAsset.check.swiftUIImage
-            .renderingMode(.template)
-            .resizable()
-            .scaledToFit()
-            .frame(width: 14)
-            .foregroundStyle(.iconW)
-        }
+        DesignSystemAsset.check.swiftUIImage
+          .renderingMode(.template)
+          .resizable()
+          .scaledToFit()
+          .frame(width: 14)
+          .foregroundStyle(.iconW)
       }
     }
-    .buttonStyle(.plain)
+    .frame(width: 32, height: 32)
+    .contentShape(Rectangle())
   }
 }
 
