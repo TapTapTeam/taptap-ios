@@ -254,6 +254,7 @@ public final class LinkListViewModel {
 
   public func handleCategoryContextChange() {
     isSelectingNewTabArticle = false
+    selectedTabID = nil
     endEditing()
     applyFilters()
   }
