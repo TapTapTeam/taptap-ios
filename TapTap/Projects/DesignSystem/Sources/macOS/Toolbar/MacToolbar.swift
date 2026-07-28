@@ -11,16 +11,28 @@ import SwiftUI
 public struct MacToolbar: View {
   @Binding private var text: String
   private let onSearchTap: () -> Void
+  private let onBackTap: () -> Void
+  private let onForwardTap: () -> Void
+  private let isBackEnabled: Bool
+  private let isForwardEnabled: Bool
   private let backForwardLeadingPadding: CGFloat
   @State private var containerWidth: CGFloat = 1000
   
   public init(
     text: Binding<String>,
     onSearchTap: @escaping () -> Void = {},
+    onBackTap: @escaping () -> Void,
+    onForwardTap: @escaping () -> Void,
+    isBackEnabled: Bool,
+    isForwardEnabled: Bool,
     backForwardLeadingPadding: CGFloat = 20
   ) {
     self._text = text
     self.onSearchTap = onSearchTap
+    self.onBackTap = onBackTap
+    self.onForwardTap = onForwardTap
+    self.isBackEnabled = isBackEnabled
+    self.isForwardEnabled = isForwardEnabled
     self.backForwardLeadingPadding = backForwardLeadingPadding
   }
   
@@ -44,8 +56,10 @@ public extension MacToolbar {
     ZStack(alignment: .leading) {
       HStack {
         MacBackForwardButton(
-          onBackTap: {},
-          onForwardTap: {}
+          isBackEnabled: isBackEnabled,
+          isForwardEnabled: isForwardEnabled,
+          onBackTap: onBackTap,
+          onForwardTap: onForwardTap
         )
         .padding(.leading, backForwardLeadingPadding)
         Spacer()

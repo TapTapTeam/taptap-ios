@@ -22,6 +22,8 @@ struct RootView: View {
   
   @State private var isSidebarCollapsed: Bool = false
   @State private var sidebarSelection: SidebarSelection = .allLinks
+  @State private var navigationHistory: [SidebarSelection] = [.allLinks]
+  @State private var historyIndex: Int = 0
   @State private var isLinkListEditing: Bool = false
   @State private var selectedDetail: DetailDestination = .linkList
   @State private var isSaveSuccessToastPresented: Bool = false
@@ -48,6 +50,14 @@ struct RootView: View {
   private var selectedCategoryID: UUID? {
     guard case let .category(categoryID) = sidebarSelection else { return nil }
     return categoryID
+  }
+
+  private var isBackEnabled: Bool {
+    historyIndex > 0
+  }
+
+  private var isForwardEnabled: Bool {
+    historyIndex < navigationHistory.count - 1
   }
   
   var body: some View {
@@ -249,6 +259,40 @@ struct RootView: View {
     if resetSearchOverlay {
       isSearchOverlayPresented = false
     }
+
+    if destination == .linkList {
+      pushHistory(selection)
+    }
+  }
+
+  private func pushHistory(_ selection: SidebarSelection) {
+    guard navigationHistory[historyIndex] != selection else { return }
+
+    if historyIndex < navigationHistory.count - 1 {
+      navigationHistory.removeSubrange((historyIndex + 1)...)
+    }
+
+    navigationHistory.append(selection)
+    historyIndex = navigationHistory.count - 1
+  }
+
+  private func goBack() {
+    guard isBackEnabled else { return }
+    historyIndex -= 1
+    applyHistorySelection(navigationHistory[historyIndex])
+  }
+
+  private func goForward() {
+    guard isForwardEnabled else { return }
+    historyIndex += 1
+    applyHistorySelection(navigationHistory[historyIndex])
+  }
+
+  private func applyHistorySelection(_ selection: SidebarSelection) {
+    selectedDetail = .linkList
+    sidebarSelection = selection
+    isSaveSuccessToastPresented = false
+    searchViewModel.clearSearch()
   }
   
   private var favoriteCategories: [CategoryItem] {
@@ -268,6 +312,10 @@ struct RootView: View {
             isSearchOverlayPresented = true
             searchViewModel.focus()
           },
+          onBackTap: goBack,
+          onForwardTap: goForward,
+          isBackEnabled: isBackEnabled,
+          isForwardEnabled: isForwardEnabled,
           backForwardLeadingPadding: isSidebarCollapsed ? 72 : 20
         )
       }
