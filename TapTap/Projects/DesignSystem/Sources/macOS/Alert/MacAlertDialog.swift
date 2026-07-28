@@ -30,6 +30,7 @@ public struct MacAlertDialog: View {
   private let message: String
   private let cancelTitle: String
   private let destructiveTitle: String
+  private let width: CGFloat
   private let onCancel: () -> Void
   private let onDestructive: () -> Void
 
@@ -38,6 +39,7 @@ public struct MacAlertDialog: View {
     message: String,
     cancelTitle: String = "취소",
     destructiveTitle: String = "삭제",
+    width: CGFloat = 560,
     onCancel: @escaping () -> Void,
     onDestructive: @escaping () -> Void
   ) {
@@ -45,6 +47,7 @@ public struct MacAlertDialog: View {
     self.message = message
     self.cancelTitle = cancelTitle
     self.destructiveTitle = destructiveTitle
+    self.width = width
     self.onCancel = onCancel
     self.onDestructive = onDestructive
   }
@@ -91,7 +94,7 @@ public struct MacAlertDialog: View {
       .padding(.horizontal, 20)
       .padding(.top, 20)
       .padding(.bottom, 20)
-      .frame(width: 560, height: 160)
+      .frame(width: width, height: 160)
       .background(Color.background)
       .clipShape(RoundedRectangle(cornerRadius: 16))
       .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 0)

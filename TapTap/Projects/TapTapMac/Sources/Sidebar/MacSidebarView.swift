@@ -116,23 +116,30 @@ public struct MacSidebarView: View {
       .padding(.bottom, 20)
       .zIndex(2)
 
+      // 카테고리 목록 위에 얹혀 하단으로 스크롤되는 행을 흐리게 없앤다.
+      // 반드시 콘텐츠(zIndex 2)보다 위, 설정 버튼(zIndex 4)보다 아래여야 보인다.
       VStack {
         Spacer()
         LinearGradient(
-          colors: [Color.bgButtonGrad4, Color.n0],
-          startPoint: .top,
-          endPoint: .bottom
+          stops: [
+            Gradient.Stop(color: .bgButtonGrad4, location: 0.0),
+            Gradient.Stop(color: .n0, location: 0.7)
+          ],
+          startPoint: UnitPoint(x: 0.44, y: 0),
+          endPoint: UnitPoint(x: 0.44, y: 1)
         )
         .frame(height: 72)
-        .allowsHitTesting(false)
+        .blur(radius: 4)
       }
-      .zIndex(1)
+      .clipShape(sidebarShape)
+      .allowsHitTesting(false)
+      .zIndex(3)
 
       if !isCollapsed {
         SidebarSettingsButton(onSettings: onSettings)
           .padding(.leading, 20)
           .padding(.bottom, 20)
-          .zIndex(3)
+          .zIndex(4)
       }
     }
     .frame(width: width, alignment: .leading)
