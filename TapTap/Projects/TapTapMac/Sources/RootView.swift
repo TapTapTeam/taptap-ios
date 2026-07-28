@@ -42,6 +42,7 @@ struct RootView: View {
   private let sidebarCollapseThreshold: CGFloat = 860
   
   @State private var isSettingAlertPresented: Bool = false
+  @State private var categoryPendingDeletion: UUID?
   
   var body: some View {
     GeometryReader { geometry in
@@ -93,13 +94,7 @@ struct RootView: View {
               selectedCategoryID = nil
               selectedDetail = .addLink
             },
-            onSeeAllLinks: {
-              selectedDetail = .linkList
-              isSaveSuccessToastPresented = false
-              isSeeAllSelected = true
-              selectedCategoryID = nil
-              searchViewModel.clearSearch()
-            },
+            onSeeAllLinks: showAllLinks,
             onAddCategory: showAddCategoryPopover,
             onSelectCategory: { category in
               selectedDetail = .linkList
@@ -109,7 +104,7 @@ struct RootView: View {
               searchViewModel.clearSearch()
             },
             onToggleCategoryFavorite: toggleCategoryFavorite,
-            onDeleteCategory: deleteCategory,
+            onDeleteCategory: { categoryPendingDeletion = $0 },
             onSettings: {
               print("tap")
               isSettingAlertPresented = true
@@ -178,6 +173,22 @@ struct RootView: View {
             .padding(.horizontal, currentWidth < 600 ? 20 : 0)
             .padding(.vertical, currentHeight < 640 ? 20 : 0)
             .zIndex(30)
+        }
+      }
+      .overlay {
+        if let category = categoryPendingDeletion.flatMap(category(id:)) {
+          // MacAlertDialog가 배경 딤을 자체적으로 그리므로 별도 딤 레이어는 두지 않는다.
+          MacAlertDialog(
+            title: "이 카테고리를 삭제할까요?",
+            message: deleteCategoryMessage(for: category),
+            width: 536,
+            onCancel: { categoryPendingDeletion = nil },
+            onDestructive: {
+              categoryPendingDeletion = nil
+              deleteCategory(category.id)
+            }
+          )
+          .zIndex(40)
         }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -322,6 +333,17 @@ struct RootView: View {
     }
   }
   
+  private func category(id: UUID) -> CategoryItem? {
+    allCategories.first { $0.id == id }
+  }
+
+  /// 카테고리를 지워도 링크는 사라지지 않고 미분류(전체)로 옮겨진다.
+  /// `CategoryCommand.deleteCategory(id:)`가 링크의 `category`를 nil로 만드는 동작과 대응한다.
+  private func deleteCategoryMessage(for category: CategoryItem) -> String {
+    let linkCount = (category.links ?? []).count
+    return "‘\(category.categoryName)’ 카테고리와 \(linkCount)개의 링크가 삭제되며, 포함된 링크는 전체로 이동돼요"
+  }
+
   private func deleteCategory(_ categoryID: UUID) {
     do {
       if selectedCategoryID == categoryID {
@@ -336,14 +358,37 @@ struct RootView: View {
     }
   }
   
+  @ViewBuilder
   private var detailContent: some View {
-    LinkListContainerView(
-      articles: articles,
-      categories: allCategories,
-      selectedCategoryID: selectedCategoryID,
-      isSeeAllSelected: isSeeAllSelected,
-      isEditing: $isLinkListEditing
-    )
+    switch selectedDetail {
+    case .linkList:
+      LinkListContainerView(
+        articles: articles,
+        categories: allCategories,
+        selectedCategoryID: selectedCategoryID,
+        isSeeAllSelected: isSeeAllSelected,
+        isEditing: $isLinkListEditing
+      )
+
+    case .addLink:
+      // AddLinkView는 자체 상단바("링크 추가하기" + 추가 버튼)를 그리므로
+      // contentStack에서 MacToolbar를 숨긴 상태(selectedDetail != .linkList)로 들어온다.
+      AddLinkView(
+        categories: allCategories,
+        totalLinkCount: articles.count,
+        onSave: showSavedLink,
+        onShowExistingLink: showAllLinks,
+        onAddCategory: showAddCategoryPopover
+      )
+    }
+  }
+
+  private func showAllLinks() {
+    selectedDetail = .linkList
+    isSaveSuccessToastPresented = false
+    isSeeAllSelected = true
+    selectedCategoryID = nil
+    searchViewModel.clearSearch()
   }
   
   private func showSavedLink(_ article: ArticleItem) {
