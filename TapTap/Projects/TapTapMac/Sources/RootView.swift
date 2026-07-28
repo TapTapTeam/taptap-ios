@@ -408,29 +408,39 @@ struct RootView: View {
   }
   
   private var detailContent: some View {
-    LinkListContainerView(
-      articles: articles,
-      categories: allCategories,
-      selectedCategoryID: selectedCategoryID,
-      isSeeAllSelected: isSeeAllSelected,
-      isEditing: $isLinkListEditing
-    )
+    ZStack {
+      LinkListContainerView(
+        articles: articles,
+        categories: allCategories,
+        selectedCategoryID: selectedCategoryID,
+        isSeeAllSelected: isSeeAllSelected,
+        isEditing: $isLinkListEditing
+      )
+
+      if selectedDetail == .addLink {
+        AddLinkView(
+          categories: allCategories,
+          totalLinkCount: articles.count,
+          onSave: showSavedLink,
+          onShowExistingLink: {
+            navigate(to: .linkList, selection: .allLinks)
+          },
+          onAddCategory: showAddCategoryPopover
+        )
+      }
+    }
   }
   
   private func showSavedLink(_ article: ArticleItem) {
-    selectedDetail = .linkList
-    isLinkListEditing = false
-    isSearchOverlayPresented = false
-    searchViewModel.clearSearch()
-    
-    if let category = article.category {
-      sidebarSelection = .category(category.id)
-      saveSuccessCategoryName = category.categoryName
-    } else {
-      sidebarSelection = .allLinks
-      saveSuccessCategoryName = "전체"
-    }
-    
+    let selection: SidebarSelection = article.category.map { .category($0.id) } ?? .allLinks
+    navigate(
+      to: .linkList,
+      selection: selection,
+      resetEditing: true,
+      resetSearchOverlay: true,
+      resetSaveToast: false
+    )
+    saveSuccessCategoryName = article.category?.categoryName ?? "전체"
     isSaveSuccessToastPresented = true
   }
 }
