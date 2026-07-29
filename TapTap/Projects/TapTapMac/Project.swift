@@ -16,6 +16,10 @@ let project = Project.project(
       destinations: .macOS,
       product: .app,
       deploymentTargets: .macOS("15.0"),
+      // macOS 앱스토어 업로드에는 LSApplicationCategoryType이 필수다. (altool 90242)
+      infoPlist: .extendingDefault(with: [
+        "LSApplicationCategoryType": "public.app-category.productivity"
+      ]),
       sources: .sources,
       resources: .default,
       entitlements: .file(path: "TapTapMac.entitlements"),
