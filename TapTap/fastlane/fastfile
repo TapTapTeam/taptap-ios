@@ -27,7 +27,7 @@ platform :ios do
         )
     end
   
-  desc "TesetFlight 업로드(버전을 입력해주세요.)"
+  desc "TestFlight 업로드(버전을 입력해주세요.)"
   lane :beta do |options|
     version = options[:version] || prompt(text: "버전을 입력해주세요. (예: 1.10.0): ")
 
@@ -238,6 +238,7 @@ platform :macos do
   desc "macOS TestFlight 업로드 (버전을 입력해주세요. 예: version:1.0.0)"
   lane :beta do |options|
     version = options[:version] || prompt(text: "버전을 입력해주세요. (예: 1.0.0): ")
+    UI.user_error!("유효하지 않은 버전 형식입니다: '#{version}' (예: 1.0.0)") unless version =~ /\A\d+\.\d+\.\d+\z/
     app_identifier = "com.Nbs.dev.ADA.macOS"
 
     # macOS 앱스토어 .pkg 서명에는 앱 배포 인증서 + Installer 인증서가 둘 다 필요하다.
@@ -254,18 +255,13 @@ platform :macos do
       key_filepath: ENV["ASC_KEY_FILEPATH"]
     )
 
-    # 앱을 처음 올릴 땐 TestFlight에 기존 빌드가 없어 조회가 실패하므로 1부터 시작한다.
-    next_build = (
-      begin
-        latest_testflight_build_number(
-          app_identifier: app_identifier,
-          api_key: api_key,
-          version: version,
-          platform: "osx"
-        )
-      rescue
-        0
-      end
+    # 앱을 처음 올릴 땐 TestFlight에 기존 빌드가 없으므로 initial_build_number로 0을 지정해 1부터 시작한다.
+    next_build = latest_testflight_build_number(
+      app_identifier: app_identifier,
+      api_key: api_key,
+      version: version,
+      platform: "osx",
+      initial_build_number: 0
     ).to_i + 1
 
     # 버전은 공유 xcconfig(Project.xcconfig)를 건드리지 않고 빌드 시점에만 주입한다.
