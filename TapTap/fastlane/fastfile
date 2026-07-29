@@ -234,4 +234,53 @@ platform :macos do
       platform: "macos"
     )
   end
+
+  desc "macOS TestFlight 업로드 (버전을 입력해주세요. 예: version:1.0.0)"
+  lane :beta do |options|
+    version = options[:version] || prompt(text: "버전을 입력해주세요. (예: 1.0.0): ")
+    app_identifier = "com.Nbs.dev.ADA.macOS"
+
+    # macOS 앱스토어 .pkg 서명에는 앱 배포 인증서 + Installer 인증서가 둘 다 필요하다.
+    match(
+      type: "appstore",
+      app_identifier: app_identifier,
+      platform: "macos",
+      additional_cert_types: ["mac_installer_distribution"]
+    )
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_FILEPATH"]
+    )
+
+    # 앱을 처음 올릴 땐 TestFlight에 기존 빌드가 없어 조회가 실패하므로 1부터 시작한다.
+    next_build = (
+      begin
+        latest_testflight_build_number(
+          app_identifier: app_identifier,
+          api_key: api_key,
+          version: version,
+          platform: "osx"
+        )
+      rescue
+        0
+      end
+    ).to_i + 1
+
+    # 버전은 공유 xcconfig(Project.xcconfig)를 건드리지 않고 빌드 시점에만 주입한다.
+    # (iOS 버전 관리와 분리)
+    build_app(
+      workspace: "../TapTap/TapTap.xcworkspace",
+      scheme: "TapTapMac",
+      export_method: "app-store",
+      xcargs: "MARKETING_VERSION=#{version} CURRENT_PROJECT_VERSION=#{next_build}"
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      app_platform: "osx",
+      skip_waiting_for_build_processing: true
+    )
+  end
 end
