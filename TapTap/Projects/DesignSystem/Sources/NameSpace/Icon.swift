@@ -48,6 +48,7 @@ public extension Icon {
   static let checkUnfill = "check-unfill"
   static let checkFill = "check-fill"
   static let bookmark = "bookmark"
+  static let favorite = "favorite"
   static let arrowLeft = "arrow-left"
   static let arrowRight = "arrow-right"
   static let linkMac = "linkMac"
