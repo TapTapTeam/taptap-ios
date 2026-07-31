@@ -32,6 +32,12 @@ public struct CategoryCommand {
     category.isFavorite.toggle()
     try context.save()
   }
+
+  public func setFavorite(id: UUID, isFavorite: Bool) throws {
+    guard let category = try fetchCategory(id: id) else { return }
+    category.isFavorite = isFavorite
+    try context.save()
+  }
   
   public func deleteCategory(id: UUID) throws {
     guard let category = try fetchCategory(id: id) else { return }
