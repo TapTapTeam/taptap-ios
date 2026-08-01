@@ -86,6 +86,34 @@ extension MyCategoryCollectionView: View {
         .transition(.move(edge: .bottom).combined(with: .opacity))
         .zIndex(1)
       }
+
+      if let favoriteStore = store.scope(
+        state: \.favoriteModal,
+        action: \.favoriteModal
+      ) {
+        BottomSheetContainerView(onDismiss: {
+          store.send(.favoriteModal(.dismissButtonTapped))
+        }) {
+          CategoryFavoriteView(store: favoriteStore)
+        }
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+        .zIndex(1)
+      }
+
+      if store.favoriteFullAlert != nil {
+        ZStack {
+          Color.dim.ignoresSafeArea()
+          AlertDialog(
+            title: "즐겨찾기 개수가 꽉 찼어요!",
+            subtitle: "이 카테고리를 즐겨찾기에 추가할까요?\n즐겨찾기는 최대 6개까지 추가할 수 있으며, 이 카테고리를 고정하면 가장 오래된 카테고리가 해제돼요",
+            onCancel: { store.send(.favoriteFullAlertCancelled) },
+            buttonType: .confirm(title: "추가", action: {
+              store.send(.favoriteFullAlertConfirmed)
+            })
+          )
+        }
+        .zIndex(2)
+      }
     }
     .toolbar(.hidden)
     .onAppear {

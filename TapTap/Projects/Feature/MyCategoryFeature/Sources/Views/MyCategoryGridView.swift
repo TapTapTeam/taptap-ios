@@ -25,36 +25,47 @@ extension MyCategoryGridView: View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       ScrollView {
         LazyVGrid(columns: gridItems, spacing: 10) {
-          ForEach(viewStore.categories.reversed()) { category in
-            Button {
-              store.send(.categoryTapped(category))
-            } label: {
-              ZStack(alignment: .bottomTrailing) {
-                VStack(alignment: .leading, spacing: 4) {
-                  Text(category.categoryName)
-                    .font(.B1_SB)
-                    .foregroundStyle(.text1)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(2)
-                  Text("\((category.links ?? []).count)개")
-                    .font(.B2_M)
-                    .foregroundStyle(.caption2)
-                  Spacer()
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top)
-                .padding(.horizontal)
-                DesignSystemAsset.primaryCategoryIcon(number: category.icon.number)
-                  .resizable()
-                  .frame(width: 52, height: 52)
-                  .padding(.trailing, 14)
-                  .padding(.bottom, 12)
+          ForEach(viewStore.categories) { category in
+            ZStack(alignment: .bottomTrailing) {
+              VStack(alignment: .leading, spacing: 4) {
+                Text(category.categoryName)
+                  .font(.B1_SB)
+                  .foregroundStyle(.text1)
+                  .multilineTextAlignment(.leading)
+                  .lineLimit(2)
+                Text("\((category.links ?? []).count)개")
+                  .font(.B2_M)
+                  .foregroundStyle(.caption2)
+                Spacer()
               }
-              .frame(maxWidth: .infinity, minHeight: 116)
-              .background(.n0)
-              .clipShape(RoundedRectangle(cornerRadius: 12))
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .padding(.top)
+              .padding(.horizontal)
+              DesignSystemAsset.primaryCategoryIcon(number: category.icon.number)
+                .resizable()
+                .frame(width: 52, height: 52)
+                .padding(.trailing, 14)
+                .padding(.bottom, 12)
             }
-            .buttonStyle(.plain)
+            .frame(maxWidth: .infinity, minHeight: 116)
+            .background(.n0)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(alignment: .topTrailing) {
+              if category.isFavorite {
+                Image(icon: Icon.favorite)
+                  .resizable()
+                  .aspectRatio(contentMode: .fit)
+                  .frame(width: 14, height: 18)
+                  .padding(.trailing, 16)
+              }
+            }
+            .contentShape(RoundedRectangle(cornerRadius: 12))
+            .onTapGesture {
+              store.send(.categoryTapped(category))
+            }
+            .onLongPressGesture(minimumDuration: 0.4) {
+              store.send(.categoryLongPressed(category))
+            }
             .shadow(color: .bgShadow3, radius: 4, x: 0, y: 0)
           }
         }
