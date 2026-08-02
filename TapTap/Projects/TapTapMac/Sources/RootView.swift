@@ -21,9 +21,7 @@ struct RootView: View {
   @Query(sort: \ArticleItem.lastViewedDate, order: .reverse) private var articles: [ArticleItem]
   
   @State private var isSidebarCollapsed: Bool = false
-  @State private var sidebarSelection: SidebarSelection = .allLinks
-  @State private var navigationHistory: [SidebarSelection] = [.allLinks]
-  @State private var historyIndex: Int = 0
+  @State private var linkListViewModel = LinkListViewModel()
   @State private var isLinkListEditing: Bool = false
   @State private var selectedDetail: DetailDestination = .linkList
   @State private var isSaveSuccessToastPresented: Bool = false
@@ -44,20 +42,12 @@ struct RootView: View {
   @State private var isSettingAlertPresented: Bool = false
 
   private var isSeeAllSelected: Bool {
-    sidebarSelection == .allLinks
+    linkListViewModel.activeContext == .allLinks
   }
 
   private var selectedCategoryID: UUID? {
-    guard case let .category(categoryID) = sidebarSelection else { return nil }
+    guard case let .category(categoryID) = linkListViewModel.activeContext else { return nil }
     return categoryID
-  }
-
-  private var isBackEnabled: Bool {
-    historyIndex > 0
-  }
-
-  private var isForwardEnabled: Bool {
-    historyIndex < navigationHistory.count - 1
   }
   
   var body: some View {
@@ -102,14 +92,24 @@ struct RootView: View {
             isCollapsed: isSidebarCollapsed,
             onToggleSidebar: toggleSidebar,
             onAddLink: {
-              navigate(to: .addLink, selection: .none, resetEditing: true, resetSearchOverlay: true)
+              isSearchOverlayPresented = false
+              isSaveSuccessToastPresented = false
+              searchViewModel.clearSearch()
+              isLinkListEditing = false
+              selectedDetail = .addLink
             },
             onSeeAllLinks: {
-              navigate(to: .linkList, selection: .allLinks)
+              selectedDetail = .linkList
+              isSaveSuccessToastPresented = false
+              searchViewModel.clearSearch()
+              linkListViewModel.selectContext(.allLinks)
             },
             onAddCategory: showAddCategoryPopover,
             onSelectCategory: { category in
-              navigate(to: .linkList, selection: .category(category.id))
+              selectedDetail = .linkList
+              isSaveSuccessToastPresented = false
+              searchViewModel.clearSearch()
+              linkListViewModel.selectContext(.category(category.id))
             },
             onToggleCategoryFavorite: toggleCategoryFavorite,
             onDeleteCategory: deleteCategory,
@@ -233,68 +233,6 @@ struct RootView: View {
     }
   }
 
-  private func navigate(
-    to destination: DetailDestination,
-    selection: SidebarSelection,
-    resetEditing: Bool = false,
-    resetSearchOverlay: Bool = false,
-    resetSaveToast: Bool = true,
-    resetSearch: Bool = true
-  ) {
-    selectedDetail = destination
-    sidebarSelection = selection
-
-    if resetSaveToast {
-      isSaveSuccessToastPresented = false
-    }
-
-    if resetSearch {
-      searchViewModel.clearSearch()
-    }
-
-    if resetEditing {
-      isLinkListEditing = false
-    }
-
-    if resetSearchOverlay {
-      isSearchOverlayPresented = false
-    }
-
-    if destination == .linkList {
-      pushHistory(selection)
-    }
-  }
-
-  private func pushHistory(_ selection: SidebarSelection) {
-    guard navigationHistory[historyIndex] != selection else { return }
-
-    if historyIndex < navigationHistory.count - 1 {
-      navigationHistory.removeSubrange((historyIndex + 1)...)
-    }
-
-    navigationHistory.append(selection)
-    historyIndex = navigationHistory.count - 1
-  }
-
-  private func goBack() {
-    guard isBackEnabled else { return }
-    historyIndex -= 1
-    applyHistorySelection(navigationHistory[historyIndex])
-  }
-
-  private func goForward() {
-    guard isForwardEnabled else { return }
-    historyIndex += 1
-    applyHistorySelection(navigationHistory[historyIndex])
-  }
-
-  private func applyHistorySelection(_ selection: SidebarSelection) {
-    selectedDetail = .linkList
-    sidebarSelection = selection
-    isSaveSuccessToastPresented = false
-    searchViewModel.clearSearch()
-  }
-  
   private var favoriteCategories: [CategoryItem] {
     allCategories.filter(\.isFavorite)
   }
@@ -312,10 +250,10 @@ struct RootView: View {
             isSearchOverlayPresented = true
             searchViewModel.focus()
           },
-          onBackTap: goBack,
-          onForwardTap: goForward,
-          isBackEnabled: isBackEnabled,
-          isForwardEnabled: isForwardEnabled,
+          onBackTap: linkListViewModel.goBack,
+          onForwardTap: linkListViewModel.goForward,
+          isBackEnabled: linkListViewModel.isBackEnabled,
+          isForwardEnabled: linkListViewModel.isForwardEnabled,
           backForwardLeadingPadding: isSidebarCollapsed ? 72 : 20
         )
       }
@@ -374,7 +312,7 @@ struct RootView: View {
     
     do {
       try modelContext.save()
-      sidebarSelection = .category(newCategory.id)
+      linkListViewModel.selectContext(.category(newCategory.id))
       closeAddCategoryPopover()
     } catch {
       modelContext.delete(newCategory)
@@ -393,12 +331,8 @@ struct RootView: View {
   private func deleteCategory(_ categoryID: UUID) {
     do {
       if selectedCategoryID == categoryID {
-        navigate(
-          to: .linkList,
-          selection: .allLinks,
-          resetSaveToast: false,
-          resetSearch: false
-        )
+        selectedDetail = .linkList
+        linkListViewModel.selectContext(.allLinks)
       }
       
       try CategoryCommand(context: modelContext).deleteCategory(id: categoryID)
@@ -412,8 +346,7 @@ struct RootView: View {
       LinkListContainerView(
         articles: articles,
         categories: allCategories,
-        selectedCategoryID: selectedCategoryID,
-        isSeeAllSelected: isSeeAllSelected,
+        viewModel: linkListViewModel,
         isEditing: $isLinkListEditing
       )
 
@@ -423,7 +356,8 @@ struct RootView: View {
           totalLinkCount: articles.count,
           onSave: showSavedLink,
           onShowExistingLink: {
-            navigate(to: .linkList, selection: .allLinks)
+            selectedDetail = .linkList
+            linkListViewModel.selectContext(.allLinks)
           },
           onAddCategory: showAddCategoryPopover
         )
@@ -432,14 +366,14 @@ struct RootView: View {
   }
   
   private func showSavedLink(_ article: ArticleItem) {
-    let selection: SidebarSelection = article.category.map { .category($0.id) } ?? .allLinks
-    navigate(
-      to: .linkList,
-      selection: selection,
-      resetEditing: true,
-      resetSearchOverlay: true,
-      resetSaveToast: false
-    )
+    selectedDetail = .linkList
+    isLinkListEditing = false
+    isSearchOverlayPresented = false
+    searchViewModel.clearSearch()
+
+    let context: LinkListViewModel.OpenedLinkTab.Context = article.category.map { .category($0.id) } ?? .allLinks
+    linkListViewModel.selectContext(context)
+
     saveSuccessCategoryName = article.category?.categoryName ?? "전체"
     isSaveSuccessToastPresented = true
   }
@@ -448,12 +382,6 @@ struct RootView: View {
 private enum DetailDestination: Equatable {
   case linkList
   case addLink
-}
-
-private enum SidebarSelection: Equatable {
-  case allLinks
-  case category(UUID)
-  case none
 }
 
 private struct SaveSuccessToast: View {
