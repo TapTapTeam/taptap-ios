@@ -17,7 +17,7 @@ public struct Constants {
   
   public struct AppInfo {
     public static let privacyPolicy = """
-    2025년 11월 27일 마지막으로 업데이트 됨.
+    2026년 7월 29일 마지막으로 업데이트 됨.
     
     **개요**
     탭탭 TapTap(이하 ‘회사’)은 이용자의 개인정보를 소중히 생각하며, 관련 법령을 준수합니다.  
@@ -47,14 +47,11 @@ public struct Constants {
     
     또한, 앱의 서비스 개선 및 오류 분석을 위해 Firebase Crashlytics, Amplitude 등 외부 서비스가 사용될 수 있으며, 이들 서비스는 각자의 개인정보처리방침에 따라 정보를 처리할 수 있습니다.  
     
-    - [Firebase Crashlytics 개인정보처리방침](https://firebase.google.com/support/privacy)  
-    - [Amplitude 개인정보처리방침](https://amplitude.com/privacy)
-    
     **제4조(개인정보 보호책임자)**
     이용자의 개인정보 보호와 관련된 문의, 불만처리, 피해구제 등을 위하여 아래와 같이 개인정보 보호책임자를 지정합니다.  
     
-    - 개인정보 보호책임자: 신지현  
-    - 이메일: [taptap.contacts@gmail.com](mailto:taptap.contacts@gmail.com)
+    - 개인정보 보호책임자: 탭탭 팀
+    - 이메일: [dbsghdz1.dev@gmail.com](mailto:dbsghdz1.dev@gmail.com)
     
     회사는 수집된 정보를 이용 목적 달성 시 또는 이용자의 요청 시 지체 없이 파기하며,  
     관련 법령에 따라 보존이 필요한 경우에는 해당 기간 동안 안전하게 보관 후 파기합니다.
@@ -88,8 +85,7 @@ public struct Constants {
     회사는 관련 법령을 위배하지 않는 범위 내에서 약관을 변경할 수 있으며, 변경 시 서비스 내에 공지합니다.
     
     **제4조(서비스의 제공 및 변경)**
-    회사는 연중무휴, 1일 24시간 서비스를 제공합니다.  
-    단, 시스템 점검 등 불가피한 사유가 있는 경우 서비스 제공이 일시 중단될 수 있습니다.  
+    시스템 점검 등 불가피한 사유가 있는 경우 서비스 제공이 일시 중단될 수 있습니다.  
     서비스의 내용은 회사의 정책에 따라 변경될 수 있습니다.
 
     **제5조(개인정보보호)**

@@ -21,10 +21,12 @@ public struct MyCategoryGridFeature {
     case fetchCategoriesResponse([CategoryItem])
     case fetchCategoriesResponseFailed(String)
     case categoryTapped(CategoryItem)
-    
+    case categoryLongPressed(CategoryItem)
+
     case delegate(Delegate)
     public enum Delegate: Equatable {
       case route(AppRoute)
+      case favoriteLongPressed(CategoryItem)
     }
   }
   
@@ -35,7 +37,10 @@ public struct MyCategoryGridFeature {
       switch action {
       case let .categoryTapped(category):
         return .send(.delegate(.route(.linkList(initCategory: category.categoryName))))
-        
+
+      case let .categoryLongPressed(category):
+        return .send(.delegate(.favoriteLongPressed(category)))
+
       case .onAppear:
         return .run { send in
           do {
@@ -47,7 +52,11 @@ public struct MyCategoryGridFeature {
         }
         
       case let .fetchCategoriesResponse(categories):
-        state.categories = categories
+        // 즐겨찾기 카테고리를 상단에, 그 외는 최신순으로 정렬
+        state.categories = categories.sorted {
+          if $0.isFavorite != $1.isFavorite { return $0.isFavorite }
+          return $0.createdAt > $1.createdAt
+        }
         return .none
         
       case .fetchCategoriesResponseFailed:

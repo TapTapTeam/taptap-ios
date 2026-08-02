@@ -66,3 +66,7 @@ Derived/
 
 ### Tuist managed dependencies ###
 Tuist/.build
+
+### Fastlane / build outputs ###
+*.pkg
+*.app/
