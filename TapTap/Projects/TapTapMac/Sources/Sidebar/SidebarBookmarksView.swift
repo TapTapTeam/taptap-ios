@@ -1,6 +1,6 @@
 //
 //  SidebarBookmarksView.swift
-//  MacHomeFeature
+//  TapTapMac
 //
 
 import SwiftUI

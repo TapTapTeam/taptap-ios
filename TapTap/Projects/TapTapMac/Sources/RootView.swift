@@ -11,7 +11,6 @@ import Core
 import DesignSystem
 
 import MacAddLinkFeature
-import MacHomeFeature
 import MacLinkListFeature
 import MacSearchFeature
 
@@ -22,8 +21,7 @@ struct RootView: View {
   @Query(sort: \ArticleItem.lastViewedDate, order: .reverse) private var articles: [ArticleItem]
   
   @State private var isSidebarCollapsed: Bool = false
-  @State private var isSeeAllSelected: Bool = true
-  @State private var selectedCategoryID: UUID?
+  @State private var linkListViewModel = LinkListViewModel()
   @State private var isLinkListEditing: Bool = false
   @State private var selectedDetail: DetailDestination = .linkList
   @State private var isSaveSuccessToastPresented: Bool = false
@@ -43,7 +41,16 @@ struct RootView: View {
   
   @State private var isSettingAlertPresented: Bool = false
   @State private var categoryPendingDeletion: UUID?
-  
+
+  private var isSeeAllSelected: Bool {
+    linkListViewModel.activeContext == .allLinks
+  }
+
+  private var selectedCategoryID: UUID? {
+    guard case let .category(categoryID) = linkListViewModel.activeContext else { return nil }
+    return categoryID
+  }
+
   var body: some View {
     GeometryReader { geometry in
       contentView
@@ -86,12 +93,10 @@ struct RootView: View {
             isCollapsed: isSidebarCollapsed,
             onToggleSidebar: toggleSidebar,
             onAddLink: {
-              isLinkListEditing = false
               isSearchOverlayPresented = false
               isSaveSuccessToastPresented = false
               searchViewModel.clearSearch()
-              isSeeAllSelected = false
-              selectedCategoryID = nil
+              isLinkListEditing = false
               selectedDetail = .addLink
             },
             onSeeAllLinks: showAllLinks,
@@ -99,9 +104,8 @@ struct RootView: View {
             onSelectCategory: { category in
               selectedDetail = .linkList
               isSaveSuccessToastPresented = false
-              isSeeAllSelected = false
-              selectedCategoryID = category.id
               searchViewModel.clearSearch()
+              linkListViewModel.selectContext(.category(category.id))
             },
             onToggleCategoryFavorite: toggleCategoryFavorite,
             onDeleteCategory: { categoryPendingDeletion = $0 },
@@ -240,7 +244,7 @@ struct RootView: View {
       isSidebarCollapsed.toggle()
     }
   }
-  
+
   private var favoriteCategories: [CategoryItem] {
     allCategories.filter(\.isFavorite)
   }
@@ -258,6 +262,10 @@ struct RootView: View {
             isSearchOverlayPresented = true
             searchViewModel.focus()
           },
+          onBackTap: linkListViewModel.goBack,
+          onForwardTap: linkListViewModel.goForward,
+          isBackEnabled: linkListViewModel.isBackEnabled,
+          isForwardEnabled: linkListViewModel.isForwardEnabled,
           backForwardLeadingPadding: isSidebarCollapsed ? 72 : 20
         )
       }
@@ -316,8 +324,7 @@ struct RootView: View {
     
     do {
       try modelContext.save()
-      isSeeAllSelected = false
-      selectedCategoryID = newCategory.id
+      linkListViewModel.selectContext(.category(newCategory.id))
       closeAddCategoryPopover()
     } catch {
       modelContext.delete(newCategory)
@@ -348,8 +355,7 @@ struct RootView: View {
     do {
       if selectedCategoryID == categoryID {
         selectedDetail = .linkList
-        isSeeAllSelected = true
-        selectedCategoryID = nil
+        linkListViewModel.selectContext(.allLinks)
       }
       
       try CategoryCommand(context: modelContext).deleteCategory(id: categoryID)
@@ -358,37 +364,34 @@ struct RootView: View {
     }
   }
   
-  @ViewBuilder
   private var detailContent: some View {
-    switch selectedDetail {
-    case .linkList:
+    ZStack {
       LinkListContainerView(
         articles: articles,
         categories: allCategories,
-        selectedCategoryID: selectedCategoryID,
-        isSeeAllSelected: isSeeAllSelected,
+        viewModel: linkListViewModel,
         isEditing: $isLinkListEditing
       )
 
-    case .addLink:
-      // AddLinkView는 자체 상단바("링크 추가하기" + 추가 버튼)를 그리므로
-      // contentStack에서 MacToolbar를 숨긴 상태(selectedDetail != .linkList)로 들어온다.
-      AddLinkView(
-        categories: allCategories,
-        totalLinkCount: articles.count,
-        onSave: showSavedLink,
-        onShowExistingLink: showAllLinks,
-        onAddCategory: showAddCategoryPopover
-      )
+      if selectedDetail == .addLink {
+        // AddLinkView는 자체 상단바("링크 추가하기" + 추가 버튼)를 그리므로
+        // contentStack에서 MacToolbar를 숨긴 상태(selectedDetail != .linkList)로 들어온다.
+        AddLinkView(
+          categories: allCategories,
+          totalLinkCount: articles.count,
+          onSave: showSavedLink,
+          onShowExistingLink: showAllLinks,
+          onAddCategory: showAddCategoryPopover
+        )
+      }
     }
   }
 
   private func showAllLinks() {
     selectedDetail = .linkList
     isSaveSuccessToastPresented = false
-    isSeeAllSelected = true
-    selectedCategoryID = nil
     searchViewModel.clearSearch()
+    linkListViewModel.selectContext(.allLinks)
   }
   
   private func showSavedLink(_ article: ArticleItem) {
@@ -396,17 +399,11 @@ struct RootView: View {
     isLinkListEditing = false
     isSearchOverlayPresented = false
     searchViewModel.clearSearch()
-    
-    if let category = article.category {
-      isSeeAllSelected = false
-      selectedCategoryID = category.id
-      saveSuccessCategoryName = category.categoryName
-    } else {
-      isSeeAllSelected = true
-      selectedCategoryID = nil
-      saveSuccessCategoryName = "전체"
-    }
-    
+
+    let context: LinkListViewModel.OpenedLinkTab.Context = article.category.map { .category($0.id) } ?? .allLinks
+    linkListViewModel.selectContext(context)
+
+    saveSuccessCategoryName = article.category?.categoryName ?? "전체"
     isSaveSuccessToastPresented = true
   }
 }

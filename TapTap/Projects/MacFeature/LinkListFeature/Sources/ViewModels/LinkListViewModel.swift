@@ -10,6 +10,43 @@ import Observation
 
 import Core
 
+struct NavigationHistory: Equatable {
+  private(set) var entries: [LinkListViewModel.OpenedLinkTab.Context]
+  private(set) var index: Int
+
+  init(initial: LinkListViewModel.OpenedLinkTab.Context) {
+    entries = [initial]
+    index = 0
+  }
+
+  var current: LinkListViewModel.OpenedLinkTab.Context { entries[index] }
+  var isBackEnabled: Bool { index > 0 }
+  var isForwardEnabled: Bool { index < entries.count - 1 }
+
+  mutating func push(_ context: LinkListViewModel.OpenedLinkTab.Context) {
+    guard entries[index] != context else { return }
+    if index < entries.count - 1 {
+      entries.removeSubrange((index + 1)...)
+    }
+    entries.append(context)
+    index = entries.count - 1
+  }
+
+  @discardableResult
+  mutating func goBack() -> LinkListViewModel.OpenedLinkTab.Context? {
+    guard isBackEnabled else { return nil }
+    index -= 1
+    return entries[index]
+  }
+
+  @discardableResult
+  mutating func goForward() -> LinkListViewModel.OpenedLinkTab.Context? {
+    guard isForwardEnabled else { return nil }
+    index += 1
+    return entries[index]
+  }
+}
+
 /// 링크 리스트 화면의 필터링, 정렬, 선택 상태를 관리하는 ViewModel입니다.
 @MainActor
 @Observable
@@ -38,28 +75,41 @@ public final class LinkListViewModel {
   }
 
   public struct OpenedLinkTab: Identifiable, Equatable {
-    public let id: String
-    public let articleID: String?
-    public let title: String
-
-    init(article: ArticleItem, id: String = UUID().uuidString) {
-      self.id = id
-      self.articleID = article.id
-      self.title = article.title
+    public enum Context: Equatable {
+      case allLinks
+      case category(UUID)
+      case article(String)
     }
 
-    static func newTab() -> OpenedLinkTab {
+    public let id: String
+    public internal(set) var title: String
+    var history: NavigationHistory
+
+    public var context: Context {
+      history.current
+    }
+
+    public var articleID: String? {
+      if case let .article(id) = context {
+        return id
+      }
+      return nil
+    }
+
+    static func newTab(title: String) -> OpenedLinkTab {
       OpenedLinkTab(
         id: UUID().uuidString,
-        articleID: nil,
-        title: "모든 링크"
+        title: title,
+        history: NavigationHistory(initial: .allLinks)
       )
     }
 
-    private init(id: String, articleID: String?, title: String) {
-      self.id = id
-      self.articleID = articleID
-      self.title = title
+    static func articleTab(article: ArticleItem, id: String = UUID().uuidString) -> OpenedLinkTab {
+      OpenedLinkTab(
+        id: id,
+        title: article.title,
+        history: NavigationHistory(initial: .article(article.id))
+      )
     }
   }
 
@@ -79,7 +129,6 @@ public final class LinkListViewModel {
   public private(set) var articleDeleteToast: ArticleDeleteToastState?
   public private(set) var openedTabs: [OpenedLinkTab] = []
   public private(set) var selectedTabID: String?
-  public private(set) var isSelectingNewTabArticle: Bool = false
 
   public var isEditing: Bool = false
   public var selectedArticleIDs: Set<String> = [] {
@@ -96,8 +145,7 @@ public final class LinkListViewModel {
 
   private var articles: [ArticleItem] = []
   private var categories: [CategoryItem] = []
-  private var selectedCategoryID: UUID?
-  private var isSeeAllSelected: Bool = true
+  private var baseHistory = NavigationHistory(initial: .allLinks)
   private var pendingDeleteArticles: [ArticleItem] = []
   private var pendingDeletedArticles: [ArticleItem] = []
   private var persistence: (any LinkListPersistence)?
@@ -120,14 +168,10 @@ public final class LinkListViewModel {
 
   public func update(
     articles: [ArticleItem],
-    categories: [CategoryItem],
-    selectedCategoryID: UUID?,
-    isSeeAllSelected: Bool
+    categories: [CategoryItem]
   ) {
     self.articles = articles
     self.categories = categories
-    self.selectedCategoryID = selectedCategoryID
-    self.isSeeAllSelected = isSeeAllSelected
     self.hiddenArticleIDs = Set(pendingDeletedArticles.map(\.id))
     applyFilters()
   }
@@ -137,18 +181,25 @@ public final class LinkListViewModel {
   }
 
   public var categoryTitle: String {
-    if isSelectingNewTabArticle {
+    switch activeContext {
+    case .allLinks:
+      return "전체"
+    case let .category(id):
+      return categories.first { $0.id == id }?.categoryName ?? "전체"
+    case .article:
       return "전체"
     }
-
-    if isSeeAllSelected {
-      return "전체"
-    }
-
-    return categories
-      .first { $0.id == selectedCategoryID }?
-      .categoryName ?? "전체"
   }
+
+  public var activeContext: OpenedLinkTab.Context {
+    if let selectedTabID, let tab = openedTabs.first(where: { $0.id == selectedTabID }) {
+      return tab.context
+    }
+    return baseHistory.current
+  }
+
+  public var isBackEnabled: Bool { activeHistorySnapshot.isBackEnabled }
+  public var isForwardEnabled: Bool { activeHistorySnapshot.isForwardEnabled }
 
   public var selectedArticle: ArticleItem? {
     guard
@@ -173,7 +224,6 @@ public final class LinkListViewModel {
   }
 
   public func beginEditing() {
-    isSelectingNewTabArticle = false
     selectedArticleIDs.removeAll()
     isSingleMovePickerPresented = false
     movingArticle = nil
@@ -181,10 +231,9 @@ public final class LinkListViewModel {
   }
 
   public func beginNewTabSelection() {
-    let tab = OpenedLinkTab.newTab()
+    let tab = OpenedLinkTab.newTab(title: title(for: .allLinks))
     openedTabs.append(tab)
     selectedTabID = tab.id
-    isSelectingNewTabArticle = true
     endEditing()
     applyFilters()
   }
@@ -193,19 +242,17 @@ public final class LinkListViewModel {
     if let selectedTabID,
        let selectedIndex = openedTabs.firstIndex(where: { $0.id == selectedTabID }),
        openedTabs[selectedIndex].articleID == nil {
-      openedTabs[selectedIndex] = OpenedLinkTab(article: article, id: selectedTabID)
-      isSelectingNewTabArticle = false
+      openedTabs[selectedIndex].history.push(.article(article.id))
+      openedTabs[selectedIndex].title = article.title
       return
     }
-
-    isSelectingNewTabArticle = false
 
     if let existingTab = openedTabs.first(where: { $0.articleID == article.id }) {
       selectedTabID = existingTab.id
       return
     }
 
-    let tab = OpenedLinkTab(article: article)
+    let tab = OpenedLinkTab.articleTab(article: article)
     openedTabs.append(tab)
     selectedTabID = tab.id
   }
@@ -213,7 +260,6 @@ public final class LinkListViewModel {
   public func selectTab(_ tabID: String) {
     guard openedTabs.contains(where: { $0.id == tabID }) else { return }
     selectedTabID = tabID
-    isSelectingNewTabArticle = selectedArticle == nil
   }
 
   public func closeTab(_ tabID: String) {
@@ -229,7 +275,6 @@ public final class LinkListViewModel {
     } else {
       selectedTabID = openedTabs.last?.id
     }
-    isSelectingNewTabArticle = selectedArticle == nil && selectedTabID != nil
   }
 
   public func closeTabs(articleIDs: Set<String>) {
@@ -252,10 +297,23 @@ public final class LinkListViewModel {
     isEditing = false
   }
 
-  public func handleCategoryContextChange() {
-    isSelectingNewTabArticle = false
+  public func selectContext(_ context: OpenedLinkTab.Context) {
+    if let selectedTabID, let index = openedTabs.firstIndex(where: { $0.id == selectedTabID }) {
+      openedTabs[index].history.push(context)
+      openedTabs[index].title = title(for: context)
+    } else {
+      baseHistory.push(context)
+    }
     endEditing()
     applyFilters()
+  }
+
+  public func goBack() {
+    mutateActiveHistory { $0.goBack() }
+  }
+
+  public func goForward() {
+    mutateActiveHistory { $0.goForward() }
   }
 
   public func updateSelection(_ article: ArticleItem, isSelected: Bool) {
@@ -470,13 +528,11 @@ private extension LinkListViewModel {
     syncOpenedTabs()
 
     let filteredArticles: [ArticleItem]
-
-    if isSelectingNewTabArticle || isSeeAllSelected || selectedCategoryID == nil {
+    switch activeContext {
+    case .allLinks, .article:
       filteredArticles = articles
-    } else {
-      filteredArticles = articles.filter {
-        $0.category?.id == selectedCategoryID
-      }
+    case let .category(id):
+      filteredArticles = articles.filter { $0.category?.id == id }
     }
 
     displayedArticles = filteredArticles
@@ -501,20 +557,43 @@ private extension LinkListViewModel {
         return articleIDs.contains(articleID)
       }
       .map { tab in
-        guard
-          let articleID = tab.articleID,
-          let article = articles.first(where: { $0.id == articleID })
-        else {
-          return tab
-        }
-        return OpenedLinkTab(article: article, id: tab.id)
+        var tab = tab
+        tab.title = title(for: tab.context)
+        return tab
       }
 
     if let selectedTabID, !openedTabs.contains(where: { $0.id == selectedTabID }) {
       self.selectedTabID = openedTabs.last?.id
     }
 
-    isSelectingNewTabArticle = selectedArticle == nil && selectedTabID != nil
+  }
+
+  var activeHistorySnapshot: NavigationHistory {
+    if let selectedTabID, let tab = openedTabs.first(where: { $0.id == selectedTabID }) {
+      return tab.history
+    }
+    return baseHistory
+  }
+
+  func mutateActiveHistory(_ mutate: (inout NavigationHistory) -> OpenedLinkTab.Context?) {
+    if let selectedTabID, let index = openedTabs.firstIndex(where: { $0.id == selectedTabID }) {
+      guard mutate(&openedTabs[index].history) != nil else { return }
+      openedTabs[index].title = title(for: openedTabs[index].context)
+    } else {
+      guard mutate(&baseHistory) != nil else { return }
+    }
+    applyFilters()
+  }
+
+  func title(for context: OpenedLinkTab.Context) -> String {
+    switch context {
+    case .allLinks:
+      return "모든 링크"
+    case let .category(id):
+      return categories.first { $0.id == id }?.categoryName ?? "전체"
+    case let .article(id):
+      return articles.first { $0.id == id }?.title ?? "링크"
+    }
   }
 
 

@@ -1,6 +1,6 @@
 //
 //  SidebarMyLinksView.swift
-//  MacHomeFeature
+//  TapTapMac
 //
 
 import SwiftUI

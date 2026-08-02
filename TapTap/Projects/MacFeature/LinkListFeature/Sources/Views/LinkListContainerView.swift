@@ -18,24 +18,20 @@ public struct LinkListContainerView: View {
   
   private let articles: [ArticleItem]
   private let categories: [CategoryItem]
-  private let selectedCategoryID: UUID?
-  private let isSeeAllSelected: Bool
+  private let viewModel: LinkListViewModel
   @Binding private var isEditing: Bool
 
-  @State private var viewModel = LinkListViewModel()
   @State private var detailViewModel: LinkDetailViewModel?
   
   public init(
     articles: [ArticleItem],
     categories: [CategoryItem],
-    selectedCategoryID: UUID?,
-    isSeeAllSelected: Bool,
+    viewModel: LinkListViewModel,
     isEditing: Binding<Bool>
   ) {
     self.articles = articles
     self.categories = categories
-    self.selectedCategoryID = selectedCategoryID
-    self.isSeeAllSelected = isSeeAllSelected
+    self.viewModel = viewModel
     self._isEditing = isEditing
   }
   
@@ -115,19 +111,11 @@ public struct LinkListContainerView: View {
     .onChange(of: categories.map { "\($0.id):\($0.categoryName):\($0.isFavorite)" }) { _, _ in
       updateViewModel()
     }
-    .onChange(of: selectedCategoryID) { _, _ in
-      updateViewModel()
-      viewModel.handleCategoryContextChange()
-    }
-    .onChange(of: isSeeAllSelected) { _, _ in
-      updateViewModel()
-      viewModel.handleCategoryContextChange()
+    .onChange(of: viewModel.activeContext) { _, _ in
+      syncDetailViewModel()
     }
     .onChange(of: viewModel.isEditing) { _, newValue in
       isEditing = newValue
-    }
-    .onChange(of: viewModel.selectedTabID) { _, _ in
-      syncDetailViewModel()
     }
     .onDisappear {
       viewModel.dismiss()
@@ -151,7 +139,7 @@ private extension LinkListContainerView {
         ) {
           LinkMovePopover(
             categories: categories,
-            selectedCategoryID: selectedCategoryID,
+            selectedCategoryID: activeCategoryID,
             onSelect: viewModel.moveSelectedLinks
           )
         }
@@ -213,9 +201,7 @@ private extension LinkListContainerView {
   func updateViewModel() {
     viewModel.update(
       articles: articles,
-      categories: categories,
-      selectedCategoryID: selectedCategoryID,
-      isSeeAllSelected: isSeeAllSelected
+      categories: categories
     )
     syncDetailViewModel()
   }
@@ -238,6 +224,13 @@ private extension LinkListContainerView {
   func beginNewTabSelection() {
     viewModel.beginNewTabSelection()
     syncDetailViewModel()
+  }
+
+  var activeCategoryID: UUID? {
+    if case let .category(categoryID) = viewModel.activeContext {
+      return categoryID
+    }
+    return nil
   }
 
   func syncDetailViewModel() {
