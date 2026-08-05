@@ -61,7 +61,7 @@ public struct MacSidebarView: View {
   }
 
   public var body: some View {
-    let width: CGFloat = isCollapsed ? 56 : 290
+    let width: CGFloat = isCollapsed ? 56 : 272
     let sidebarShape = UnevenRoundedRectangle(
       topLeadingRadius: 0,
       bottomLeadingRadius: 0,
