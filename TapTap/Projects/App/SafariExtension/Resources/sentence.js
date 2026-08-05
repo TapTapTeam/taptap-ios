@@ -8,9 +8,9 @@
 window.TapTap = window.TapTap || {};
 TapTap.sentence = {
   selectSentenceAt: function(event) {
-    const touch = event.changedTouches[0];
-    const x = touch.clientX;
-    const y = touch.clientY;
+    const point = event.changedTouches ? event.changedTouches[0] : event;
+    const x = point.clientX;
+    const y = point.clientY;
 
     const range = document.caretRangeFromPoint(x, y);
 
