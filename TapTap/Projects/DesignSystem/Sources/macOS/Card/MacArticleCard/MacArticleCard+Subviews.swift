@@ -56,31 +56,31 @@ extension MacArticleCard {
   }
 
   var articleImage: some View {
-    AsyncImage(url: URL(string: imageURL ?? "")) { phase in
-      switch phase {
-      case .empty:
-        ProgressView()
-          .frame(width: 90, height: 90)
+    Group {
+      if let imageURL, !imageURL.isEmpty, let url = URL(string: imageURL) {
+        AsyncImage(url: url) { phase in
+          switch phase {
+          case .empty:
+            ProgressView()
+              .frame(width: 90, height: 90)
 
-      case .success(let image):
-        image
-          .resizable()
-          .aspectRatio(contentMode: .fill)
-          .frame(width: 90, height: 90)
-          .clipped()
-          .clipShape(RoundedRectangle(cornerRadius: 8))
+          case .success(let image):
+            image
+              .resizable()
+              .aspectRatio(contentMode: .fill)
+              .frame(width: 90, height: 90)
+              .clipped()
+              .clipShape(RoundedRectangle(cornerRadius: 8))
 
-      case .failure:
-        DesignSystemAsset.notImage.swiftUIImage
-          .resizable()
-          .aspectRatio(contentMode: .fill)
-          .frame(width: 90, height: 90)
-          .foregroundStyle(.gray)
-          .clipped()
-          .clipShape(RoundedRectangle(cornerRadius: 8))
+          case .failure:
+            faviconFallback
 
-      @unknown default:
-        EmptyView()
+          @unknown default:
+            notImagePlaceholder
+          }
+        }
+      } else {
+        faviconFallback
       }
     }
     .overlay {
@@ -89,6 +89,43 @@ extension MacArticleCard {
           .fill(Color.bgDim)
       }
     }
+  }
+
+  private var faviconFallback: some View {
+    Group {
+      if let faviconURL {
+        AsyncImage(url: faviconURL) { phase in
+          if case .success(let favicon) = phase {
+            favicon
+              .resizable()
+              .aspectRatio(contentMode: .fit)
+              .frame(width: 40, height: 40)
+              .frame(width: 90, height: 90)
+              .background(Color.n10)
+              .clipShape(RoundedRectangle(cornerRadius: 8))
+          } else {
+            notImagePlaceholder
+          }
+        }
+      } else {
+        notImagePlaceholder
+      }
+    }
+  }
+
+  private var faviconURL: URL? {
+    guard let linkURL, let host = URL(string: linkURL)?.host else { return nil }
+    return URL(string: "https://\(host)/favicon.ico")
+  }
+
+  private var notImagePlaceholder: some View {
+    DesignSystemAsset.notImage.swiftUIImage
+      .resizable()
+      .aspectRatio(contentMode: .fill)
+      .frame(width: 90, height: 90)
+      .foregroundStyle(.gray)
+      .clipped()
+      .clipShape(RoundedRectangle(cornerRadius: 8))
   }
 
   var editButton: some View {

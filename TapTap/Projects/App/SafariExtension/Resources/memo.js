@@ -30,6 +30,8 @@ TapTap.memo = {
   },
 
   handleExternalClick: function(event) {
+    if (TapTap.tooltip?._suppressClickUntil && Date.now() < TapTap.tooltip._suppressClickUntil) return;
+
     if (this.memoUIElement.style.display === 'flex' && !this.memoUIElement.contains(event.target)) {
         this.hideMemoInput();
     }
@@ -140,6 +142,9 @@ TapTap.memo = {
       textarea.focus();
     }
     this.memoUIElement.style.display = 'flex';
+    if (textarea && !('ontouchend' in window)) {
+      textarea.focus();
+    }
   },
 
   hideMemoInput: function() {
@@ -165,7 +170,7 @@ TapTap.memo = {
 
     let memoToSave;
     if (memoId) {
-      memoToSave = highlight.memos.find(m => m.id === memoId);
+      memoToSave = highlight.memos.find(m => String(m.id) === String(memoId));
       if (memoToSave) {
         memoToSave.text = memoText;
       }
@@ -189,7 +194,7 @@ TapTap.memo = {
       const highlight = highlights.find(h => h.id === highlightId);
 
       if (highlight && highlight.memos) {
-          highlight.memos = highlight.memos.filter(m => m.id !== memoId);
+          highlight.memos = highlight.memos.filter(m => String(m.id) !== String(memoId));
           localStorage.setItem(pageKey, JSON.stringify(highlights));
           TapTap.highlight._updateSharedDom(highlights); // DOM에 데이터 저장
       }

@@ -123,8 +123,13 @@ extension Target {
       }
       
     case .appExtension:
-      debugSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.bundleIDBase).\(name)"
-      releaseSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.bundIDAppStore).\(name == "shareExtension" ? "actionExtension" : "safariExtension")"
+      if name == "MacSafariExtension" {
+        debugSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.macOSbundleID).safariExtension"
+        releaseSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.macOSbundleIDAppStore).safariExtension"
+      } else {
+        debugSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.bundleIDBase).\(name)"
+        releaseSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.bundIDAppStore).\(name == "shareExtension" ? "actionExtension" : "safariExtension")"
+      }
       debugSettings["PROVISIONING_PROFILE_SPECIFIER"] = "$(PROV_PROFILE_\(name.uppercased())_DEV)"
       releaseSettings["PROVISIONING_PROFILE_SPECIFIER"] = "$(PROV_PROFILE_\(name.uppercased())_RELEASE)"
       

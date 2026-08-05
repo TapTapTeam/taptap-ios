@@ -11,15 +11,25 @@ TapTap.gesture = {
   
   init: function() {
     document.addEventListener('touchend', this.handleTouchEnd.bind(this), false);
+    if (!('ontouchend' in window)) {
+      document.addEventListener('dblclick', this.handleDoubleTap.bind(this), false);
+    }
   },
-  
+
   handleTouchEnd: function(event) {
     const currentTime = new Date().getTime();
     const timeSinceLastTap = currentTime - this.lastTapTime;
-    
+
     if (timeSinceLastTap < 300 && timeSinceLastTap > 0) {
+      this.handleDoubleTap(event);
+    }
+
+    this.lastTapTime = currentTime;
+  },
+
+  handleDoubleTap: function(event) {
       console.log("더블탭 감지됨");
-      
+
       const wrapper = event.target.closest('.taptap-wrapper');
       
       if (wrapper) {
@@ -66,9 +76,6 @@ TapTap.gesture = {
         TapTap.sentence.selectSentenceAt(event);
         event.preventDefault();
       }
-    }
-    
-    this.lastTapTime = currentTime;
   }
 };
 

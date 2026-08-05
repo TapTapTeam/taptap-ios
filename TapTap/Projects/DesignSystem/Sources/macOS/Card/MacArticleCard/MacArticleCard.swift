@@ -19,6 +19,7 @@ public struct MacArticleCard: View {
   let title: String
   let categoryName: String?
   let imageURL: String?
+  let linkURL: String?
   let dateString: String
   let isEditing: Bool
   @Binding var isSelected: Bool
@@ -36,6 +37,7 @@ public struct MacArticleCard: View {
     title: String,
     categoryName: String?,
     imageURL: String?,
+    linkURL: String? = nil,
     dateString: String,
     isEditing: Bool = false,
     isSelected: Binding<Bool> = .constant(false),
@@ -46,6 +48,7 @@ public struct MacArticleCard: View {
     self.title = title
     self.categoryName = categoryName
     self.imageURL = imageURL
+    self.linkURL = linkURL
     self.dateString = dateString
     self.isEditing = isEditing
     self._isSelected = isSelected

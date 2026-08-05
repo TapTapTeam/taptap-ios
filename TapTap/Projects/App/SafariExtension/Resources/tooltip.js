@@ -59,6 +59,10 @@ TapTap.tooltip = {
     event.preventDefault();
     event.stopPropagation();
 
+    if (!('ontouchend' in window)) {
+      this._suppressClickUntil = Date.now() + 400;
+    }
+
     const target = event.target.closest('[data-color], [data-action]');
     if (!target) return;
 
@@ -116,6 +120,8 @@ TapTap.tooltip = {
   },
 
   handleExternalClick: function(event) {
+    if (this._suppressClickUntil && Date.now() < this._suppressClickUntil) return;
+
     const wrapper = event.target.closest('.taptap-wrapper');
     if (wrapper) {
       event.preventDefault();

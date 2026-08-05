@@ -165,7 +165,11 @@ private extension LinkDetailView {
 
   func openOriginalLink() {
     guard let url = URL(string: viewModel.article.urlString) else { return }
-    NSWorkspace.shared.open(url)
+    if let safariURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.Safari") {
+      NSWorkspace.shared.open([url], withApplicationAt: safariURL, configuration: NSWorkspace.OpenConfiguration())
+    } else {
+      NSWorkspace.shared.open(url)
+    }
   }
 
   func closeMemoPanel() {

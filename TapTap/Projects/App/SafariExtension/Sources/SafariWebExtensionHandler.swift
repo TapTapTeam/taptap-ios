@@ -8,7 +8,9 @@
 import SafariServices
 import SwiftData
 
+#if os(iOS)
 import Core
+#endif
 
 final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
   private let appGroupID = "group.com.nbs.dev.ADA.shared"
@@ -58,8 +60,19 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
       }
       sharedUserDefaults?.set(value, forKey: "hasShownHighlightToast")
       let success = sharedUserDefaults?.synchronize() ?? false
-      
+
       self.sendResponse(to: context, with: ["success": success])
+
+    case "syncHighlights":
+      guard let url = message["url"] as? String else {
+        self.sendResponse(to: context, with: ["error": "URL not provided"])
+        return
+      }
+      let title = message["title"] as? String ?? url
+      let imageURL = message["imageURL"] as? String
+      let drafts = message["highlights"] as? [[String: Any]] ?? []
+      let synced = self.syncHighlights(url: url, title: title, imageURL: imageURL, drafts: drafts)
+      self.sendResponse(to: context, with: ["success": synced])
       
     default:
       self.sendResponse(to: context, with: ["error": "Unknown action"])
@@ -69,6 +82,77 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
 
 // MARK: - Communication Method
 private extension SafariWebExtensionHandler {
+  func syncHighlights(url urlString: String, title: String, imageURL: String?, drafts: [[String: Any]]) -> Bool {
+    let container = AppGroupContainer.shared
+    let context = ModelContext(container)
+
+    let thumbnailURL = (imageURL?.isEmpty == false) ? imageURL : nil
+    let fetchDescriptor = FetchDescriptor<ArticleItem>(predicate: #Predicate { $0.urlString == urlString })
+    let article: ArticleItem
+    if let existing = try? context.fetch(fetchDescriptor).first {
+      article = existing
+      if article.imageURL?.isEmpty != false, let thumbnailURL {
+        article.imageURL = thumbnailURL
+      }
+    } else {
+      guard !drafts.isEmpty else { return true }
+      article = ArticleItem(urlString: urlString, title: title, imageURL: thumbnailURL)
+      context.insert(article)
+    }
+
+    for highlight in article.highlights ?? [] {
+      context.delete(highlight)
+    }
+
+    var newHighlights: [HighlightItem] = []
+    for draft in drafts {
+      guard let id = draft["id"] as? String,
+            let sentence = draft["text"] as? String,
+            let color = draft["color"] as? String else { continue }
+
+      let commentsArray = draft["memos"] as? [[String: Any]] ?? []
+      let comments = commentsArray.compactMap { dict -> Comment? in
+        guard let commentId = dict["id"] as? Double,
+              let commentText = dict["text"] as? String,
+              let commentType = dict["type"] as? String else { return nil }
+        return Comment(id: commentId, type: commentType, text: commentText)
+      }
+
+      let newHighlight = HighlightItem(
+        id: id,
+        sentence: sentence,
+        type: highlightType(from: color),
+        createdAt: Date(),
+        comments: comments
+      )
+      newHighlight.link = article
+      context.insert(newHighlight)
+      newHighlights.append(newHighlight)
+    }
+    article.highlights = newHighlights
+    article.lastViewedDate = Date()
+
+    do {
+      try context.save()
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  func highlightType(from rgba: String) -> String {
+    switch rgba {
+    case "rgba(255, 85, 249, 0.2)":
+      return "What"
+    case "rgba(255, 241, 39, 0.2)":
+      return "Why"
+    case "rgba(31, 180, 255, 0.2)":
+      return "Detail"
+    default:
+      return "What"
+    }
+  }
+
   func fetchHighlights(for urlString: String) -> Any? {
     let container = AppGroupContainer.shared
     

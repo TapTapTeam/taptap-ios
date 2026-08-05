@@ -170,6 +170,9 @@ TapTap.highlight = {
 
     // 3. 기존 하이라이트 삭제 (이제 Range가 깨져도 상관없음)
     this.removeHighlight(id);
+
+    const staleCapsuleContainer = document.getElementById('capsules-for-' + id);
+    if (staleCapsuleContainer) staleCapsuleContainer.remove();
     
     // 4. 새 하이라이트의 ID를 원본 ID로 교체 및 메모 복구
     const newWrapper = this.getHighlightElementById(tempId);
@@ -385,5 +388,40 @@ TapTap.highlight = {
       document.body.appendChild(sharedDiv);
     }
     sharedDiv.textContent = JSON.stringify(highlights);
+
+    if (!('ontouchend' in window)) {
+      clearTimeout(this._syncTimer);
+      this._syncTimer = setTimeout(() => {
+        browser.runtime.sendMessage({
+          action: 'syncHighlights',
+          url: window.location.href,
+          title: document.title,
+          imageURL: this._extractThumbnailImage(),
+          highlights: highlights
+        }).catch(() => {});
+      }, 300);
+    }
+  },
+
+  _extractThumbnailImage: function() {
+    const ogImage = document.querySelector('meta[property="og:image"]');
+    if (ogImage && ogImage.content) return ogImage.content;
+
+    const twitterImage = document.querySelector('meta[name="twitter:image"]');
+    if (twitterImage && twitterImage.content) return twitterImage.content;
+
+    const appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
+    if (appleIcon && appleIcon.href) return appleIcon.href;
+
+    const favicon = document.querySelector('link[rel="icon"]');
+    if (favicon && favicon.href) return favicon.href;
+
+    const images = Array.from(document.querySelectorAll('img'));
+    if (images.length > 0) {
+      images.sort((a, b) => (b.naturalWidth * b.naturalHeight) - (a.naturalWidth * a.naturalHeight));
+      if (images[0].src) return images[0].src;
+    }
+
+    return "";
   }
 };

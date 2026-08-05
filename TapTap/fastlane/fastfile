@@ -221,7 +221,7 @@ platform :macos do
   lane :dev do
     match(
       type: "development",
-      app_identifier: "com.Nbs.dev.taptap.macOS",
+      app_identifier: ["com.Nbs.dev.taptap.macOS", "com.Nbs.dev.taptap.macOS.safariExtension"],
       platform: "macos"
     )
   end
@@ -230,7 +230,7 @@ platform :macos do
   lane :release do
     match(
       type: "appstore",
-      app_identifier: "com.Nbs.dev.ADA.macOS",
+      app_identifier: ["com.Nbs.dev.ADA.macOS", "com.Nbs.dev.ADA.macOS.safariExtension"],
       platform: "macos"
     )
   end
@@ -244,7 +244,7 @@ platform :macos do
     # macOS 앱스토어 .pkg 서명에는 앱 배포 인증서 + Installer 인증서가 둘 다 필요하다.
     match(
       type: "appstore",
-      app_identifier: app_identifier,
+      app_identifier: [app_identifier, "#{app_identifier}.safariExtension"],
       platform: "macos",
       additional_cert_types: ["mac_installer_distribution"]
     )

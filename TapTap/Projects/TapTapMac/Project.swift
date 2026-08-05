@@ -8,6 +8,27 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
+let macSafariExtensionTarget = Target.target(
+  name: "MacSafariExtension",
+  destinations: .macOS,
+  product: .appExtension,
+  deploymentTargets: .macOS("15.0"),
+  infoPlist: .file(path: "MacSafariExtension/Info.plist"),
+  sources: [
+    "../App/SafariExtension/Sources/**",
+    "../Core/Sources/**"
+  ],
+  resources: [
+    "../App/SafariExtension/Resources/manifest.json",
+    "../App/SafariExtension/Resources/popup.html",
+    "../App/SafariExtension/Resources/*.js",
+    "../App/SafariExtension/Resources/*.css",
+    "../App/SafariExtension/Resources/images/**",
+    "../App/SafariExtension/Resources/_locales/**"
+  ],
+  entitlements: .file(path: "MacSafariExtension.entitlements")
+)
+
 let project = Project.project(
   name: Module.TapTapMac.rawValue,
   targets: [
@@ -24,6 +45,7 @@ let project = Project.project(
       resources: .default,
       entitlements: .file(path: "TapTapMac.entitlements"),
       dependencies: [
+        .target(name: "MacSafariExtension"),
         .core(),
         .designSystem(),
         .macSearchFeature(),
@@ -31,6 +53,7 @@ let project = Project.project(
         .macLinkListFeature(),
         .macLinkDetailFeature()
       ]
-    )
+    ),
+    macSafariExtensionTarget
   ]
 )
