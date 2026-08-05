@@ -75,6 +75,7 @@ private extension LinkListView {
             title: article.title,
             categoryName: article.category?.categoryName,
             imageURL: article.imageURL,
+            linkURL: article.urlString,
             dateString: viewModel.formattedDate(article.createAt),
             isEditing: viewModel.isEditing,
             isSelected: isSelected,
