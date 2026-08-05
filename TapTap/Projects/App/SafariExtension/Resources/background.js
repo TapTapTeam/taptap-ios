@@ -13,5 +13,16 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
     return true;
   }
+  if (message.action == "syncHighlights") {
+    browser.runtime.sendNativeMessage("com.Nbs.dev.ADA.app", message)
+      .then(response => {
+        sendResponse(response);
+      })
+      .catch(error => {
+        console.error("background.js: 하이라이트 동기화 오류:", error);
+        sendResponse({ error: error.message });
+      });
+    return true;
+  }
   return false;
 });
