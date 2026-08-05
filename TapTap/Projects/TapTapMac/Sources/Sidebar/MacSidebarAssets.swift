@@ -71,10 +71,14 @@ struct SidebarPlusIcon: View {
 }
 
 struct SeeMoreButton: View {
+  var isSelectedRow: Bool = false
+
+  private static let selectedBackground = Color(red: 218 / 255, green: 215 / 255, blue: 254 / 255)
+
   var body: some View {
     ZStack {
       RoundedRectangle(cornerRadius: 6, style: .continuous)
-        .fill(Color.n30)
+        .fill(isSelectedRow ? Self.selectedBackground : Color.n30)
         .frame(width: 24, height: 24)
 
       Image(icon: MacIcon.more)

@@ -23,7 +23,7 @@ struct SidebarCategoryRow: View {
 
   private var isHovered: Bool { hoveredCategoryID == categoryID }
   private var isMenuPresented: Bool { presentedMenuCategoryID == categoryID }
-  private let trailingAccessoryWidth: CGFloat = 32
+  private let trailingAccessoryWidth: CGFloat = 24
 
   var body: some View {
     HStack(spacing: 10) {
@@ -38,11 +38,11 @@ struct SidebarCategoryRow: View {
         .truncationMode(.tail)
         .frame(maxWidth: .infinity, alignment: .leading)
 
-      if isHovered || isMenuPresented {
+      if isSelected || isHovered || isMenuPresented {
         Button {
           presentedMenuCategoryID = isMenuPresented ? nil : categoryID
         } label: {
-          SeeMoreButton()
+          SeeMoreButton(isSelectedRow: isSelected)
         }
         .buttonStyle(.plain)
         .anchorPreference(
@@ -56,7 +56,7 @@ struct SidebarCategoryRow: View {
         Text(countText)
           .font(.B2_M)
           .foregroundStyle(SidebarForeground.caption2)
-          .frame(width: trailingAccessoryWidth, alignment: .trailing)
+          .frame(width: trailingAccessoryWidth, alignment: .leading)
       }
     }
     .padding(.leading, 12)
