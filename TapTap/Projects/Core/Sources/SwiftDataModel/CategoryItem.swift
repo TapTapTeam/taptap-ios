@@ -39,6 +39,13 @@ public struct CategoryCommand {
     try context.save()
   }
   
+  public func updateCategory(id: UUID, name: String, icon: CategoryIcon) throws {
+    guard let category = try fetchCategory(id: id) else { return }
+    category.categoryName = name
+    category.icon = icon
+    try context.save()
+  }
+
   public func deleteCategory(id: UUID) throws {
     guard let category = try fetchCategory(id: id) else { return }
     category.links?.forEach { article in

@@ -11,6 +11,7 @@ import AppKit
 import DesignSystem
 
 struct AddCategoryPopover: View {
+  var title: String = "카테고리 추가하기"
   @Binding var categoryName: String
   @Binding var selectedIconNumber: Int
   let isDuplicateName: Bool
@@ -53,7 +54,7 @@ struct AddCategoryPopover: View {
   
   private var header: some View {
     HStack(spacing: 12) {
-      Text("카테고리 추가하기")
+      Text(title)
         .font(.B1_SB)
         .foregroundStyle(Color.text1)
         .frame(maxWidth: .infinity, alignment: .leading)
