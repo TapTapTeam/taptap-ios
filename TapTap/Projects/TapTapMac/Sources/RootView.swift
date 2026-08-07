@@ -42,6 +42,10 @@ struct RootView: View {
   @State private var isSettingAlertPresented: Bool = false
   @State private var categoryPendingDeletion: UUID?
 
+  @AppStorage("isAddLinkNoticeHidden") private var isAddLinkNoticeHidden: Bool = false
+  @State private var isAddLinkNoticePresented: Bool = false
+  @State private var isAddLinkNoticeDontShowAgain: Bool = false
+
   private var isSeeAllSelected: Bool {
     linkListViewModel.activeContext == .allLinks
   }
@@ -98,6 +102,7 @@ struct RootView: View {
               searchViewModel.clearSearch()
               isLinkListEditing = false
               selectedDetail = .addLink
+              isAddLinkNoticePresented = !isAddLinkNoticeHidden
             },
             onSeeAllLinks: showAllLinks,
             onAddCategory: showAddCategoryPopover,
@@ -162,6 +167,20 @@ struct RootView: View {
             isDuplicateName: isDuplicateCategoryName,
             onClose: closeAddCategoryPopover,
             onSave: saveNewCategory
+          )
+          .zIndex(30)
+        }
+      }
+      .overlay {
+        if isAddLinkNoticePresented {
+          Color.bgDim
+            .ignoresSafeArea()
+            .contentShape(Rectangle())
+            .onTapGesture { closeAddLinkNotice() }
+
+          AddLinkNoticePopover(
+            isDontShowAgainChecked: $isAddLinkNoticeDontShowAgain,
+            onClose: closeAddLinkNotice
           )
           .zIndex(30)
         }
@@ -381,10 +400,18 @@ struct RootView: View {
           totalLinkCount: articles.count,
           onSave: showSavedLink,
           onShowExistingLink: showAllLinks,
-          onAddCategory: showAddCategoryPopover
+          onAddCategory: showAddCategoryPopover,
+          onBack: { selectedDetail = .linkList }
         )
       }
     }
+  }
+
+  private func closeAddLinkNotice() {
+    if isAddLinkNoticeDontShowAgain {
+      isAddLinkNoticeHidden = true
+    }
+    isAddLinkNoticePresented = false
   }
 
   private func showAllLinks() {
