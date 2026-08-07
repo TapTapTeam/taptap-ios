@@ -42,6 +42,15 @@ struct RootView: View {
   @State private var isSettingAlertPresented: Bool = false
   @State private var categoryPendingDeletion: UUID?
 
+  @AppStorage("isAddLinkNoticeHidden") private var isAddLinkNoticeHidden: Bool = false
+  @State private var isAddLinkNoticePresented: Bool = false
+  @State private var isAddLinkNoticeDontShowAgain: Bool = false
+
+  @State private var editingCategoryID: UUID?
+  @State private var editCategoryName: String = ""
+  @State private var editCategoryIconNumber: Int = 1
+  @State private var isDuplicateEditCategoryName: Bool = false
+
   private var isSeeAllSelected: Bool {
     linkListViewModel.activeContext == .allLinks
   }
@@ -98,6 +107,7 @@ struct RootView: View {
               searchViewModel.clearSearch()
               isLinkListEditing = false
               selectedDetail = .addLink
+              isAddLinkNoticePresented = !isAddLinkNoticeHidden
             },
             onSeeAllLinks: showAllLinks,
             onAddCategory: showAddCategoryPopover,
@@ -108,6 +118,7 @@ struct RootView: View {
               linkListViewModel.selectContext(.category(category.id))
             },
             onToggleCategoryFavorite: toggleCategoryFavorite,
+            onEditCategory: beginEditCategory,
             onDeleteCategory: { categoryPendingDeletion = $0 },
             onSettings: {
               print("tap")
@@ -167,6 +178,38 @@ struct RootView: View {
         }
       }
       .overlay {
+        if editingCategoryID != nil {
+          Color.bgDim
+            .ignoresSafeArea()
+            .contentShape(Rectangle())
+            .onTapGesture { closeEditCategoryPopover() }
+
+          AddCategoryPopover(
+            title: "카테고리 수정하기",
+            categoryName: $editCategoryName,
+            selectedIconNumber: $editCategoryIconNumber,
+            isDuplicateName: isDuplicateEditCategoryName,
+            onClose: closeEditCategoryPopover,
+            onSave: saveEditedCategory
+          )
+          .zIndex(30)
+        }
+      }
+      .overlay {
+        if isAddLinkNoticePresented {
+          Color.bgDim
+            .ignoresSafeArea()
+            .contentShape(Rectangle())
+            .onTapGesture { closeAddLinkNotice() }
+
+          AddLinkNoticePopover(
+            isDontShowAgainChecked: $isAddLinkNoticeDontShowAgain,
+            onClose: closeAddLinkNotice
+          )
+          .zIndex(30)
+        }
+      }
+      .overlay {
         if isSettingAlertPresented {
           Color.bgDim
             .ignoresSafeArea()
@@ -204,6 +247,9 @@ struct RootView: View {
       }
       .onChange(of: newCategoryName) { _, _ in
         isDuplicateCategoryName = false
+      }
+      .onChange(of: editCategoryName) { _, _ in
+        isDuplicateEditCategoryName = false
       }
       
       if isSearchOverlayPresented {
@@ -381,10 +427,61 @@ struct RootView: View {
           totalLinkCount: articles.count,
           onSave: showSavedLink,
           onShowExistingLink: showAllLinks,
-          onAddCategory: showAddCategoryPopover
+          onAddCategory: showAddCategoryPopover,
+          onBack: { selectedDetail = .linkList }
         )
       }
     }
+  }
+
+  private func beginEditCategory(_ categoryID: UUID) {
+    guard let category = category(id: categoryID) else { return }
+    editCategoryName = category.categoryName
+    editCategoryIconNumber = category.icon.number
+    isDuplicateEditCategoryName = false
+    editingCategoryID = categoryID
+  }
+
+  private func closeEditCategoryPopover() {
+    editingCategoryID = nil
+    editCategoryName = ""
+    editCategoryIconNumber = 1
+    isDuplicateEditCategoryName = false
+  }
+
+  private func saveEditedCategory() {
+    guard let categoryID = editingCategoryID else { return }
+    let trimmedName = editCategoryName.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmedName.isEmpty else { return }
+
+    let isDuplicate = allCategories.contains {
+      $0.id != categoryID &&
+      $0.categoryName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == trimmedName.lowercased()
+    } || trimmedName.lowercased() == "전체"
+
+    guard !isDuplicate else {
+      isDuplicateEditCategoryName = true
+      return
+    }
+
+    do {
+      try CategoryCommand(context: modelContext).updateCategory(
+        id: categoryID,
+        name: trimmedName,
+        icon: CategoryIcon(number: editCategoryIconNumber)
+      )
+    } catch {
+      print("Failed to update category: \(error)")
+    }
+
+    closeEditCategoryPopover()
+  }
+
+  private func closeAddLinkNotice() {
+    if isAddLinkNoticeDontShowAgain {
+      isAddLinkNoticeHidden = true
+    }
+    isAddLinkNoticePresented = false
   }
 
   private func showAllLinks() {

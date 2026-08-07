@@ -25,7 +25,6 @@ struct SidebarCategorySectionHeader: View {
       )
       .frame(maxWidth: .infinity)
       .frame(height: 48)
-      .offset(y: -6)
 
       HStack {
         Text("카테고리")
@@ -46,6 +45,6 @@ struct SidebarCategorySectionHeader: View {
       .padding(.leading, 4)
       .padding(.top, 7)
     }
-    .frame(height: 40)
+    .frame(height: 40, alignment: .top)
   }
 }

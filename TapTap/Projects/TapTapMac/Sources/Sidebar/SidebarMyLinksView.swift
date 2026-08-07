@@ -54,11 +54,13 @@ struct SidebarMyLinksView: View {
         }
         .padding(.leading, 12)
         .padding(.trailing, 6)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: 36)
         .background(
           RoundedRectangle(cornerRadius: 8, style: .continuous)
             .fill(isSeeAllSelected ? Color.bl1 : Color.clear)
         )
+        .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
       }
       .buttonStyle(.plain)
       .padding(.vertical, 6)

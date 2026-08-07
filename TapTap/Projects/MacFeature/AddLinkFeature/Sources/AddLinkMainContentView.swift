@@ -18,16 +18,18 @@ struct AddLinkMainContentView: View {
   let onAdd: () -> Void
   let onAddCategory: () -> Void
   let onLinkURLChanged: () -> Void
-  
+  let onBack: () -> Void
+
   @Binding var linkURL: String
   @Binding var selectedCategoryID: UUID?
-  
+
   var body: some View {
     VStack(spacing: 20) {
       AddLinkTopBar(
         isSaving: isSaving,
         canSubmit: canSubmit,
-        onAdd: onAdd
+        onAdd: onAdd,
+        onBack: onBack
       )
       
       VStack(spacing: 24) {
@@ -53,16 +55,24 @@ private struct AddLinkTopBar: View {
   let isSaving: Bool
   let canSubmit: Bool
   let onAdd: () -> Void
-  
+  let onBack: () -> Void
+
   var body: some View {
     ZStack {
       Text("링크 추가하기")
         .font(.system(size: 16, weight: .semibold))
         .foregroundStyle(Color.text1)
-      
+
       HStack {
+        MacBackForwardButton(
+          isBackEnabled: true,
+          isForwardEnabled: false,
+          onBackTap: onBack,
+          onForwardTap: {}
+        )
+
         Spacer()
-        
+
         Button(action: onAdd) {
           AddLinkSubmitButtonLabel(isSaving: isSaving)
             .foregroundStyle(canSubmit ? Color.bl6 : Color.caption2)
@@ -74,6 +84,7 @@ private struct AddLinkTopBar: View {
         .buttonStyle(.plain)
         .disabled(!canSubmit)
       }
+      .padding(.leading, 20)
       .padding(.trailing, 32)
     }
     .padding(.bottom, 20)

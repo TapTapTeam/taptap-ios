@@ -22,6 +22,7 @@ public struct MacSidebarView: View {
   public var onAddCategory: () -> Void
   public var onSelectCategory: (CategoryItem) -> Void
   public var onToggleCategoryFavorite: (UUID) -> Void
+  public var onEditCategory: (UUID) -> Void
   public var onDeleteCategory: (UUID) -> Void
   public var onSettings: () -> Void
   
@@ -41,6 +42,7 @@ public struct MacSidebarView: View {
     onAddCategory: @escaping () -> Void,
     onSelectCategory: @escaping (CategoryItem) -> Void,
     onToggleCategoryFavorite: @escaping (UUID) -> Void,
+    onEditCategory: @escaping (UUID) -> Void = { _ in },
     onDeleteCategory: @escaping (UUID) -> Void,
     onSettings: @escaping () -> Void
   ) {
@@ -56,12 +58,13 @@ public struct MacSidebarView: View {
     self.onAddCategory = onAddCategory
     self.onSelectCategory = onSelectCategory
     self.onToggleCategoryFavorite = onToggleCategoryFavorite
+    self.onEditCategory = onEditCategory
     self.onDeleteCategory = onDeleteCategory
     self.onSettings = onSettings
   }
 
   public var body: some View {
-    let width: CGFloat = isCollapsed ? 56 : 290
+    let width: CGFloat = isCollapsed ? 56 : 272
     let sidebarShape = UnevenRoundedRectangle(
       topLeadingRadius: 0,
       bottomLeadingRadius: 0,
@@ -173,7 +176,10 @@ public struct MacSidebarView: View {
               onToggleCategoryFavorite(categoryID)
             },
             onOpenInNewTab: { presentedMenuCategoryID = nil },
-            onEdit: { presentedMenuCategoryID = nil },
+            onEdit: {
+              presentedMenuCategoryID = nil
+              onEditCategory(categoryID)
+            },
             onDelete: {
               presentedMenuCategoryID = nil
               onDeleteCategory(categoryID)

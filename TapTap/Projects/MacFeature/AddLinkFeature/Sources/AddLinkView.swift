@@ -17,6 +17,7 @@ public struct AddLinkView: View {
   private let onSave: (ArticleItem) -> Void
   private let onShowExistingLink: () -> Void
   private let onAddCategory: () -> Void
+  private let onBack: () -> Void
   
   @Environment(\.modelContext) private var modelContext
   
@@ -26,19 +27,22 @@ public struct AddLinkView: View {
   @State private var statusMessage: String?
   @State private var isStatusError: Bool = false
   @State private var isDuplicateLinkToastPresented: Bool = false
+
   
   public init(
     categories: [CategoryItem] = [],
     totalLinkCount: Int = 0,
     onSave: @escaping (ArticleItem) -> Void = { _ in },
     onShowExistingLink: @escaping () -> Void = {},
-    onAddCategory: @escaping () -> Void = {}
+    onAddCategory: @escaping () -> Void = {},
+    onBack: @escaping () -> Void = {}
   ) {
     self.categories = categories
     self.totalLinkCount = totalLinkCount
     self.onSave = onSave
     self.onShowExistingLink = onShowExistingLink
     self.onAddCategory = onAddCategory
+    self.onBack = onBack
   }
   
   public var body: some View {
@@ -51,6 +55,7 @@ public struct AddLinkView: View {
         onAdd: addButtonTapped,
         onAddCategory: addCategoryButtonTapped,
         onLinkURLChanged: linkURLChanged,
+        onBack: onBack,
         linkURL: $linkURL,
         selectedCategoryID: $selectedCategoryID
       )
@@ -63,6 +68,7 @@ public struct AddLinkView: View {
         onCloseDuplicateToast: closeDuplicateToast,
         onCloseStatusToast: closeStatusToast
       )
+
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.background)
