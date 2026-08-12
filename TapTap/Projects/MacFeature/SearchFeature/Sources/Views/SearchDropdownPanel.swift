@@ -65,6 +65,7 @@ public extension SearchDropdownPanel {
         ScrollView {
           SearchRecentLinksView(
             items: viewModel.recentLinks,
+            showDivider: false,
             onTap: { _ in onClose() }
           )
           .frame(maxWidth: .infinity)

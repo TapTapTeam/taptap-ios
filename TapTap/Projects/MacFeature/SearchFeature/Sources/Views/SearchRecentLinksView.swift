@@ -11,6 +11,7 @@ import Core
 
 public struct SearchRecentLinksView: View {
   private let items: [ArticleItem]
+  private let showDivider: Bool
   private let onTap: (ArticleItem) -> Void
 
   private let columns = [
@@ -20,9 +21,11 @@ public struct SearchRecentLinksView: View {
 
   public init(
     items: [ArticleItem],
+    showDivider: Bool = true,
     onTap: @escaping (ArticleItem) -> Void,
   ) {
     self.items = items
+    self.showDivider = showDivider
     self.onTap = onTap
   }
 }
@@ -30,9 +33,11 @@ public struct SearchRecentLinksView: View {
 public extension SearchRecentLinksView {
   var body: some View {
     VStack(alignment: .leading) {
-      Divider()
-        .padding(.bottom, 12)
-      
+      if showDivider {
+        Divider()
+          .padding(.bottom, 12)
+      }
+
       HStack {
         Text("최근 본 링크")
           .font(.B2_M)
