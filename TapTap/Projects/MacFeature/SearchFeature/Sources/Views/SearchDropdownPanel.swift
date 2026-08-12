@@ -75,26 +75,26 @@ public extension SearchDropdownPanel {
       }
 
     case let .recent(items):
-      VStack(alignment: .leading, spacing: 24) {
-        SearchRecentView(
-          recentQuery: .constant(items),
-          onTap: { keyword in
-            viewModel.selectRecentKeyword(keyword)
-            onClose()
-          },
-          onDelete: { viewModel.removeRecent($0) },
-          onClear: { viewModel.clearRecent() }
-        )
+      ScrollView {
+        VStack(alignment: .leading, spacing: 24) {
+          SearchRecentView(
+            recentQuery: .constant(items),
+            onTap: { keyword in
+              viewModel.selectRecentKeyword(keyword)
+              onClose()
+            },
+            onDelete: { viewModel.removeRecent($0) },
+            onClear: { viewModel.clearRecent() }
+          )
 
-        if !viewModel.recentLinks.isEmpty {
-          ScrollView {
+          if !viewModel.recentLinks.isEmpty {
             SearchRecentLinksView(
               items: viewModel.recentLinks,
               onTap: { _ in onClose() }
             )
-            .padding(.bottom, 20)
           }
         }
+        .padding(.bottom, 20)
       }
       .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.top, 30)
