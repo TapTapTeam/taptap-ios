@@ -59,6 +59,7 @@ public extension SearchRecentRowView {
             .renderingMode(.template)
             .foregroundStyle(buttonColor)
             .frame(width: 24, height: 24)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .onHover { isDeleteHovered = $0 }
@@ -66,6 +67,7 @@ public extension SearchRecentRowView {
       }
       .padding(.horizontal, 20)
       .frame(height: 36)
+      .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
     .background(backgroundColor)
