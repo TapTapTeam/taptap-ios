@@ -38,6 +38,7 @@ struct RootView: View {
   @State private var currentWidth: CGFloat = 0
   @State private var currentHeight: CGFloat = 0
   private let sidebarCollapseThreshold: CGFloat = 860
+  private let searchPanelVerticalPadding: CGFloat = 20
   
   @State private var isSettingAlertPresented: Bool = false
   @State private var categoryPendingDeletion: UUID?
@@ -270,12 +271,14 @@ struct RootView: View {
           VStack(spacing: 0) {
             SearchDropdownPanel(
               viewModel: searchViewModel,
+              maxAvailableHeight: currentHeight - searchPanelVerticalPadding * 2,
               onClose: {
                 isSearchOverlayPresented = false
               }
             )
             .padding(.horizontal, currentWidth <= 720 ? 20 : 0)
-            .padding(.bottom, 20)
+            .padding(.top, searchPanelVerticalPadding)
+            .padding(.bottom, searchPanelVerticalPadding)
             Spacer()
           }
           .frame(maxWidth: .infinity)
