@@ -62,6 +62,7 @@ public extension SearchRecentRowView {
         }
         .buttonStyle(.plain)
         .onHover { isDeleteHovered = $0 }
+        .opacity(isHovered ? 1 : 0)
       }
       .padding(.horizontal, 20)
       .frame(height: 36)
