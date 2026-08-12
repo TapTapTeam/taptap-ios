@@ -38,8 +38,11 @@ let project = Project.project(
       product: .app,
       deploymentTargets: .macOS("15.0"),
       // macOS 앱스토어 업로드에는 LSApplicationCategoryType이 필수다. (altool 90242)
+      // 버전 키가 없으면 Tuist 기본값(1.0/1)으로 고정되어 익스텐션 버전과 어긋난다.
       infoPlist: .extendingDefault(with: [
-        "LSApplicationCategoryType": "public.app-category.productivity"
+        "LSApplicationCategoryType": "public.app-category.productivity",
+        "CFBundleShortVersionString": "$(MARKETING_VERSION)",
+        "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)"
       ]),
       sources: .sources,
       resources: .default,
