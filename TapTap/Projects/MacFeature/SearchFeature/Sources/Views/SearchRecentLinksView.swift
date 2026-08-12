@@ -35,6 +35,7 @@ public extension SearchRecentLinksView {
     VStack(alignment: .leading) {
       if showDivider {
         Divider()
+          .background(Color.divider2)
           .padding(.bottom, 12)
       }
 
