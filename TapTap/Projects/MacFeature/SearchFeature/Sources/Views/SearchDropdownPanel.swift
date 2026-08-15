@@ -12,12 +12,23 @@ public struct SearchDropdownPanel: View {
   @ObservedObject private var viewModel: SearchViewModel
   @FocusState private var isFocused: Bool
   private let onClose: () -> Void
-  
+
+  private let maxAvailableHeight: CGFloat
+
+  @State private var measuredContentHeight: CGFloat = 0
+  @State private var panelHeight: CGFloat = 300
+
+  private let minPanelHeight: CGFloat = 300
+  private let maxPanelHeight: CGFloat = 713
+  private let headerHeight: CGFloat = 90
+
   public init(
     viewModel: SearchViewModel,
+    maxAvailableHeight: CGFloat,
     onClose: @escaping () -> Void
   ) {
     self.viewModel = viewModel
+    self.maxAvailableHeight = maxAvailableHeight
     self.onClose = onClose
   }
 }
@@ -38,65 +49,87 @@ public extension SearchDropdownPanel {
       )
       .padding(.horizontal, 20)
       .padding(.top, 20)
-      
+
       content
     }
     .frame(maxWidth: 640)
-    .frame(minHeight: 300, maxHeight: 713, alignment: .top)
+    .frame(height: panelHeight, alignment: .top)
     .background(.n0)
     .clipShape(RoundedRectangle(cornerRadius: 16))
     .onAppear {
       DispatchQueue.main.async {
         isFocused = true
       }
+      updatePanelHeight()
     }
+    .onChange(of: maxAvailableHeight) { _, _ in
+      updatePanelHeight()
+    }
+  }
+
+  private func updatePanelHeight() {
+    let totalNeededHeight = measuredContentHeight + headerHeight
+    let effectiveMaxHeight = max(0, min(maxPanelHeight, maxAvailableHeight))
+    let effectiveMinHeight = min(minPanelHeight, effectiveMaxHeight)
+    panelHeight = min(max(totalNeededHeight, effectiveMinHeight), effectiveMaxHeight)
   }
 
   @ViewBuilder
   private var content: some View {
+    scrollableContent
+      .padding(.top, 30)
+      .onPreferenceChange(ContentHeightPreferenceKey.self) { measuredHeight in
+        measuredContentHeight = measuredHeight
+        updatePanelHeight()
+      }
+  }
+
+  @ViewBuilder
+  private var scrollableContent: some View {
     switch viewModel.state {
     case .empty:
       if viewModel.recentLinks.isEmpty {
         SearchQueryEmptyView()
           .frame(maxWidth: .infinity)
-          .padding(.top, 30)
           .padding(.bottom, 20)
+          .background(GeometryPreferenceReader())
       } else {
         ScrollView {
           SearchRecentLinksView(
             items: viewModel.recentLinks,
+            showDivider: false,
             onTap: { _ in onClose() }
           )
           .frame(maxWidth: .infinity)
-          .padding(.top, 30)
           .padding(.bottom, 20)
+          .background(GeometryPreferenceReader())
         }
       }
 
     case let .recent(items):
-      VStack(alignment: .leading, spacing: 24) {
-        SearchRecentView(
-          recentQuery: .constant(items),
-          onTap: { keyword in
-            viewModel.selectRecentKeyword(keyword)
-            onClose()
-          },
-          onDelete: { viewModel.removeRecent($0) },
-          onClear: { viewModel.clearRecent() }
-        )
+      ScrollView {
+        VStack(alignment: .leading, spacing: 24) {
+          SearchRecentView(
+            recentQuery: .constant(items),
+            onTap: { keyword in
+              viewModel.selectRecentKeyword(keyword)
+              onClose()
+            },
+            onDelete: { viewModel.removeRecent($0) },
+            onClear: { viewModel.clearRecent() }
+          )
 
-        if !viewModel.recentLinks.isEmpty {
-          ScrollView {
+          if !viewModel.recentLinks.isEmpty {
             SearchRecentLinksView(
               items: viewModel.recentLinks,
               onTap: { _ in onClose() }
             )
-            .padding(.bottom, 20)
           }
         }
+        .padding(.bottom, 20)
+        .background(GeometryPreferenceReader())
       }
       .frame(maxWidth: .infinity, alignment: .leading)
-      .padding(.top, 30)
 
     case let .related(keywords):
       SearchRelatedView(
@@ -108,8 +141,8 @@ public extension SearchDropdownPanel {
         }
       )
       .frame(maxWidth: .infinity)
-      .padding(.top, 30)
       .padding(.bottom, 20)
+      .background(GeometryPreferenceReader())
     }
   }
 
@@ -124,5 +157,21 @@ public extension SearchDropdownPanel {
     .padding(.horizontal, 20)
     .padding(.top, 30)
     .padding(.bottom, 20)
+  }
+}
+
+private struct ContentHeightPreferenceKey: PreferenceKey {
+  static var defaultValue: CGFloat = 0
+  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+    value = max(value, nextValue())
+  }
+}
+
+private struct GeometryPreferenceReader: View {
+  var body: some View {
+    GeometryReader { geo in
+      Color.clear
+        .preference(key: ContentHeightPreferenceKey.self, value: geo.size.height)
+    }
   }
 }
