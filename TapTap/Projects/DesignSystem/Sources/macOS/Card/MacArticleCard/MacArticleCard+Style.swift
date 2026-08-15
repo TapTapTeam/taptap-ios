@@ -114,7 +114,7 @@ extension MacArticleCard {
 
   var shadowColor: Color { .bgShadow3 }
 
-  var shadowRadius: CGFloat { 8 }
+  var shadowRadius: CGFloat { 4 }
 
 }
 

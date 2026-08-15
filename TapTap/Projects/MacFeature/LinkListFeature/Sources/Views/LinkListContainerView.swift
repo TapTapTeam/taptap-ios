@@ -162,8 +162,7 @@ private extension LinkListContainerView {
           onSelect: viewModel.moveSingleLink
         )
       }
-    }
-    .padding(.top, 10)
+    } 
   }
 
   func detailContent(_ detailViewModel: LinkDetailViewModel) -> some View {
