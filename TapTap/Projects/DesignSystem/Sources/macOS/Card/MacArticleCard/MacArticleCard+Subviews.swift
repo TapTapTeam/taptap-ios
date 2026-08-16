@@ -152,7 +152,7 @@ extension MacArticleCard {
     ZStack {
       Circle()
         .stroke(
-          isSelected ? Color.bl6 : Color.n90,
+          isSelected ? Color.bl6 : Color.n50,
           lineWidth: 1.5
         )
         .frame(width: 20, height: 20)
