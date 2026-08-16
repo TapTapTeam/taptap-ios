@@ -12,22 +12,23 @@ import DesignSystem
 
 /// 링크 이동하기를 눌렀을 때 나오는 팝오버입니다.
 public struct LinkMovePopover: View {
-  @Environment(\.dismiss) private var dismiss
-  
   private let categories: [CategoryItem]
   private let selectedCategoryID: UUID?
   private let onSelect: (CategoryItem?) -> Void
+  private let onDismiss: () -> Void
 
   @State private var selectedCategory: CategoryItem?
-  
+
   public init(
     categories: [CategoryItem],
     selectedCategoryID: UUID?,
-    onSelect: @escaping (CategoryItem?) -> Void
+    onSelect: @escaping (CategoryItem?) -> Void,
+    onDismiss: @escaping () -> Void
   ) {
     self.categories = categories
     self.selectedCategoryID = selectedCategoryID
     self.onSelect = onSelect
+    self.onDismiss = onDismiss
     self._selectedCategory = State(
       initialValue: categories.first { $0.id == selectedCategoryID }
     )
@@ -44,6 +45,8 @@ public struct LinkMovePopover: View {
     .frame(width: 536, height: 400)
     .background(Color.background)
     .clipShape(RoundedRectangle(cornerRadius: 14))
+    .shadow(color: .bgShadow5, radius: 2, x: 0, y: 2)
+    .shadow(color: .bgShadow5, radius: 8, x: 0, y: 0)
   }
 }
 
@@ -57,7 +60,7 @@ private extension LinkMovePopover {
       Spacer(minLength: 0)
       
       Button {
-        dismiss()
+        onDismiss()
       } label: {
         DesignSystemAsset.x.swiftUIImage
           .resizable()
@@ -113,7 +116,7 @@ private extension LinkMovePopover {
 
       Button {
         onSelect(selectedCategory)
-        dismiss()
+        onDismiss()
       } label: {
         Text("확인")
           .font(.B1_SB)
@@ -160,7 +163,7 @@ private extension LinkMovePopover {
           endPoint: endPoint
         )
       )
-      .frame(height: 28)
+      .frame(height: 16)
       .allowsHitTesting(false)
   }
 }

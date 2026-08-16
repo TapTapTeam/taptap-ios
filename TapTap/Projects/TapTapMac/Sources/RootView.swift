@@ -224,6 +224,22 @@ struct RootView: View {
         }
       }
       .overlay {
+        if linkListViewModel.isMultiMovePickerPresented || linkListViewModel.isSingleMovePickerPresented {
+          Color.bgDimWeb
+            .ignoresSafeArea()
+            .contentShape(Rectangle())
+            .onTapGesture { dismissMovePicker() }
+
+          LinkMovePopover(
+            categories: allCategories,
+            selectedCategoryID: movePopoverSelectedCategoryID,
+            onSelect: movePopoverOnSelect,
+            onDismiss: dismissMovePicker
+          )
+          .zIndex(30)
+        }
+      }
+      .overlay {
         if let category = categoryPendingDeletion.flatMap(category(id:)) {
           // MacAlertDialog가 배경 딤을 자체적으로 그리므로 별도 딤 레이어는 두지 않는다.
           MacAlertDialog(
@@ -485,6 +501,29 @@ struct RootView: View {
       isAddLinkNoticeHidden = true
     }
     isAddLinkNoticePresented = false
+  }
+
+  private var movePopoverSelectedCategoryID: UUID? {
+    if linkListViewModel.isMultiMovePickerPresented {
+      return selectedCategoryID
+    }
+    return linkListViewModel.movingArticle?.category?.id
+  }
+
+  private func movePopoverOnSelect(_ category: CategoryItem?) {
+    if linkListViewModel.isMultiMovePickerPresented {
+      linkListViewModel.moveSelectedLinks(to: category)
+    } else {
+      linkListViewModel.moveSingleLink(to: category)
+    }
+  }
+
+  private func dismissMovePicker() {
+    if linkListViewModel.isMultiMovePickerPresented {
+      linkListViewModel.dismissMultiMovePicker()
+    } else {
+      linkListViewModel.dismissSingleMovePicker()
+    }
   }
 
   private func showAllLinks() {

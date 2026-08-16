@@ -133,16 +133,6 @@ private extension LinkListContainerView {
           onDelete: viewModel.requestDeleteSelectedLinks,
           onMove: viewModel.presentMultiMovePicker
         )
-        .popover(
-          isPresented: multiMovePickerBinding,
-          arrowEdge: .bottom
-        ) {
-          LinkMovePopover(
-            categories: categories,
-            selectedCategoryID: activeCategoryID,
-            onSelect: viewModel.moveSelectedLinks
-          )
-        }
       }
 
       LinkListView(
@@ -152,17 +142,7 @@ private extension LinkListContainerView {
         onDeleteTap: viewModel.requestDeleteSingleLink,
         onEditTap: viewModel.beginEditing
       )
-      .popover(
-        isPresented: singleMovePickerBinding,
-        arrowEdge: .leading
-      ) {
-        LinkMovePopover(
-          categories: categories,
-          selectedCategoryID: viewModel.movingArticle?.category?.id,
-          onSelect: viewModel.moveSingleLink
-        )
-      }
-    } 
+    }
   }
 
   func detailContent(_ detailViewModel: LinkDetailViewModel) -> some View {
@@ -173,28 +153,6 @@ private extension LinkListContainerView {
         viewModel.closeTabs(articleIDs: [detailViewModel.article.id])
         syncDetailViewModel()
       }
-  }
-
-  var multiMovePickerBinding: Binding<Bool> {
-    Binding(
-      get: { viewModel.isMultiMovePickerPresented },
-      set: { isPresented in
-        if !isPresented {
-          viewModel.dismissMultiMovePicker()
-        }
-      }
-    )
-  }
-
-  var singleMovePickerBinding: Binding<Bool> {
-    Binding(
-      get: { viewModel.isSingleMovePickerPresented },
-      set: { isPresented in
-        if !isPresented {
-          viewModel.dismissSingleMovePicker()
-        }
-      }
-    )
   }
 
   func updateViewModel() {
@@ -223,13 +181,6 @@ private extension LinkListContainerView {
   func beginNewTabSelection() {
     viewModel.beginNewTabSelection()
     syncDetailViewModel()
-  }
-
-  var activeCategoryID: UUID? {
-    if case let .category(categoryID) = viewModel.activeContext {
-      return categoryID
-    }
-    return nil
   }
 
   func syncDetailViewModel() {
