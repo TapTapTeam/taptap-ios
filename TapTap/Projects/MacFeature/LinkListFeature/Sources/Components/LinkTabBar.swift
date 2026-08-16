@@ -19,30 +19,20 @@ struct LinkTabBar: View {
   var body: some View {
     GeometryReader { geometry in
       let plusButtonWidth: CGFloat = 36
-      let layout = calculatedLayout(
+      let tabWidth = calculatedTabWidth(
         totalWidth: geometry.size.width,
         plusButtonWidth: plusButtonWidth
       )
 
       HStack(spacing: 0) {
-        HStack(spacing: 0) {
-          ForEach(tabs) { tab in
-            tabItem(tab, width: layout.tabWidth)
-          }
-
-          if !layout.isOverflowing {
-            plusButton(width: plusButtonWidth)
-          }
+        ForEach(tabs) { tab in
+          tabItem(tab, width: tabWidth)
         }
-        .frame(maxWidth: layout.isOverflowing ? .infinity : nil, alignment: .leading)
-        .clipped()
 
-        if layout.isOverflowing {
-          plusButton(width: plusButtonWidth)
-        } else {
-          Spacer(minLength: 0)
-        }
+        plusButton(width: plusButtonWidth)
       }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .clipped()
     }
     .frame(height: 36)
     .background(Color.n10)
@@ -53,22 +43,11 @@ struct LinkTabBar: View {
 }
 
 private extension LinkTabBar {
-  func calculatedLayout(totalWidth: CGFloat, plusButtonWidth: CGFloat) -> (tabWidth: CGFloat, isOverflowing: Bool) {
-    let maxWidth: CGFloat = 208
-    guard !tabs.isEmpty else {
-      return (maxWidth, false)
-    }
+  func calculatedTabWidth(totalWidth: CGFloat, plusButtonWidth: CGFloat) -> CGFloat {
+    guard !tabs.isEmpty else { return 0 }
 
     let availableTabsWidth = max(totalWidth - plusButtonWidth, 0)
-    let idealTabsWidth = CGFloat(tabs.count) * maxWidth
-    let isOverflowing = idealTabsWidth > availableTabsWidth
-    guard isOverflowing else {
-      return (maxWidth, false)
-    }
-
-    let dividedWidth = availableTabsWidth / CGFloat(tabs.count)
-
-    return (max(dividedWidth, 1), true)
+    return max(availableTabsWidth / CGFloat(tabs.count), 1)
   }
 
   func plusButton(width: CGFloat) -> some View {
@@ -109,7 +88,7 @@ private extension LinkTabBar {
     }
     .padding(.horizontal, 14)
     .frame(width: width, height: 36)
-    .background(isSelected ? Color.n0 : Color.n10)
+    .background(isSelected ? Color.background : Color.n30)
     .overlay(alignment: .trailing) {
       Rectangle()
         .fill(Color.divider2)
