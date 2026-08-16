@@ -23,13 +23,12 @@ public struct MacArticleCard: View {
   let dateString: String
   let isEditing: Bool
   @Binding var isSelected: Bool
+  let isEditMenuPresented: Bool
   let onCardTap: (() -> Void)?
-  let onMoveTap: (() -> Void)?
-  let onDeleteTap: (() -> Void)?
+  let onEditButtonTap: (() -> Void)?
 
   @State var isHovered: Bool = false
   @State var isEditButtonHovered: Bool = false
-  @State var showEditMenu: Bool = false
   @State var isPressed: Bool = false
 
   // MARK: - Init
@@ -41,9 +40,9 @@ public struct MacArticleCard: View {
     dateString: String,
     isEditing: Bool = false,
     isSelected: Binding<Bool> = .constant(false),
+    isEditMenuPresented: Bool = false,
     onCardTap: (() -> Void)? = nil,
-    onMoveTap: (() -> Void)? = nil,
-    onDeleteTap: (() -> Void)? = nil
+    onEditButtonTap: (() -> Void)? = nil
   ) {
     self.title = title
     self.categoryName = categoryName
@@ -52,9 +51,9 @@ public struct MacArticleCard: View {
     self.dateString = dateString
     self.isEditing = isEditing
     self._isSelected = isSelected
+    self.isEditMenuPresented = isEditMenuPresented
     self.onCardTap = onCardTap
-    self.onMoveTap = onMoveTap
-    self.onDeleteTap = onDeleteTap
+    self.onEditButtonTap = onEditButtonTap
   }
 }
 

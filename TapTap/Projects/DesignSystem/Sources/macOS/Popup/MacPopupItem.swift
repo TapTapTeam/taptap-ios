@@ -70,7 +70,7 @@ public struct MacPopupItem: View {
     Button {
       onTap()
     } label: {
-      HStack(spacing: 8) {
+      HStack(alignment: .center, spacing: 8) {
         image
           .resizable()
           .scaledToFit()
@@ -81,14 +81,14 @@ public struct MacPopupItem: View {
           .font(.B2_M)
           .lineLimit(1)
           .foregroundStyle(textColor)
-
-        Spacer(minLength: 0)
       }
-      .padding(.horizontal, 12)
-      .frame(width: 160, height: 30)
+      .padding(.leading, 8)
+      .padding(.trailing, 40)
+      .padding(.vertical, 6)
+      .frame(width: 160, alignment: .leading)
       .background(backgroundColor)
-      .clipShape(RoundedRectangle(cornerRadius: 8))
-      .contentShape(RoundedRectangle(cornerRadius: 8))
+      .clipShape(RoundedRectangle(cornerRadius: 6))
+      .contentShape(RoundedRectangle(cornerRadius: 6))
     }
     .buttonStyle(.plain)
     .onHover { hovering in
