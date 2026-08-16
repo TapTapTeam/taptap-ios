@@ -19,8 +19,10 @@ struct InlineCommentEditor: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
-      Divider()
-        .background(Color.divider1)
+      Rectangle()
+        .fill(Color.n20)
+        .frame(height: 1)
+        .padding(.horizontal, 10)
 
       ZStack(alignment: .topLeading) {
         if text.isEmpty && !isFocused {
