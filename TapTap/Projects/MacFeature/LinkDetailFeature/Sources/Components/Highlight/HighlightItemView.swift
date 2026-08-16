@@ -68,20 +68,7 @@ private extension HighlightItemView {
 
   @ViewBuilder
   var commentList: some View {
-    if highlight.comments.isEmpty {
-      HighlightCommentView(
-        text: "하이라이트 메모",
-        highlight: highlight,
-        comment: nil,
-        commentEditingTarget: commentEditingTarget,
-        draftCommentText: $draftCommentText,
-        popupTarget: $popupTarget,
-        onAddComment: onAddComment,
-        onSaveComment: onSaveComment,
-        onEditComment: onEditComment,
-        onDeleteComment: onDeleteComment
-      )
-    } else {
+    if !highlight.comments.isEmpty {
       ForEach(Array(highlight.comments.enumerated()), id: \.element.id) { index, comment in
         HighlightCommentView(
           text: comment.text,
@@ -140,9 +127,10 @@ private struct HighlightSentenceBlock: View {
     Text(text)
       .font(.B1_M_HL)
       .foregroundStyle(.text1)
-      .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+      .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.horizontal, 16)
       .padding(.vertical, 12)
+      .frame(minHeight: 56)
       .background(backgroundColor)
       .overlay {
         if isHovered {
