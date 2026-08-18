@@ -47,7 +47,7 @@ struct HighlightEmptyView: View {
         .clipShape(RoundedRectangle(cornerRadius: 10))
       }
       .buttonStyle(.plain)
-      .padding(.top, 80)
+      .padding(.top, 70)
     }
     .frame(maxWidth: .infinity)
     .padding(.vertical, 160)
