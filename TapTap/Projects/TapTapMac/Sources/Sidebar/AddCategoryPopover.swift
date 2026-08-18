@@ -138,7 +138,7 @@ struct AddCategoryPopover: View {
       ZStack(alignment: .bottom) {
         ScrollView {
           LazyVGrid(columns: columns, alignment: .leading, spacing: 16) {
-            ForEach(1..<25, id: \.self) { iconNumber in
+            ForEach(1..<24, id: \.self) { iconNumber in
               AddCategoryIconButton(
                 iconNumber: iconNumber,
                 isSelected: selectedIconNumber == iconNumber,

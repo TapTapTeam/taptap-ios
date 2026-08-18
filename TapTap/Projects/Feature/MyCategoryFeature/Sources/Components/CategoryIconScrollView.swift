@@ -34,7 +34,7 @@ extension CategoryIconScrollView: View {
       
       ScrollView {
         LazyVGrid(columns: columns, spacing: 16) {
-          ForEach(1..<25, id: \.self) { index in
+          ForEach(1..<24, id: \.self) { index in
             let isSelected = selectedIcon?.number == index
             Button {
               selectedIcon = .init(number: index)
