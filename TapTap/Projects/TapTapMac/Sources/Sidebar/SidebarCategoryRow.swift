@@ -129,6 +129,7 @@ struct SidebarCategoryMorePopup: View {
         icon: MacIcon.trash,
         foregroundColor: Color.danger,
         backgroundColor: Color.bgDimDanger,
+        hoverColor: Color.bgDimDanger,
         action: onDelete
       )
     }
@@ -151,6 +152,7 @@ private struct SidebarCategoryMorePopupButton: View {
   let icon: String
   var foregroundColor: Color = Color.text1
   var backgroundColor: Color = Color.clear
+  var hoverColor: Color = Color.n20
   let action: () -> Void
 
   @State private var isHovered = false
@@ -177,8 +179,8 @@ private struct SidebarCategoryMorePopupButton: View {
       .padding(.trailing, 12)
       .padding(.vertical, 6)
       .frame(maxWidth: .infinity, alignment: .leading)
+      .background(isHovered ? hoverColor : Color.clear)
       .background(backgroundColor)
-      .background(isHovered ? Color.bgDimHover : Color.clear)
       .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
       .contentShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
     }
