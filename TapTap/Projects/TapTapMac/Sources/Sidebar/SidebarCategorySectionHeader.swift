@@ -14,15 +14,18 @@ struct SidebarCategorySectionHeader: View {
     ZStack(alignment: .top) {
       // 스티키 "카테고리" 헤더 뒤 스크림. 위쪽은 완전 흰색이라 스크롤되는 행이
       // 헤더에 닿기 전에 사라지고, 아래로 투명해져 그 밑 행은 정상적으로 보인다.
-      LinearGradient(
-        stops: [
-          Gradient.Stop(color: .n0, location: 0.0),
-          Gradient.Stop(color: .n0, location: 0.75),
-          Gradient.Stop(color: .bgButtonGrad4, location: 1.0)
-        ],
-        startPoint: .top,
-        endPoint: .bottom
-      )
+      ZStack {
+        SidebarBackdropBlur()
+        LinearGradient(
+          stops: [
+            Gradient.Stop(color: .n0, location: 0.0),
+            Gradient.Stop(color: .n0, location: 0.75),
+            Gradient.Stop(color: .bgButtonGrad4, location: 1.0)
+          ],
+          startPoint: .top,
+          endPoint: .bottom
+        )
+      }
       .frame(maxWidth: .infinity)
       .frame(height: 48)
 

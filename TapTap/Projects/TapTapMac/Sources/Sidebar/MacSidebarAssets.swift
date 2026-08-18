@@ -3,6 +3,8 @@
 //  TapTapMac
 //
 
+import AppKit
+import CoreImage
 import SwiftUI
 
 import DesignSystem
@@ -43,6 +45,31 @@ struct MacSidebarLogoIcon: View {
 
 enum SidebarHover {
   static let animation: Animation = .easeOut(duration: 0.12)
+}
+
+struct SidebarBackdropBlur: NSViewRepresentable {
+  var radius: CGFloat = 4
+
+  func makeNSView(context: Context) -> NSView {
+    let view = PassthroughView()
+    view.wantsLayer = true
+    view.layerUsesCoreImageFilters = true
+    return view
+  }
+
+  func updateNSView(_ nsView: NSView, context: Context) {
+    guard
+      let clamp = CIFilter(name: "CIAffineClamp"),
+      let blur = CIFilter(name: "CIGaussianBlur")
+    else { return }
+    clamp.setValue(CGAffineTransform.identity, forKey: "inputTransform")
+    blur.setValue(radius, forKey: kCIInputRadiusKey)
+    nsView.layer?.backgroundFilters = [clamp, blur]
+  }
+
+  private final class PassthroughView: NSView {
+    override func hitTest(_ point: NSPoint) -> NSView? { nil }
+  }
 }
 
 struct SidebarToggleIcon: View {
