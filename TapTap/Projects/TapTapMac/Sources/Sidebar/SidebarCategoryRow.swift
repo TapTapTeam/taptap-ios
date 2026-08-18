@@ -153,6 +153,8 @@ private struct SidebarCategoryMorePopupButton: View {
   var backgroundColor: Color = Color.clear
   let action: () -> Void
 
+  @State private var isHovered = false
+
   var body: some View {
     Button(action: action) {
       HStack(spacing: 8) {
@@ -176,9 +178,12 @@ private struct SidebarCategoryMorePopupButton: View {
       .padding(.vertical, 6)
       .frame(maxWidth: .infinity, alignment: .leading)
       .background(backgroundColor)
+      .background(isHovered ? Color.bgDimHover : Color.clear)
       .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
       .contentShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
     }
     .buttonStyle(.plain)
+    .onHover { isHovered = $0 }
+    .animation(SidebarHover.animation, value: isHovered)
   }
 }
