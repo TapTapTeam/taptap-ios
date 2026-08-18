@@ -131,8 +131,10 @@ public struct MacSidebarView: View {
           startPoint: UnitPoint(x: 0.44, y: 0),
           endPoint: UnitPoint(x: 0.44, y: 1)
         )
-        .frame(height: 72)
-        .blur(radius: 4)
+        .frame(height: 96)
+        // 블러가 아래쪽 가장자리도 흐리게 만들므로 그만큼 아래로 밀어 사이드바 클립 밖에서 사라지게 한다.
+        .padding(.bottom, -12)
+        .blur(radius: 10)
       }
       .clipShape(sidebarShape)
       .allowsHitTesting(false)
