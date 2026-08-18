@@ -88,7 +88,7 @@ private extension LinkTabBar {
     }
     .padding(.horizontal, 14)
     .frame(width: width, height: 36)
-    .background(isSelected ? Color.background : Color.n30)
+    .background(isSelected ? Color.n0 : Color.background)
     .overlay(alignment: .trailing) {
       Rectangle()
         .fill(Color.divider2)

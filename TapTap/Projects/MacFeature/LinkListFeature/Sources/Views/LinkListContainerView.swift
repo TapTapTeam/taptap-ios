@@ -54,6 +54,7 @@ public struct LinkListContainerView: View {
         } else {
           listContent
             .transition(.opacity)
+            .padding(.top, 20)
         }
       }
     }
