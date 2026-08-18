@@ -41,6 +41,11 @@ struct MacSidebarLogoIcon: View {
   }
 }
 
+/// 사이드바 공통 호버 애니메이션. DesignSystem macOS 버튼(`MacArrowButton` 등)과 동일한 곡선·길이.
+enum SidebarHover {
+  static let animation: Animation = .easeOut(duration: 0.12)
+}
+
 struct SidebarToggleIcon: View {
   var isCollapsed: Bool
 
@@ -49,24 +54,35 @@ struct SidebarToggleIcon: View {
       .resizable()
       .scaledToFit()
       .frame(width: 24, height: 24)
-    .frame(width: 40, height: 40)
-    .background(
-      RoundedRectangle(cornerRadius: 8, style: .continuous)
-        .fill(Color.n0)
-    )
-    .overlay(
-      RoundedRectangle(cornerRadius: 8, style: .continuous)
-        .strokeBorder(Color.divider1.opacity(0.6), lineWidth: 1)
-    )
+      .frame(width: 40, height: 40)
+      .contentShape(Rectangle())
   }
 }
 
-struct SidebarPlusIcon: View {
+/// "내 링크"·"카테고리" 섹션 헤더의 32pt + 버튼. 호버 시 n20 → n30.
+struct SidebarPlusButton: View {
+  let accessibilityLabel: String
+  let action: () -> Void
+
+  @State private var isHovered = false
+
   var body: some View {
-    Image(icon: MacIcon.plus)
-      .resizable()
-      .scaledToFit()
-      .frame(width: 24, height: 24)
+    Button(action: action) {
+      Image(icon: MacIcon.plus)
+        .resizable()
+        .scaledToFit()
+        .frame(width: 24, height: 24)
+        .frame(width: 32, height: 32)
+        .background(
+          RoundedRectangle(cornerRadius: 8, style: .continuous)
+            .fill(isHovered ? Color.n30 : Color.n20)
+        )
+        .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+    .buttonStyle(.plain)
+    .onHover { isHovered = $0 }
+    .animation(SidebarHover.animation, value: isHovered)
+    .accessibilityLabel(accessibilityLabel)
   }
 }
 

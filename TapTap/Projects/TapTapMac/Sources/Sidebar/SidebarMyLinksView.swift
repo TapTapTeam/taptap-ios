@@ -13,6 +13,8 @@ struct SidebarMyLinksView: View {
   let onAddLink: () -> Void
   let onSeeAllLinks: () -> Void
 
+  @State private var isSeeAllHovered = false
+
   var body: some View {
     VStack(alignment: .leading, spacing: 6) {
       Rectangle()
@@ -24,16 +26,7 @@ struct SidebarMyLinksView: View {
           .font(.B2_M)
           .foregroundStyle(SidebarForeground.caption3)
         Spacer(minLength: 0)
-        Button(action: onAddLink) {
-          SidebarPlusIcon()
-            .frame(width: 32, height: 32)
-            .background(
-              RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color.n20)
-            )
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("링크 추가")
+        SidebarPlusButton(accessibilityLabel: "링크 추가", action: onAddLink)
       }
       .padding(.leading, 4)
 
@@ -58,11 +51,13 @@ struct SidebarMyLinksView: View {
         .frame(height: 36)
         .background(
           RoundedRectangle(cornerRadius: 8, style: .continuous)
-            .fill(isSeeAllSelected ? Color.bl1 : Color.clear)
+            .fill(isSeeAllSelected ? Color.bl1 : (isSeeAllHovered ? Color.n20 : Color.clear))
         )
         .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
       }
       .buttonStyle(.plain)
+      .onHover { isSeeAllHovered = $0 }
+      .animation(SidebarHover.animation, value: isSeeAllHovered)
       .padding(.vertical, 6)
     }
   }

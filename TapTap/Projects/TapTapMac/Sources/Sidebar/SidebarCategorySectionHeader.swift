@@ -31,16 +31,7 @@ struct SidebarCategorySectionHeader: View {
           .font(.B2_M)
           .foregroundStyle(SidebarForeground.caption3)
         Spacer(minLength: 0)
-        Button(action: onAddCategory) {
-          SidebarPlusIcon()
-            .frame(width: 32, height: 32)
-            .background(
-              RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color.n20)
-            )
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("카테고리 추가")
+        SidebarPlusButton(accessibilityLabel: "카테고리 추가", action: onAddCategory)
       }
       .padding(.leading, 4)
       .padding(.top, 7)
