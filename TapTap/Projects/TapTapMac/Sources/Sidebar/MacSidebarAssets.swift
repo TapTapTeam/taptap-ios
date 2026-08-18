@@ -50,25 +50,45 @@ enum SidebarHover {
 struct SidebarBackdropBlur: NSViewRepresentable {
   var radius: CGFloat = 4
 
-  func makeNSView(context: Context) -> NSView {
-    let view = PassthroughView()
+  func makeNSView(context: Context) -> BlurView {
+    let view = BlurView()
     view.wantsLayer = true
     view.layerUsesCoreImageFilters = true
+    view.radius = radius
     return view
   }
 
-  func updateNSView(_ nsView: NSView, context: Context) {
-    guard
-      let clamp = CIFilter(name: "CIAffineClamp"),
-      let blur = CIFilter(name: "CIGaussianBlur")
-    else { return }
-    clamp.setValue(CGAffineTransform.identity, forKey: "inputTransform")
-    blur.setValue(radius, forKey: kCIInputRadiusKey)
-    nsView.layer?.backgroundFilters = [clamp, blur]
+  func updateNSView(_ nsView: BlurView, context: Context) {
+    nsView.radius = radius
   }
 
-  private final class PassthroughView: NSView {
+  final class BlurView: NSView {
+    var radius: CGFloat = 4 {
+      didSet { applyFilters() }
+    }
+
     override func hitTest(_ point: NSPoint) -> NSView? { nil }
+
+    override func viewDidMoveToWindow() {
+      super.viewDidMoveToWindow()
+      applyFilters()
+    }
+
+    override func viewDidChangeBackingProperties() {
+      super.viewDidChangeBackingProperties()
+      applyFilters()
+    }
+
+    private func applyFilters() {
+      guard
+        let clamp = CIFilter(name: "CIAffineClamp"),
+        let blur = CIFilter(name: "CIGaussianBlur")
+      else { return }
+      let scale = window?.backingScaleFactor ?? 2
+      clamp.setValue(CGAffineTransform.identity, forKey: "inputTransform")
+      blur.setValue(radius * scale, forKey: kCIInputRadiusKey)
+      layer?.backgroundFilters = [clamp, blur]
+    }
   }
 }
 
