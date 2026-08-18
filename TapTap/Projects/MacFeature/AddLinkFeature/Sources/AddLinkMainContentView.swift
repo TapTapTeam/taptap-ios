@@ -170,7 +170,7 @@ private struct AddLinkCategorySection: View {
           AddLinkCategoryCard(
             title: "전체",
             countText: "\(totalLinkCount)개",
-            iconNumber: nil,
+            iconNumber: 24,
             isSelected: selectedCategoryID == nil
           ) {
             selectedCategoryID = nil
