@@ -37,7 +37,7 @@ public struct LinkListContainerView: View {
   
   public var body: some View {
     VStack(spacing: 0) {
-      if !viewModel.openedTabs.isEmpty {
+      if !viewModel.openedTabs.isEmpty && !isEditing {
         LinkTabBar(
           tabs: viewModel.openedTabs,
           selectedTabID: viewModel.selectedTabID,
@@ -54,7 +54,7 @@ public struct LinkListContainerView: View {
         } else {
           listContent
             .transition(.opacity)
-            .padding(.top, 20)
+            .padding(.top, isEditing ? 0 : 20)
         }
       }
     }

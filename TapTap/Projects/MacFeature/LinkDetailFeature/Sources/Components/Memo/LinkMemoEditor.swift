@@ -35,7 +35,6 @@ struct LinkMemoEditor: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .background(Color.n0)
-    .padding(.top, 7)
     .clipShape(UnevenRoundedRectangle(topLeadingRadius: 24))
   }
 }

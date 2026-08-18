@@ -54,8 +54,9 @@ struct LinkEditToolbar: View {
     .padding(.leading, 20)
     .padding(.trailing, 32)
     .padding(.vertical, 20)
-    .background(.n20)
+    .background(Color.background)
     .ignoresSafeArea(edges: .top)
+    .frame(height: 90)
   }
 }
 
