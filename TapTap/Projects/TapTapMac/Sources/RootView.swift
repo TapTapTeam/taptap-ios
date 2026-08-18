@@ -102,14 +102,7 @@ struct RootView: View {
             selectedCategoryID: selectedCategoryID,
             isCollapsed: isSidebarCollapsed,
             onToggleSidebar: toggleSidebar,
-            onAddLink: {
-              isSearchOverlayPresented = false
-              isSaveSuccessToastPresented = false
-              searchViewModel.clearSearch()
-              isLinkListEditing = false
-              selectedDetail = .addLink
-              isAddLinkNoticePresented = !isAddLinkNoticeHidden
-            },
+            onAddLink: showAddLink,
             onSeeAllLinks: showAllLinks,
             onAddCategory: showAddCategoryPopover,
             onSelectCategory: { category in
@@ -419,7 +412,8 @@ struct RootView: View {
         articles: articles,
         categories: allCategories,
         viewModel: linkListViewModel,
-        isEditing: $isLinkListEditing
+        isEditing: $isLinkListEditing,
+        onAddLink: showAddLink
       )
 
       if selectedDetail == .addLink {
@@ -485,6 +479,16 @@ struct RootView: View {
       isAddLinkNoticeHidden = true
     }
     isAddLinkNoticePresented = false
+  }
+
+  /// 링크 추가 화면으로 전환. 사이드바 "+"와 빈 목록의 "새 링크 추가하기"가 공유한다.
+  private func showAddLink() {
+    isSearchOverlayPresented = false
+    isSaveSuccessToastPresented = false
+    searchViewModel.clearSearch()
+    isLinkListEditing = false
+    selectedDetail = .addLink
+    isAddLinkNoticePresented = !isAddLinkNoticeHidden
   }
 
   private func showAllLinks() {

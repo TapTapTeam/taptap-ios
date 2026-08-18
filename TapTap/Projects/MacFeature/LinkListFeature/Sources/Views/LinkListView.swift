@@ -18,19 +18,22 @@ public struct LinkListView: View {
   private let onMoveTap: (ArticleItem) -> Void
   private let onDeleteTap: (ArticleItem) -> Void
   private let onEditTap: () -> Void
+  private let onAddLinkTap: () -> Void
   
   public init(
     viewModel: LinkListViewModel,
     onArticleTap: @escaping (ArticleItem) -> Void = { _ in },
     onMoveTap: @escaping (ArticleItem) -> Void = { _ in },
     onDeleteTap: @escaping (ArticleItem) -> Void = { _ in },
-    onEditTap: @escaping () -> Void = {}
+    onEditTap: @escaping () -> Void = {},
+    onAddLinkTap: @escaping () -> Void = {}
   ) {
     self.viewModel = viewModel
     self.onArticleTap = onArticleTap
     self.onMoveTap = onMoveTap
     self.onDeleteTap = onDeleteTap
     self.onEditTap = onEditTap
+    self.onAddLinkTap = onAddLinkTap
   }
   
   public var body: some View {
@@ -47,7 +50,7 @@ public struct LinkListView: View {
       )
       
       if viewModel.displayedArticles.isEmpty {
-        LinkListEmptyView()
+        LinkListEmptyView(onAddLink: onAddLinkTap)
       } else {
         articleList
       }
