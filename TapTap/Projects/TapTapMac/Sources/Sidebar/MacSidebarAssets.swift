@@ -95,12 +95,19 @@ struct SidebarPlusButton: View {
 struct SeeMoreButton: View {
   var isSelectedRow: Bool = false
 
+  @Environment(\.colorScheme) private var colorScheme
+
   private static let selectedBackground = Color(red: 218 / 255, green: 215 / 255, blue: 254 / 255)
+
+  private var backgroundColor: Color {
+    if colorScheme == .dark { return Color.bgDimSelect }
+    return isSelectedRow ? Self.selectedBackground : Color.n30
+  }
 
   var body: some View {
     ZStack {
       RoundedRectangle(cornerRadius: 6, style: .continuous)
-        .fill(isSelectedRow ? Self.selectedBackground : Color.n30)
+        .fill(backgroundColor)
         .frame(width: 24, height: 24)
 
       Image(icon: MacIcon.more)
