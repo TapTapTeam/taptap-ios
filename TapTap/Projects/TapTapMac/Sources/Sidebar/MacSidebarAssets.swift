@@ -48,7 +48,7 @@ enum SidebarHover {
 }
 
 struct SidebarBackdropBlur: NSViewRepresentable {
-  var radius: CGFloat = 4
+  var radius: CGFloat = 8
 
   func makeNSView(context: Context) -> BlurView {
     let view = BlurView()
