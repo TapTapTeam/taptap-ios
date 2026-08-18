@@ -38,7 +38,8 @@ struct SidebarCategoryRow: View {
         .truncationMode(.tail)
         .frame(maxWidth: .infinity, alignment: .leading)
 
-      if isSelected || isHovered || isMenuPresented {
+      // 선택 행도 기본은 링크 수를 보여주고(피그마: 보라색 숫자), 호버·메뉴 열림일 때만 ⋮로 바뀐다.
+      if isHovered || isMenuPresented {
         Button {
           presentedMenuCategoryID = isMenuPresented ? nil : categoryID
         } label: {
@@ -55,7 +56,7 @@ struct SidebarCategoryRow: View {
       } else {
         Text(countText)
           .font(.B2_M)
-          .foregroundStyle(SidebarForeground.caption2)
+          .foregroundStyle(isSelected ? Color.bl8 : SidebarForeground.caption2)
           .frame(width: trailingAccessoryWidth, alignment: .leading)
       }
     }
