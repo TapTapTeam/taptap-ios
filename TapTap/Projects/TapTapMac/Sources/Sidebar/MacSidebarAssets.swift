@@ -46,8 +46,11 @@ enum SidebarHover {
   static let animation: Animation = .easeOut(duration: 0.12)
 }
 
+/// 사이드바 접기/펼치기 아이콘. 기본은 아이콘만, 호버 시 n20 라운드 배경.
 struct SidebarToggleIcon: View {
   var isCollapsed: Bool
+
+  @State private var isHovered = false
 
   var body: some View {
     Image(icon: isCollapsed ? MacIcon.sidebarOpen : MacIcon.sidebarClose)
@@ -55,7 +58,13 @@ struct SidebarToggleIcon: View {
       .scaledToFit()
       .frame(width: 24, height: 24)
       .frame(width: 40, height: 40)
-      .contentShape(Rectangle())
+      .background(
+        RoundedRectangle(cornerRadius: 8, style: .continuous)
+          .fill(isHovered ? Color.n20 : Color.clear)
+      )
+      .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+      .onHover { isHovered = $0 }
+      .animation(SidebarHover.animation, value: isHovered)
   }
 }
 

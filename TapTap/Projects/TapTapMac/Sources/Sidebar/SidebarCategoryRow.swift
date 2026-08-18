@@ -133,7 +133,9 @@ struct SidebarCategoryMorePopup: View {
       )
     }
     .padding(4)
-    .frame(width: 168, alignment: .leading)
+    // 기본 168pt, "즐겨찾기에서 제거하기"처럼 긴 항목이 있으면 잘리지 않게 가로로 늘어난다.
+    .frame(minWidth: 168, alignment: .leading)
+    .fixedSize(horizontal: true, vertical: false)
     .background(Color.n0)
     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     .overlay {
@@ -166,12 +168,14 @@ private struct SidebarCategoryMorePopupButton: View {
           .font(.B2_M)
           .foregroundStyle(foregroundColor)
           .lineLimit(1)
-          .frame(width: 95, alignment: .leading)
+          .fixedSize(horizontal: true, vertical: false)
+
+        Spacer(minLength: 0)
       }
       .padding(.leading, 8)
-      .padding(.trailing, 40)
+      .padding(.trailing, 12)
       .padding(.vertical, 6)
-      .frame(width: 160, alignment: .leading)
+      .frame(maxWidth: .infinity, alignment: .leading)
       .background(backgroundColor)
       .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
       .contentShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
