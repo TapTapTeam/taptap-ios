@@ -10,7 +10,6 @@ import DesignSystem
 
 /// 링크가 하나도 없을 때 보여지는 뷰입니다.
 struct LinkListEmptyView: View {
-  /// "새 링크 추가하기" 버튼 액션. 사이드바의 링크 추가와 같은 플로우로 연결된다.
   var onAddLink: () -> Void = {}
 
   var body: some View {
@@ -44,7 +43,6 @@ struct LinkListEmptyView: View {
         .frame(minHeight: 44)
         .background(.bgBtn)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        // .plain 버튼은 라벨의 불투명 픽셀만 히트 영역이라 배경 전체를 클릭 영역으로 지정한다.
         .contentShape(RoundedRectangle(cornerRadius: 12))
       }
       .buttonStyle(.plain)

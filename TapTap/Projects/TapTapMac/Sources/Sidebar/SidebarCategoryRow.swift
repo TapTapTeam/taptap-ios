@@ -38,7 +38,6 @@ struct SidebarCategoryRow: View {
         .truncationMode(.tail)
         .frame(maxWidth: .infinity, alignment: .leading)
 
-      // 선택 행도 기본은 링크 수를 보여주고(피그마: 보라색 숫자), 호버·메뉴 열림일 때만 ⋮로 바뀐다.
       if isHovered || isMenuPresented {
         Button {
           presentedMenuCategoryID = isMenuPresented ? nil : categoryID
@@ -134,7 +133,6 @@ struct SidebarCategoryMorePopup: View {
       )
     }
     .padding(4)
-    // 기본 168pt, "즐겨찾기에서 제거하기"처럼 긴 항목이 있으면 잘리지 않게 가로로 늘어난다.
     .frame(minWidth: 168, alignment: .leading)
     .fixedSize(horizontal: true, vertical: false)
     .background(Color.n0)

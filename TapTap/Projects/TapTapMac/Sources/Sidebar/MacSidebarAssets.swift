@@ -41,12 +41,10 @@ struct MacSidebarLogoIcon: View {
   }
 }
 
-/// 사이드바 공통 호버 애니메이션. DesignSystem macOS 버튼(`MacArrowButton` 등)과 동일한 곡선·길이.
 enum SidebarHover {
   static let animation: Animation = .easeOut(duration: 0.12)
 }
 
-/// 사이드바 접기/펼치기 아이콘. 기본은 아이콘만, 호버 시 n20 라운드 배경.
 struct SidebarToggleIcon: View {
   var isCollapsed: Bool
 
@@ -68,7 +66,6 @@ struct SidebarToggleIcon: View {
   }
 }
 
-/// "내 링크"·"카테고리" 섹션 헤더의 32pt + 버튼. 호버 시 n20 → n30.
 struct SidebarPlusButton: View {
   let accessibilityLabel: String
   let action: () -> Void
