@@ -48,7 +48,7 @@ struct SidebarCategoryListView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
           .padding(.bottom, 56)
         }
-        .scrollIndicators(.hidden)
+        .scrollIndicators(.never)
 
         SidebarCategorySectionHeader(onAddCategory: onAddCategory)
       }

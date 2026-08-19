@@ -38,7 +38,7 @@ struct SidebarCategoryRow: View {
         .truncationMode(.tail)
         .frame(maxWidth: .infinity, alignment: .leading)
 
-      if isSelected || isHovered || isMenuPresented {
+      if isHovered || isMenuPresented {
         Button {
           presentedMenuCategoryID = isMenuPresented ? nil : categoryID
         } label: {
@@ -55,7 +55,7 @@ struct SidebarCategoryRow: View {
       } else {
         Text(countText)
           .font(.B2_M)
-          .foregroundStyle(SidebarForeground.caption2)
+          .foregroundStyle(isSelected ? Color.bl8 : SidebarForeground.caption2)
           .frame(width: trailingAccessoryWidth, alignment: .leading)
       }
     }
@@ -129,11 +129,13 @@ struct SidebarCategoryMorePopup: View {
         icon: MacIcon.trash,
         foregroundColor: Color.danger,
         backgroundColor: Color.bgDimDanger,
+        hoverColor: Color.bgDimDanger,
         action: onDelete
       )
     }
     .padding(4)
-    .frame(width: 168, alignment: .leading)
+    .frame(minWidth: 168, alignment: .leading)
+    .fixedSize(horizontal: true, vertical: false)
     .background(Color.n0)
     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     .overlay {
@@ -150,7 +152,10 @@ private struct SidebarCategoryMorePopupButton: View {
   let icon: String
   var foregroundColor: Color = Color.text1
   var backgroundColor: Color = Color.clear
+  var hoverColor: Color = Color.n20
   let action: () -> Void
+
+  @State private var isHovered = false
 
   var body: some View {
     Button(action: action) {
@@ -166,16 +171,21 @@ private struct SidebarCategoryMorePopupButton: View {
           .font(.B2_M)
           .foregroundStyle(foregroundColor)
           .lineLimit(1)
-          .frame(width: 95, alignment: .leading)
+          .fixedSize(horizontal: true, vertical: false)
+
+        Spacer(minLength: 0)
       }
       .padding(.leading, 8)
-      .padding(.trailing, 40)
+      .padding(.trailing, 12)
       .padding(.vertical, 6)
-      .frame(width: 160, alignment: .leading)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .background(isHovered ? hoverColor : Color.clear)
       .background(backgroundColor)
       .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
       .contentShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
     }
     .buttonStyle(.plain)
+    .onHover { isHovered = $0 }
+    .animation(SidebarHover.animation, value: isHovered)
   }
 }

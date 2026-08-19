@@ -102,14 +102,7 @@ struct RootView: View {
             selectedCategoryID: selectedCategoryID,
             isCollapsed: isSidebarCollapsed,
             onToggleSidebar: toggleSidebar,
-            onAddLink: {
-              isSearchOverlayPresented = false
-              isSaveSuccessToastPresented = false
-              searchViewModel.clearSearch()
-              isLinkListEditing = false
-              selectedDetail = .addLink
-              isAddLinkNoticePresented = !isAddLinkNoticeHidden
-            },
+            onAddLink: showAddLink,
             onSeeAllLinks: showAllLinks,
             onAddCategory: showAddCategoryPopover,
             onSelectCategory: { category in
@@ -435,7 +428,8 @@ struct RootView: View {
         articles: articles,
         categories: allCategories,
         viewModel: linkListViewModel,
-        isEditing: $isLinkListEditing
+        isEditing: $isLinkListEditing,
+        onAddLink: showAddLink
       )
 
       if selectedDetail == .addLink {
@@ -524,6 +518,15 @@ struct RootView: View {
     } else {
       linkListViewModel.dismissSingleMovePicker()
     }
+  }
+
+  private func showAddLink() {
+    isSearchOverlayPresented = false
+    isSaveSuccessToastPresented = false
+    searchViewModel.clearSearch()
+    isLinkListEditing = false
+    selectedDetail = .addLink
+    isAddLinkNoticePresented = !isAddLinkNoticeHidden
   }
 
   private func showAllLinks() {

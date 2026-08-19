@@ -10,6 +10,8 @@ import DesignSystem
 
 /// 링크가 하나도 없을 때 보여지는 뷰입니다.
 struct LinkListEmptyView: View {
+  var onAddLink: () -> Void = {}
+
   var body: some View {
     VStack(spacing: 10) {
       DesignSystemAsset.emptyImage.swiftUIImage
@@ -22,9 +24,7 @@ struct LinkListEmptyView: View {
         .foregroundStyle(Color.caption3)
         .padding(.bottom, 80)
    
-      Button {
-        print("새 링크 추가하기 버튼입니다")
-      } label: {
+      Button(action: onAddLink) {
         HStack {
           DesignSystemAsset.plus.swiftUIImage
             .resizable()
@@ -40,10 +40,11 @@ struct LinkListEmptyView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
+        .frame(minHeight: 44)
+        .background(.bgBtn)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .contentShape(RoundedRectangle(cornerRadius: 12))
       }
-      .frame(minHeight: 44)
-      .background(.bgBtn)
-      .clipShape(RoundedRectangle(cornerRadius: 12))
       .buttonStyle(.plain)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)

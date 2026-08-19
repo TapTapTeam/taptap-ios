@@ -20,6 +20,7 @@ public struct LinkListContainerView: View {
   private let categories: [CategoryItem]
   private let viewModel: LinkListViewModel
   @Binding private var isEditing: Bool
+  private let onAddLink: () -> Void
 
   @State private var detailViewModel: LinkDetailViewModel?
   
@@ -27,12 +28,14 @@ public struct LinkListContainerView: View {
     articles: [ArticleItem],
     categories: [CategoryItem],
     viewModel: LinkListViewModel,
-    isEditing: Binding<Bool>
+    isEditing: Binding<Bool>,
+    onAddLink: @escaping () -> Void = {}
   ) {
     self.articles = articles
     self.categories = categories
     self.viewModel = viewModel
     self._isEditing = isEditing
+    self.onAddLink = onAddLink
   }
   
   public var body: some View {
@@ -141,7 +144,8 @@ private extension LinkListContainerView {
         onArticleTap: openArticle,
         onMoveTap: viewModel.presentSingleMovePicker,
         onDeleteTap: viewModel.requestDeleteSingleLink,
-        onEditTap: viewModel.beginEditing
+        onEditTap: viewModel.beginEditing,
+        onAddLinkTap: onAddLink
       )
     }
   }

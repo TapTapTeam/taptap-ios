@@ -170,7 +170,7 @@ private struct AddLinkCategorySection: View {
           AddLinkCategoryCard(
             title: "전체",
             countText: "\(totalLinkCount)개",
-            iconNumber: nil,
+            iconNumber: 24,
             isSelected: selectedCategoryID == nil
           ) {
             selectedCategoryID = nil
@@ -233,9 +233,12 @@ private struct AddLinkCategoryHeader: View {
       Button(action: onAddCategory) {
         HStack(spacing: 4) {
           Image(icon: Icon.plus)
+            .resizable()
             .renderingMode(.template)
+            .scaledToFit()
+            .frame(width: 20, height: 20)
             .foregroundStyle(.bl6)
-          
+
           Text("새 카테고리")
             .font(.system(size: 12, weight: .semibold))
         }
