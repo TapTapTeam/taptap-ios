@@ -47,7 +47,7 @@ public struct MacPopup: View {
   }
 
   public var body: some View {
-    VStack(spacing: 2) {
+    VStack(alignment: .leading, spacing: 2) {
       MacPopupItem(
         image: normalImage,
         title: normalTitle,
@@ -63,15 +63,15 @@ public struct MacPopup: View {
       )
     }
     .padding(4)
-    .frame(width: 168, height: 70)
     .background(Color.n0)
     .clipShape(RoundedRectangle(cornerRadius: 8))
     .overlay {
       RoundedRectangle(cornerRadius: 8)
+        .inset(by: 0.25)
         .strokeBorder(Color.divider2, lineWidth: 0.5)
     }
-    .shadow(color: .bgShadow1, radius: 6, x: 0, y: 2)
-    .shadow(color: .bgShadow2, radius: 4, x: 0, y: 2)
+    .shadow(color: .bgShadow1, radius: 3, x: 0, y: 2)
+    .shadow(color: .bgShadow2, radius: 2, x: 0, y: 2)
   }
 }
 

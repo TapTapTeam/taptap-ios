@@ -106,9 +106,10 @@ private struct HighlightCommentBlock: View {
     Text(text)
       .font(.B1_M_HL)
       .foregroundStyle(isPlaceholder ? Color.caption2 : Color.text1)
-      .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+      .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.horizontal, 16)
       .padding(.vertical, 12)
+      .frame(minHeight: 56)
       .background(Color.n20)
       .overlay {
         if isHovered {

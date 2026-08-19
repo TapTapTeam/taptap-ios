@@ -46,7 +46,7 @@ extension MacArticleCard {
         .padding(.vertical, 10)
         .padding(.trailing, 10)
 
-      if !isEditing && (visualState == .defaultHover || showEditMenu) {
+      if !isEditing && (visualState == .defaultHover || isEditMenuPresented) {
         editButton
           .padding(.trailing, 18)
           .padding(.bottom, 18)
@@ -130,7 +130,7 @@ extension MacArticleCard {
 
   var editButton: some View {
     Button {
-      showEditMenu = true
+      onEditButtonTap?()
     } label: {
       DesignSystemAsset.edit2.swiftUIImage
         .resizable()
@@ -143,34 +143,16 @@ extension MacArticleCard {
         .onHover { isEditButtonHovered = $0 }
     }
     .buttonStyle(.plain)
-    .popover(isPresented: $showEditMenu, arrowEdge: .leading) {
-      editMenu
-        .presentationBackground(Color.n0)
+    .anchorPreference(key: MacEditMenuAnchorKey.self, value: .bounds) { anchor in
+      isEditMenuPresented ? anchor : nil
     }
-  }
-
-  var editMenu: some View {
-    MacPopup(
-      normalImage: DesignSystemAsset.openWindow.swiftUIImage,
-      normalTitle: "링크 이동하기",
-      dangerImage: DesignSystemAsset.trash.swiftUIImage,
-      dangerTitle: "링크 삭제하기",
-      onNormalTap: {
-        showEditMenu = false
-        onMoveTap?()
-      },
-      onDangerTap: {
-        showEditMenu = false
-        onDeleteTap?()
-      }
-    )
   }
 
   var selectionIndicator: some View {
     ZStack {
       Circle()
         .stroke(
-          isSelected ? Color.bl6 : Color.n90,
+          isSelected ? Color.bl6 : Color.n50,
           lineWidth: 1.5
         )
         .frame(width: 20, height: 20)

@@ -22,7 +22,6 @@ struct RootView: View {
   
   @State private var isSidebarCollapsed: Bool = false
   @State private var linkListViewModel = LinkListViewModel()
-  @State private var isLinkListEditing: Bool = false
   @State private var selectedDetail: DetailDestination = .linkList
   @State private var isSaveSuccessToastPresented: Bool = false
   @State private var saveSuccessCategoryName: String = "전체"
@@ -217,6 +216,25 @@ struct RootView: View {
         }
       }
       .overlay {
+        if linkListViewModel.isMultiMovePickerPresented || linkListViewModel.isSingleMovePickerPresented {
+          Color.bgDimWeb
+            .ignoresSafeArea()
+            .contentShape(Rectangle())
+            .onTapGesture { dismissMovePicker() }
+
+          LinkMovePopover(
+            categories: allCategories,
+            selectedCategoryID: movePopoverSelectedCategoryID,
+            onSelect: movePopoverOnSelect,
+            onDismiss: dismissMovePicker
+          )
+          .zIndex(30)
+          .onExitCommand {
+            dismissMovePicker()
+          }
+        }
+      }
+      .overlay {
         if let category = categoryPendingDeletion.flatMap(category(id:)) {
           // MacAlertDialog가 배경 딤을 자체적으로 그리므로 별도 딤 레이어는 두지 않는다.
           MacAlertDialog(
@@ -297,7 +315,7 @@ struct RootView: View {
   
   private var contentStack: some View {
     VStack(spacing: 0) {
-      if selectedDetail == .linkList, !isLinkListEditing {
+      if selectedDetail == .linkList, !linkListViewModel.isEditing {
         MacToolbar(
           text: $searchViewModel.query,
           onSearchTap: {
@@ -412,8 +430,8 @@ struct RootView: View {
         articles: articles,
         categories: allCategories,
         viewModel: linkListViewModel,
-        isEditing: $isLinkListEditing,
-        onAddLink: showAddLink
+        onAddLink: showAddLink,
+        editToolbarBackForwardLeadingPadding: isSidebarCollapsed ? 72 : 20
       )
 
       if selectedDetail == .addLink {
@@ -481,11 +499,34 @@ struct RootView: View {
     isAddLinkNoticePresented = false
   }
 
+  private var movePopoverSelectedCategoryID: UUID? {
+    if linkListViewModel.isMultiMovePickerPresented {
+      return selectedCategoryID
+    }
+    return linkListViewModel.movingArticle?.category?.id
+  }
+
+  private func movePopoverOnSelect(_ category: CategoryItem?) {
+    if linkListViewModel.isMultiMovePickerPresented {
+      linkListViewModel.moveSelectedLinks(to: category)
+    } else {
+      linkListViewModel.moveSingleLink(to: category)
+    }
+  }
+
+  private func dismissMovePicker() {
+    if linkListViewModel.isMultiMovePickerPresented {
+      linkListViewModel.dismissMultiMovePicker()
+    } else {
+      linkListViewModel.dismissSingleMovePicker()
+    }
+  }
+
   private func showAddLink() {
     isSearchOverlayPresented = false
     isSaveSuccessToastPresented = false
     searchViewModel.clearSearch()
-    isLinkListEditing = false
+    linkListViewModel.endEditing()
     selectedDetail = .addLink
     isAddLinkNoticePresented = !isAddLinkNoticeHidden
   }
@@ -499,7 +540,7 @@ struct RootView: View {
   
   private func showSavedLink(_ article: ArticleItem) {
     selectedDetail = .linkList
-    isLinkListEditing = false
+    linkListViewModel.endEditing()
     isSearchOverlayPresented = false
     searchViewModel.clearSearch()
 

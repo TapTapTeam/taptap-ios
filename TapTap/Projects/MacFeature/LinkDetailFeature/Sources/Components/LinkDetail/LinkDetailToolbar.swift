@@ -81,15 +81,15 @@ private extension LinkDetailToolbar {
       
       HStack(spacing: 0) {
         Text("\(categoryName)  ")
-          .font(.B1_M)
+          .font(.H4_SB)
           .foregroundStyle(.text1)
           .lineLimit(1)
         Text("/")
-          .font(.B1_M)
+          .font(.H4_SB)
           .foregroundStyle(.caption3)
           .lineLimit(1)
         Text("  \(title)")
-          .font(.B1_M)
+          .font(.H4_SB)
           .foregroundStyle(.text1)
           .lineLimit(1)
       }

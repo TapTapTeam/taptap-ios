@@ -610,7 +610,7 @@ private extension LinkListViewModel {
     )
 
     moveToastDismissTask = Task {
-      try? await Task.sleep(for: .seconds(3))
+      try? await Task.sleep(for: .seconds(5))
       guard !Task.isCancelled else { return }
       await MainActor.run {
         hideMoveToast()
@@ -629,7 +629,7 @@ private extension LinkListViewModel {
     )
 
     deleteToastDismissTask = Task {
-      try? await Task.sleep(for: .seconds(3))
+      try? await Task.sleep(for: .seconds(5))
       guard !Task.isCancelled else { return }
       await MainActor.run {
         commitPendingDelete()

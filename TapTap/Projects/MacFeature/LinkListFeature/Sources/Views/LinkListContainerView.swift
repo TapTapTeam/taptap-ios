@@ -19,28 +19,28 @@ public struct LinkListContainerView: View {
   private let articles: [ArticleItem]
   private let categories: [CategoryItem]
   private let viewModel: LinkListViewModel
-  @Binding private var isEditing: Bool
   private let onAddLink: () -> Void
+  private let editToolbarBackForwardLeadingPadding: CGFloat
 
   @State private var detailViewModel: LinkDetailViewModel?
-  
+
   public init(
     articles: [ArticleItem],
     categories: [CategoryItem],
     viewModel: LinkListViewModel,
-    isEditing: Binding<Bool>,
-    onAddLink: @escaping () -> Void = {}
+    onAddLink: @escaping () -> Void = {},
+    editToolbarBackForwardLeadingPadding: CGFloat = 20
   ) {
     self.articles = articles
     self.categories = categories
     self.viewModel = viewModel
-    self._isEditing = isEditing
     self.onAddLink = onAddLink
+    self.editToolbarBackForwardLeadingPadding = editToolbarBackForwardLeadingPadding
   }
   
   public var body: some View {
     VStack(spacing: 0) {
-      if !viewModel.openedTabs.isEmpty {
+      if !viewModel.openedTabs.isEmpty && !viewModel.isEditing {
         LinkTabBar(
           tabs: viewModel.openedTabs,
           selectedTabID: viewModel.selectedTabID,
@@ -57,6 +57,7 @@ public struct LinkListContainerView: View {
         } else {
           listContent
             .transition(.opacity)
+            .padding(.top, viewModel.isEditing ? 0 : 20)
         }
       }
     }
@@ -67,7 +68,7 @@ public struct LinkListContainerView: View {
             variant: .move,
             count: moveToast.movedCount,
             title: moveToast.categoryName,
-            duration: 3,
+            duration: 5,
             onUndoTap: viewModel.undoMove,
             onCloseTap: viewModel.hideMoveToast
           )
@@ -79,7 +80,7 @@ public struct LinkListContainerView: View {
             variant: .delete,
             count: deleteToast.deletedCount,
             title: deleteToast.linkTitle,
-            duration: 3,
+            duration: 5,
             onUndoTap: viewModel.undoDelete,
             onCloseTap: viewModel.commitPendingDelete
           )
@@ -117,9 +118,6 @@ public struct LinkListContainerView: View {
     .onChange(of: viewModel.activeContext) { _, _ in
       syncDetailViewModel()
     }
-    .onChange(of: viewModel.isEditing) { _, newValue in
-      isEditing = newValue
-    }
     .onDisappear {
       viewModel.dismiss()
     }
@@ -129,23 +127,14 @@ public struct LinkListContainerView: View {
 private extension LinkListContainerView {
   var listContent: some View {
     VStack(spacing: 0) {
-      if isEditing {
+      if viewModel.isEditing {
         LinkEditToolbar(
           selectedCount: viewModel.selectedArticleIDs.count,
           onCancel: viewModel.endEditing,
           onDelete: viewModel.requestDeleteSelectedLinks,
-          onMove: viewModel.presentMultiMovePicker
+          onMove: viewModel.presentMultiMovePicker,
+          backForwardLeadingPadding: editToolbarBackForwardLeadingPadding
         )
-        .popover(
-          isPresented: multiMovePickerBinding,
-          arrowEdge: .bottom
-        ) {
-          LinkMovePopover(
-            categories: categories,
-            selectedCategoryID: activeCategoryID,
-            onSelect: viewModel.moveSelectedLinks
-          )
-        }
       }
 
       LinkListView(
@@ -156,18 +145,7 @@ private extension LinkListContainerView {
         onEditTap: viewModel.beginEditing,
         onAddLinkTap: onAddLink
       )
-      .popover(
-        isPresented: singleMovePickerBinding,
-        arrowEdge: .leading
-      ) {
-        LinkMovePopover(
-          categories: categories,
-          selectedCategoryID: viewModel.movingArticle?.category?.id,
-          onSelect: viewModel.moveSingleLink
-        )
-      }
     }
-    .padding(.top, 10)
   }
 
   func detailContent(_ detailViewModel: LinkDetailViewModel) -> some View {
@@ -178,28 +156,6 @@ private extension LinkListContainerView {
         viewModel.closeTabs(articleIDs: [detailViewModel.article.id])
         syncDetailViewModel()
       }
-  }
-
-  var multiMovePickerBinding: Binding<Bool> {
-    Binding(
-      get: { viewModel.isMultiMovePickerPresented },
-      set: { isPresented in
-        if !isPresented {
-          viewModel.dismissMultiMovePicker()
-        }
-      }
-    )
-  }
-
-  var singleMovePickerBinding: Binding<Bool> {
-    Binding(
-      get: { viewModel.isSingleMovePickerPresented },
-      set: { isPresented in
-        if !isPresented {
-          viewModel.dismissSingleMovePicker()
-        }
-      }
-    )
   }
 
   func updateViewModel() {
@@ -228,13 +184,6 @@ private extension LinkListContainerView {
   func beginNewTabSelection() {
     viewModel.beginNewTabSelection()
     syncDetailViewModel()
-  }
-
-  var activeCategoryID: UUID? {
-    if case let .category(categoryID) = viewModel.activeContext {
-      return categoryID
-    }
-    return nil
   }
 
   func syncDetailViewModel() {

@@ -15,7 +15,8 @@ struct LinkMemoEditor: View {
   let onClose: () -> Void
   
   @FocusState private var isFocused: Bool
-  
+  @State private var isCloseButtonHovered: Bool = false
+
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
       headerView
@@ -23,9 +24,10 @@ struct LinkMemoEditor: View {
         .padding(.top, 16)
         .frame(height: 32)
       
-      Divider()
-        .background(Color.n20)
-        .padding(.horizontal, 20)
+      Rectangle()
+        .fill(Color.n20)
+        .frame(height: 1)
+        .padding(.horizontal, 10)
       
       textEditor
         .padding(.horizontal, 20)
@@ -62,7 +64,11 @@ extension LinkMemoEditor {
           .frame(width: 19, height: 19)
       }
       .frame(width: 32, height: 32)
+      .background(isCloseButtonHovered ? Color.bgDimHover : Color.clear)
+      .clipShape(RoundedRectangle(cornerRadius: 8))
       .buttonStyle(.plain)
+      .onHover { isCloseButtonHovered = $0 }
+      .animation(.easeOut(duration: 0.12), value: isCloseButtonHovered)
     }
   }
   
@@ -73,7 +79,7 @@ extension LinkMemoEditor {
           .font(.B3_R_HLM)
           .foregroundStyle(.caption3)
           .padding(.horizontal, 12)
-          .padding(.vertical, 14)
+          .padding(.vertical, 7)
           .allowsHitTesting(false)
       }
 

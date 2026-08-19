@@ -30,7 +30,11 @@ public struct LinkDetailView: View {
           title: viewModel.article.title,
           onOpenOriginalLink: openOriginalLink,
           onOpenMemo: {
-            isMemoPanelPresented = true
+            if isMemoPanelPresented {
+              closeMemoPanel()
+            } else {
+              isMemoPanelPresented = true
+            }
           },
           onDelete: {
             deleteTarget = .article

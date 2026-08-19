@@ -91,16 +91,18 @@ public struct MacSidebarView: View {
             onAddLink: onAddLink,
             onSeeAllLinks: onSeeAllLinks
           )
-          SidebarBookmarksView(
-            categories: favoriteCategories,
-            selectedCategoryID: selectedCategoryID,
-            isSeeAllSelected: isSeeAllSelected,
-            hoveredCategoryID: $hoveredCategoryID,
-            presentedMenuCategoryID: $presentedMenuCategoryID,
-            onSelectCategory: onSelectCategory,
-            onToggleCategoryFavorite: onToggleCategoryFavorite,
-            onDeleteCategory: onDeleteCategory
-          )
+          if !favoriteCategories.isEmpty {
+            SidebarBookmarksView(
+              categories: favoriteCategories,
+              selectedCategoryID: selectedCategoryID,
+              isSeeAllSelected: isSeeAllSelected,
+              hoveredCategoryID: $hoveredCategoryID,
+              presentedMenuCategoryID: $presentedMenuCategoryID,
+              onSelectCategory: onSelectCategory,
+              onToggleCategoryFavorite: onToggleCategoryFavorite,
+              onDeleteCategory: onDeleteCategory
+            )
+          }
           SidebarCategoryListView(
             categories: categories,
             selectedCategoryID: selectedCategoryID,
