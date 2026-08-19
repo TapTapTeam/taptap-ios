@@ -13,7 +13,36 @@ TapTap.gesture = {
     document.addEventListener('touchend', this.handleTouchEnd.bind(this), false);
     if (!('ontouchend' in window)) {
       document.addEventListener('dblclick', this.handleDoubleTap.bind(this), false);
+      document.addEventListener('mouseup', this.handleMouseUpSelection.bind(this), false);
     }
+  },
+
+  handleMouseUpSelection: function(event) {
+    if (event.button !== 0) return;
+
+    const tooltip = TapTap.tooltip;
+    const memoUI = TapTap.memo && TapTap.memo.memoUIElement;
+    if (!tooltip || !tooltip.element) return;
+    if (tooltip.element.contains(event.target)) return;
+    if (memoUI && memoUI.contains(event.target)) return;
+    if (event.target.closest && event.target.closest('#taptap-custom-alert-overlay')) return;
+
+    setTimeout(() => {
+      if (tooltip.element.style.display === 'block') return;
+      if (memoUI && memoUI.style.display === 'flex') return;
+
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+
+      const range = selection.getRangeAt(0);
+      if (!range.toString().trim()) return;
+
+      let ancestor = range.commonAncestorContainer;
+      if (ancestor.nodeType !== Node.ELEMENT_NODE) ancestor = ancestor.parentElement;
+      const wrapper = ancestor ? ancestor.closest('.taptap-wrapper') : null;
+
+      tooltip.show(range, wrapper ? wrapper.dataset.highlightId : null);
+    }, 0);
   },
 
   handleTouchEnd: function(event) {

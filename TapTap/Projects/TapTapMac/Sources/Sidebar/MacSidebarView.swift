@@ -123,16 +123,18 @@ public struct MacSidebarView: View {
       // 반드시 콘텐츠(zIndex 2)보다 위, 설정 버튼(zIndex 4)보다 아래여야 보인다.
       VStack {
         Spacer()
-        LinearGradient(
-          stops: [
-            Gradient.Stop(color: .bgButtonGrad4, location: 0.0),
-            Gradient.Stop(color: .n0, location: 0.7)
-          ],
-          startPoint: UnitPoint(x: 0.44, y: 0),
-          endPoint: UnitPoint(x: 0.44, y: 1)
-        )
+        ZStack {
+          SidebarBackdropBlur()
+          LinearGradient(
+            stops: [
+              Gradient.Stop(color: .bgButtonGrad4, location: 0.0),
+              Gradient.Stop(color: .n0, location: 0.7)
+            ],
+            startPoint: UnitPoint(x: 0.44, y: 0),
+            endPoint: UnitPoint(x: 0.44, y: 1)
+          )
+        }
         .frame(height: 72)
-        .blur(radius: 4)
       }
       .clipShape(sidebarShape)
       .allowsHitTesting(false)

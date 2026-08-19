@@ -27,6 +27,6 @@ struct SidebarSettingsButton: View {
       RoundedRectangle(cornerRadius: 8, style: .continuous)
         .strokeBorder(Color.divider1, lineWidth: 1)
     )
-    .shadow(color: .bgShadow3, radius: 8, x: 0, y: 0)
+    .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 2)
   }
 }

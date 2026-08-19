@@ -37,6 +37,7 @@ struct SidebarHeaderView: View {
             SidebarToggleIcon(isCollapsed: isCollapsed)
           }
           .buttonStyle(.plain)
+          .offset(y: -10)
         }
         .frame(height: 48)
         .padding(.top, 42)
