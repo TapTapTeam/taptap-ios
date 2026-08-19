@@ -229,6 +229,9 @@ struct RootView: View {
             onDismiss: dismissMovePicker
           )
           .zIndex(30)
+          .onExitCommand {
+            dismissMovePicker()
+          }
         }
       }
       .overlay {
