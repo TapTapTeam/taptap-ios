@@ -29,14 +29,14 @@ import SwiftUI
 public struct MacArrowButton: View {
   let direction: MacArrowButtonDirection
   let onTap: () -> Void
-  
+
   @Environment(\.isEnabled) private var isEnabled
   @State private var isHovered = false
-  
+
 #if DEBUG
   private var debugHover: Bool?
 #endif
-  
+
   /// `MacArrowButton`을 생성합니다.
   ///
   /// - Parameters:
@@ -52,7 +52,7 @@ public struct MacArrowButton: View {
     self.debugHover = nil
 #endif
   }
-  
+
 #if DEBUG
   private init(
     direction: MacArrowButtonDirection,
@@ -63,7 +63,7 @@ public struct MacArrowButton: View {
     self.onTap = onTap
     self.debugHover = debugHover
   }
-  
+
   public func debugHover(_ value: Bool?) -> Self {
     MacArrowButton(
       direction: direction,
@@ -91,9 +91,13 @@ public extension MacArrowButton {
         .contentShape(buttonShape)
     }
     .buttonStyle(.plain)
+    .environment(\.isEnabled, true)
+    .allowsHitTesting(isEnabled)
     .onHover { hovering in
       isHovered = hovering
     }
+    .shadow(color: .bgShadow2, radius: 3, x: 0, y: 2)
+    .shadow(color: .bgShadow1, radius: 2, x: 0, y: 2)
     .animation(.easeOut(duration: 0.12), value: effectiveHovered)
     .animation(.easeOut(duration: 0.12), value: isEnabled)
   }

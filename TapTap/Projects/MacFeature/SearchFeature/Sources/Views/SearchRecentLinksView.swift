@@ -13,12 +13,12 @@ public struct SearchRecentLinksView: View {
   private let items: [ArticleItem]
   private let showDivider: Bool
   private let onTap: (ArticleItem) -> Void
-
+  
   private let columns = [
     GridItem(.flexible(), spacing: 8),
     GridItem(.flexible(), spacing: 8)
   ]
-
+  
   public init(
     items: [ArticleItem],
     showDivider: Bool = true,
@@ -34,11 +34,12 @@ public extension SearchRecentLinksView {
   var body: some View {
     VStack(alignment: .leading) {
       if showDivider {
-        Divider()
-          .background(Color.divider2)
+        Rectangle()
+          .frame(height: 1)
+          .foregroundStyle(.divider1)
           .padding(.bottom, 12)
       }
-
+      
       HStack {
         Text("최근 본 링크")
           .font(.B2_M)

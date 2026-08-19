@@ -19,7 +19,6 @@ public struct SearchDropdownPanel: View {
   @State private var panelHeight: CGFloat = 300
 
   private let minPanelHeight: CGFloat = 300
-  private let maxPanelHeight: CGFloat = 713
   private let headerHeight: CGFloat = 90
 
   public init(
@@ -69,7 +68,7 @@ public extension SearchDropdownPanel {
 
   private func updatePanelHeight() {
     let totalNeededHeight = measuredContentHeight + headerHeight
-    let effectiveMaxHeight = max(0, min(maxPanelHeight, maxAvailableHeight))
+    let effectiveMaxHeight = max(0, maxAvailableHeight)
     let effectiveMinHeight = min(minPanelHeight, effectiveMaxHeight)
     panelHeight = min(max(totalNeededHeight, effectiveMinHeight), effectiveMaxHeight)
   }

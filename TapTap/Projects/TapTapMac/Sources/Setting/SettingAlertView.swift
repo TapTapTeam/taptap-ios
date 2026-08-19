@@ -24,7 +24,7 @@ struct SettingAlertView: View {
         HStack {
           Text("설정")
             .font(.B1_SB)
-            .foregroundStyle(.black)
+            .foregroundStyle(.text1)
           Spacer()
           Button(action: onClose) {
             Image(icon: MacIcon.close)
@@ -52,10 +52,6 @@ struct SettingAlertView: View {
 
           SettingRowButton(icon: MacIcon.opensource, title: "사용된 오픈 소스") {
             path.append(SettingDestination.opensource)
-          }
-
-          SettingRowButton(icon: MacIcon.heart, title: "TapTap팀") {
-            print("탭탭")
           }
         }
         .padding(.top, 10)
