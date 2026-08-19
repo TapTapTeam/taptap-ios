@@ -76,6 +76,7 @@ public extension MacBackForwardButton {
         onBackTap()
       }
       .disabled(!isBackEnabled)
+      
       Rectangle()
         .foregroundStyle(.divider1)
         .frame(width: 0.5, height: 40)
