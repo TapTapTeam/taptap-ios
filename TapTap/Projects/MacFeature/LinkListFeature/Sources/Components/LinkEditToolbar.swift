@@ -14,7 +14,8 @@ struct LinkEditToolbar: View {
   let onCancel: () -> Void
   let onDelete: () -> Void
   let onMove: () -> Void
-  
+  var backForwardLeadingPadding: CGFloat = 20
+
   var body: some View {
     ZStack {
       HStack {
@@ -23,7 +24,8 @@ struct LinkEditToolbar: View {
           onBackTap: onCancel,
           onForwardTap: {}
         )
-        
+        .padding(.leading, backForwardLeadingPadding)
+
         Spacer()
         
         HStack(spacing: 12) {
@@ -51,12 +53,9 @@ struct LinkEditToolbar: View {
         .font(.H4_SB)
         .foregroundStyle(.text1)
     }
-    .padding(.leading, 20)
     .padding(.trailing, 32)
     .padding(.vertical, 20)
     .background(Color.background)
-    .ignoresSafeArea(edges: .top)
-    .frame(height: 90)
   }
 }
 

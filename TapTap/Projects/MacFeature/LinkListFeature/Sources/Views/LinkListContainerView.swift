@@ -19,28 +19,28 @@ public struct LinkListContainerView: View {
   private let articles: [ArticleItem]
   private let categories: [CategoryItem]
   private let viewModel: LinkListViewModel
-  @Binding private var isEditing: Bool
   private let onAddLink: () -> Void
+  private let editToolbarBackForwardLeadingPadding: CGFloat
 
   @State private var detailViewModel: LinkDetailViewModel?
-  
+
   public init(
     articles: [ArticleItem],
     categories: [CategoryItem],
     viewModel: LinkListViewModel,
-    isEditing: Binding<Bool>,
-    onAddLink: @escaping () -> Void = {}
+    onAddLink: @escaping () -> Void = {},
+    editToolbarBackForwardLeadingPadding: CGFloat = 20
   ) {
     self.articles = articles
     self.categories = categories
     self.viewModel = viewModel
-    self._isEditing = isEditing
     self.onAddLink = onAddLink
+    self.editToolbarBackForwardLeadingPadding = editToolbarBackForwardLeadingPadding
   }
   
   public var body: some View {
     VStack(spacing: 0) {
-      if !viewModel.openedTabs.isEmpty && !isEditing {
+      if !viewModel.openedTabs.isEmpty && !viewModel.isEditing {
         LinkTabBar(
           tabs: viewModel.openedTabs,
           selectedTabID: viewModel.selectedTabID,
@@ -57,7 +57,7 @@ public struct LinkListContainerView: View {
         } else {
           listContent
             .transition(.opacity)
-            .padding(.top, isEditing ? 0 : 20)
+            .padding(.top, viewModel.isEditing ? 0 : 20)
         }
       }
     }
@@ -118,9 +118,6 @@ public struct LinkListContainerView: View {
     .onChange(of: viewModel.activeContext) { _, _ in
       syncDetailViewModel()
     }
-    .onChange(of: viewModel.isEditing) { _, newValue in
-      isEditing = newValue
-    }
     .onDisappear {
       viewModel.dismiss()
     }
@@ -130,12 +127,13 @@ public struct LinkListContainerView: View {
 private extension LinkListContainerView {
   var listContent: some View {
     VStack(spacing: 0) {
-      if isEditing {
+      if viewModel.isEditing {
         LinkEditToolbar(
           selectedCount: viewModel.selectedArticleIDs.count,
           onCancel: viewModel.endEditing,
           onDelete: viewModel.requestDeleteSelectedLinks,
-          onMove: viewModel.presentMultiMovePicker
+          onMove: viewModel.presentMultiMovePicker,
+          backForwardLeadingPadding: editToolbarBackForwardLeadingPadding
         )
       }
 

@@ -22,7 +22,6 @@ struct RootView: View {
   
   @State private var isSidebarCollapsed: Bool = false
   @State private var linkListViewModel = LinkListViewModel()
-  @State private var isLinkListEditing: Bool = false
   @State private var selectedDetail: DetailDestination = .linkList
   @State private var isSaveSuccessToastPresented: Bool = false
   @State private var saveSuccessCategoryName: String = "전체"
@@ -313,7 +312,7 @@ struct RootView: View {
   
   private var contentStack: some View {
     VStack(spacing: 0) {
-      if selectedDetail == .linkList, !isLinkListEditing {
+      if selectedDetail == .linkList, !linkListViewModel.isEditing {
         MacToolbar(
           text: $searchViewModel.query,
           onSearchTap: {
@@ -428,8 +427,8 @@ struct RootView: View {
         articles: articles,
         categories: allCategories,
         viewModel: linkListViewModel,
-        isEditing: $isLinkListEditing,
-        onAddLink: showAddLink
+        onAddLink: showAddLink,
+        editToolbarBackForwardLeadingPadding: isSidebarCollapsed ? 72 : 20
       )
 
       if selectedDetail == .addLink {
@@ -524,7 +523,7 @@ struct RootView: View {
     isSearchOverlayPresented = false
     isSaveSuccessToastPresented = false
     searchViewModel.clearSearch()
-    isLinkListEditing = false
+    linkListViewModel.endEditing()
     selectedDetail = .addLink
     isAddLinkNoticePresented = !isAddLinkNoticeHidden
   }
@@ -538,7 +537,7 @@ struct RootView: View {
   
   private func showSavedLink(_ article: ArticleItem) {
     selectedDetail = .linkList
-    isLinkListEditing = false
+    linkListViewModel.endEditing()
     isSearchOverlayPresented = false
     searchViewModel.clearSearch()
 
