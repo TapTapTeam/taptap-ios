@@ -85,7 +85,6 @@ public extension MacBackForwardButton {
       }
       .disabled(!isForwardEnabled)
     }
-    .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 2)
   }
 }
 

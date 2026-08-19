@@ -94,6 +94,8 @@ public extension MacArrowButton {
     .onHover { hovering in
       isHovered = hovering
     }
+    .shadow(color: .bgShadow2, radius: 3, x: 0, y: 2)
+    .shadow(color: .bgShadow1, radius: 2, x: 0, y: 2)
     .animation(.easeOut(duration: 0.12), value: effectiveHovered)
     .animation(.easeOut(duration: 0.12), value: isEnabled)
   }
