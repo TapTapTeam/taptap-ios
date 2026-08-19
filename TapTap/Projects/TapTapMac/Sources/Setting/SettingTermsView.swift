@@ -18,14 +18,16 @@ struct SettingTermsView: View {
       HStack {
         Button(action: { dismiss() }) {
           Image(icon: MacIcon.chevron_left)
+            .renderingMode(.template)
             .resizable()
             .scaledToFit()
+            .foregroundStyle(.icon)
             .frame(width: 24, height: 24)
         }
         .buttonStyle(.plain)
         Text("서비스 이용약관")
           .font(.B1_SB)
-          .foregroundStyle(.black)
+          .foregroundStyle(.text1)
           .padding(.leading, 10)
         Spacer()
         Button(action: onClose) {

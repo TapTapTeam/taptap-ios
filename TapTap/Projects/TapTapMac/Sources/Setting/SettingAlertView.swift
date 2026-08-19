@@ -24,7 +24,7 @@ struct SettingAlertView: View {
         HStack {
           Text("설정")
             .font(.B1_SB)
-            .foregroundStyle(.black)
+            .foregroundStyle(.text1)
           Spacer()
           Button(action: onClose) {
             Image(icon: MacIcon.close)
