@@ -16,6 +16,8 @@ struct LinkTabBar: View {
   let onClose: (String) -> Void
   let onNewTab: () -> Void
 
+  @State private var hoveredTabID: String?
+
   var body: some View {
     GeometryReader { geometry in
       let plusButtonWidth: CGFloat = 36
@@ -26,13 +28,27 @@ struct LinkTabBar: View {
       )
 
       HStack(spacing: 0) {
-        HStack(spacing: 0) {
-          ForEach(tabs) { tab in
-            tabItem(tab, width: tabWidth)
+        // 탭이 영역보다 넓어지면 잘라내는 대신 가로로 스크롤한다.
+        // 잘라내기만 하면 화면 밖으로 밀린 탭은 선택도 닫기도 할 수 없다.
+        ScrollViewReader { proxy in
+          ScrollView(.horizontal) {
+            HStack(spacing: 0) {
+              ForEach(tabs) { tab in
+                tabItem(tab, width: tabWidth)
+                  .id(tab.id)
+              }
+            }
+          }
+          .scrollIndicators(.never)
+          .frame(width: tabsAreaWidth, alignment: .leading)
+          .onChange(of: selectedTabID) { _, newValue in
+            // 새로 연 탭이 스크롤 밖에 생기면 보이지 않으므로 따라간다.
+            guard let newValue else { return }
+            withAnimation(.easeInOut(duration: 0.15)) {
+              proxy.scrollTo(newValue, anchor: .center)
+            }
           }
         }
-        .frame(width: tabsAreaWidth, alignment: .leading)
-        .clipped()
 
         plusButton(width: plusButtonWidth)
       }
@@ -71,6 +87,8 @@ private extension LinkTabBar {
   func tabItem(_ tab: LinkListViewModel.OpenedLinkTab, width: CGFloat) -> some View {
     let isSelected = tab.id == selectedTabID
     let showsAllLinksIcon = tab.context == .allLinks && width < allLinksIconThreshold
+    // 선택된 탭만 닫을 수 있으면 배경 탭을 닫으려고 먼저 선택해야 한다.
+    let showsCloseButton = isSelected || hoveredTabID == tab.id
 
     return HStack(spacing: 10) {
       if showsAllLinksIcon {
@@ -88,7 +106,7 @@ private extension LinkTabBar {
 
       Spacer(minLength: 8)
 
-      if isSelected {
+      if showsCloseButton {
         Button {
           onClose(tab.id)
         } label: {
@@ -110,6 +128,13 @@ private extension LinkTabBar {
         .frame(width: 1)
     }
     .contentShape(Rectangle())
+    .onHover { isHovering in
+      if isHovering {
+        hoveredTabID = tab.id
+      } else if hoveredTabID == tab.id {
+        hoveredTabID = nil
+      }
+    }
     .onTapGesture {
       onSelect(tab.id)
     }
