@@ -111,6 +111,7 @@ struct RootView: View {
               linkListViewModel.selectContext(.category(category.id))
             },
             onToggleCategoryFavorite: toggleCategoryFavorite,
+            onOpenCategoryInNewTab: openCategoryInNewTab,
             onEditCategory: beginEditCategory,
             onDeleteCategory: { categoryPendingDeletion = $0 },
             onSettings: {
@@ -450,6 +451,13 @@ struct RootView: View {
         )
       }
     }
+  }
+
+  private func openCategoryInNewTab(_ categoryID: UUID) {
+    selectedDetail = .linkList
+    isSaveSuccessToastPresented = false
+    searchViewModel.clearSearch()
+    linkListViewModel.openContextInNewTab(.category(categoryID))
   }
 
   private func beginEditCategory(_ categoryID: UUID) {

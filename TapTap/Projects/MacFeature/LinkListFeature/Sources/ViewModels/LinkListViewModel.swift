@@ -230,6 +230,20 @@ public final class LinkListViewModel {
     isEditing = true
   }
 
+  /// 주어진 컨텍스트를 이미 열어 둔 새 탭을 만들고 선택합니다.
+  /// 사이드바의 "새 탭에서 열기"처럼 대상이 정해진 채로 탭을 여는 경로에서 씁니다.
+  public func openContextInNewTab(_ context: OpenedLinkTab.Context) {
+    let tab = OpenedLinkTab(
+      id: UUID().uuidString,
+      title: title(for: context),
+      history: NavigationHistory(initial: context)
+    )
+    openedTabs.append(tab)
+    selectedTabID = tab.id
+    endEditing()
+    applyFilters()
+  }
+
   public func beginNewTabSelection() {
     let tab = OpenedLinkTab.newTab(title: title(for: .allLinks))
     openedTabs.append(tab)
