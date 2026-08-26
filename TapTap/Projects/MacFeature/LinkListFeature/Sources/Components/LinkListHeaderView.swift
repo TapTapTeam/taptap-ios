@@ -54,7 +54,7 @@ private extension LinkListHeaderView {
       Color.clear
         .frame(width: 45)
 
-      Text("\(categoryTitle) (\(totalCount)개)")
+      Text("\(categoryTitle) (\(totalCount.linkCountText))")
         .font(.B2_M)
         .foregroundStyle(.caption2)
       

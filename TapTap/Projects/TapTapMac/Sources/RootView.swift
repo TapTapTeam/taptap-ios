@@ -111,10 +111,10 @@ struct RootView: View {
               linkListViewModel.selectContext(.category(category.id))
             },
             onToggleCategoryFavorite: toggleCategoryFavorite,
+            onOpenCategoryInNewTab: openCategoryInNewTab,
             onEditCategory: beginEditCategory,
             onDeleteCategory: { categoryPendingDeletion = $0 },
             onSettings: {
-              print("tap")
               isSettingAlertPresented = true
             }
           )
@@ -168,6 +168,7 @@ struct RootView: View {
             onSave: saveNewCategory
           )
           .zIndex(30)
+          .onEscape { closeAddCategoryPopover() }
         }
       }
       .overlay {
@@ -186,6 +187,7 @@ struct RootView: View {
             onSave: saveEditedCategory
           )
           .zIndex(30)
+          .onEscape { closeEditCategoryPopover() }
         }
       }
       .overlay {
@@ -200,6 +202,7 @@ struct RootView: View {
             onClose: closeAddLinkNotice
           )
           .zIndex(30)
+          .onEscape { closeAddLinkNotice() }
         }
       }
       .overlay {
@@ -213,6 +216,7 @@ struct RootView: View {
             .padding(.horizontal, currentWidth < 600 ? 20 : 0)
             .padding(.vertical, currentHeight < 640 ? 20 : 0)
             .zIndex(30)
+            .onEscape { isSettingAlertPresented = false }
         }
       }
       .overlay {
@@ -229,9 +233,7 @@ struct RootView: View {
             onDismiss: dismissMovePicker
           )
           .zIndex(30)
-          .onExitCommand {
-            dismissMovePicker()
-          }
+          .onEscape { dismissMovePicker() }
         }
       }
       .overlay {
@@ -248,6 +250,7 @@ struct RootView: View {
             }
           )
           .zIndex(40)
+          .onEscape { categoryPendingDeletion = nil }
         }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -290,6 +293,7 @@ struct RootView: View {
             .padding(.horizontal, currentWidth <= 720 ? 20 : 0)
             .padding(.top, searchPanelVerticalPadding)
             .padding(.bottom, searchPanelVerticalPadding)
+            .onEscape { isSearchOverlayPresented = false }
             Spacer()
           }
           .frame(maxWidth: .infinity)
@@ -447,6 +451,13 @@ struct RootView: View {
         )
       }
     }
+  }
+
+  private func openCategoryInNewTab(_ categoryID: UUID) {
+    selectedDetail = .linkList
+    isSaveSuccessToastPresented = false
+    searchViewModel.clearSearch()
+    linkListViewModel.openContextInNewTab(.category(categoryID))
   }
 
   private func beginEditCategory(_ categoryID: UUID) {

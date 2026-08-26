@@ -37,7 +37,7 @@ struct SidebarBookmarksView: View {
             categoryName: category.categoryName,
             iconNumber: category.icon.number,
             isFavorite: category.isFavorite,
-            countText: "\((category.links ?? []).count)개",
+            countText: (category.links ?? []).count.linkCountText,
             isSelected: selectedCategoryID == category.id && !isSeeAllSelected,
             hoveredCategoryID: $hoveredCategoryID,
             presentedMenuCategoryID: $presentedMenuCategoryID,

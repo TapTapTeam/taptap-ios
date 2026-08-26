@@ -109,7 +109,7 @@ public struct LinkListContainerView: View {
       viewModel.updatePersistence(SwiftDataLinkListPersistence(modelContext: modelContext))
       updateViewModel()
     }
-    .onChange(of: articles.map { "\($0.id):\($0.category?.id.uuidString ?? "")" }) { _, _ in
+    .onChange(of: articlesChangeKey) { _, _ in
       updateViewModel()
     }
     .onChange(of: categories.map { "\($0.id):\($0.categoryName):\($0.isFavorite)" }) { _, _ in
@@ -156,6 +156,19 @@ private extension LinkListContainerView {
         viewModel.closeTabs(articleIDs: [detailViewModel.article.id])
         syncDetailViewModel()
       }
+  }
+
+  /// 링크 구성이 바뀌었는지 확인하는 키입니다.
+  ///
+  /// 본문이 평가될 때마다 계산되므로, 링크 4,000개 기준으로 문자열 4,000개를 만들던
+  /// `articles.map { "\(id):\(categoryID)" }` 대신 해시 하나만 쌓습니다.
+  var articlesChangeKey: Int {
+    var hasher = Hasher()
+    for article in articles {
+      hasher.combine(article.id)
+      hasher.combine(article.category?.id)
+    }
+    return hasher.finalize()
   }
 
   func updateViewModel() {

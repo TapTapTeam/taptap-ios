@@ -139,7 +139,7 @@ private extension LinkListView {
       )
       .offset(x: anchorRect.minX, y: anchorRect.minY)
     }
-    .onExitCommand {
+    .onEscape {
       editMenuArticleID = nil
     }
   }

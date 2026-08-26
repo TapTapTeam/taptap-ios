@@ -73,7 +73,8 @@ struct SettingAlertView: View {
     }
     .toolbar(.hidden)
     .frame(maxWidth: 560, maxHeight: 600)
-    .background(Color.background)
+    // 다크 모드에서 딤 배경과 명도가 같아지지 않도록 한 단계 위 면(n0)을 쓴다.
+    .background(Color.n0)
     .clipShape(RoundedRectangle(cornerRadius: 16))
   }
 }

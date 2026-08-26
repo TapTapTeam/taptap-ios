@@ -230,6 +230,20 @@ public final class LinkListViewModel {
     isEditing = true
   }
 
+  /// 주어진 컨텍스트를 이미 열어 둔 새 탭을 만들고 선택합니다.
+  /// 사이드바의 "새 탭에서 열기"처럼 대상이 정해진 채로 탭을 여는 경로에서 씁니다.
+  public func openContextInNewTab(_ context: OpenedLinkTab.Context) {
+    let tab = OpenedLinkTab(
+      id: UUID().uuidString,
+      title: title(for: context),
+      history: NavigationHistory(initial: context)
+    )
+    openedTabs.append(tab)
+    selectedTabID = tab.id
+    endEditing()
+    applyFilters()
+  }
+
   public func beginNewTabSelection() {
     let tab = OpenedLinkTab.newTab(title: title(for: .allLinks))
     openedTabs.append(tab)
@@ -239,16 +253,29 @@ public final class LinkListViewModel {
   }
 
   public func openArticle(_ article: ArticleItem) {
+    // 이미 열려 있는 링크는 새 탭을 만들지 않고 그 탭으로 이동한다.
+    // 빈 탭 재사용보다 먼저 확인해야 `+`로 연 빈 탭에 같은 링크가 중복으로 열리지 않는다.
+    if let existingTab = openedTabs.first(where: { $0.articleID == article.id }) {
+      if let selectedTabID,
+         selectedTabID != existingTab.id,
+         let selectedIndex = openedTabs.firstIndex(where: { $0.id == selectedTabID }),
+         openedTabs[selectedIndex].context == .allLinks,
+         openedTabs[selectedIndex].history.entries.count == 1 {
+        // 링크를 고르려고 방금 연 빈 탭이라면 남겨둘 이유가 없으므로 정리한다.
+        // `articleID == nil`로 두면 카테고리 탭도 걸려서, 사이드바 "새 탭에서 열기"로 연
+        // 카테고리 탭에서 이미 열린 링크를 고를 때 그 탭이 사라진다.
+        openedTabs.remove(at: selectedIndex)
+      }
+
+      selectedTabID = existingTab.id
+      return
+    }
+
     if let selectedTabID,
        let selectedIndex = openedTabs.firstIndex(where: { $0.id == selectedTabID }),
        openedTabs[selectedIndex].articleID == nil {
       openedTabs[selectedIndex].history.push(.article(article.id))
       openedTabs[selectedIndex].title = article.title
-      return
-    }
-
-    if let existingTab = openedTabs.first(where: { $0.articleID == article.id }) {
-      selectedTabID = existingTab.id
       return
     }
 

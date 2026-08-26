@@ -40,7 +40,7 @@ struct SidebarMyLinksView: View {
             .font(.B1_SB)
             .foregroundStyle(SidebarForeground.text1)
             .frame(maxWidth: .infinity, alignment: .leading)
-          Text("\(totalLinkCount)개")
+          Text(totalLinkCount.linkCountText)
             .font(.B2_M)
             .foregroundStyle(isSeeAllSelected ? Color.bl8 : Color.caption2)
             .padding(.horizontal, 6)

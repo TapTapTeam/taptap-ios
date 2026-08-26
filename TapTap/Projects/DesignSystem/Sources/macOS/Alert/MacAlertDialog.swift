@@ -95,7 +95,8 @@ public struct MacAlertDialog: View {
       .padding(.top, 20)
       .padding(.bottom, 20)
       .frame(width: width, height: 160)
-      .background(Color.background)
+      // 다크 모드에서 딤 배경과 명도가 같아지지 않도록 한 단계 위 면(n0)을 쓴다.
+      .background(Color.n0)
       .clipShape(RoundedRectangle(cornerRadius: 16))
       .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 0)
     }

@@ -29,7 +29,8 @@ public final class SearchViewModel: ObservableObject {
   
   // 검색 결과에 존재하는 카테고리 목록 (드롭다운에 사용)
   public var categoryItems: [String] {
-    let cats = searchResults.compactMap { $0.category?.categoryName }
+    // 결과가 같은 카테고리를 여러 개 담고 있어도 드롭다운에는 한 번만 나와야 한다.
+    let cats = Set(searchResults.compactMap { $0.category?.categoryName })
     return ["전체"] + cats.sorted()
   }
 

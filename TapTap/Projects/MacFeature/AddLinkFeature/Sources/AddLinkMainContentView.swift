@@ -169,7 +169,7 @@ private struct AddLinkCategorySection: View {
         LazyVGrid(columns: categoryColumns, alignment: .leading, spacing: 10) {
           AddLinkCategoryCard(
             title: "전체",
-            countText: "\(totalLinkCount)개",
+            countText: totalLinkCount.linkCountText,
             iconNumber: 24,
             isSelected: selectedCategoryID == nil
           ) {
@@ -215,7 +215,7 @@ private struct AddLinkCategorySection: View {
   
   private func categoryCountText(_ category: CategoryItem) -> String? {
     guard let count = category.links?.count else { return nil }
-    return "\(count)개"
+    return count.linkCountText
   }
 }
 
