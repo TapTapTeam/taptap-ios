@@ -61,7 +61,7 @@ struct LinkEditToolbar: View {
 
 private extension LinkEditToolbar {
   var toolbarTitle: String {
-    selectedCount > 0 ? "\(selectedCount)개의 링크 선택됨" : "링크 편집하기"
+    selectedCount > 0 ? "\(selectedCount.linkCountText)의 링크 선택됨" : "링크 편집하기"
   }
   
   func toolbarActionButton(
