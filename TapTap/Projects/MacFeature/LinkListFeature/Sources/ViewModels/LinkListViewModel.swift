@@ -239,16 +239,27 @@ public final class LinkListViewModel {
   }
 
   public func openArticle(_ article: ArticleItem) {
+    // 이미 열려 있는 링크는 새 탭을 만들지 않고 그 탭으로 이동한다.
+    // 빈 탭 재사용보다 먼저 확인해야 `+`로 연 빈 탭에 같은 링크가 중복으로 열리지 않는다.
+    if let existingTab = openedTabs.first(where: { $0.articleID == article.id }) {
+      if let selectedTabID,
+         selectedTabID != existingTab.id,
+         let selectedIndex = openedTabs.firstIndex(where: { $0.id == selectedTabID }),
+         openedTabs[selectedIndex].articleID == nil,
+         openedTabs[selectedIndex].history.entries.count == 1 {
+        // 링크를 고르려고 방금 연 빈 탭이라면 남겨둘 이유가 없으므로 정리한다.
+        openedTabs.remove(at: selectedIndex)
+      }
+
+      selectedTabID = existingTab.id
+      return
+    }
+
     if let selectedTabID,
        let selectedIndex = openedTabs.firstIndex(where: { $0.id == selectedTabID }),
        openedTabs[selectedIndex].articleID == nil {
       openedTabs[selectedIndex].history.push(.article(article.id))
       openedTabs[selectedIndex].title = article.title
-      return
-    }
-
-    if let existingTab = openedTabs.first(where: { $0.articleID == article.id }) {
-      selectedTabID = existingTab.id
       return
     }
 
