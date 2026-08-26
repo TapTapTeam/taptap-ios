@@ -259,9 +259,11 @@ public final class LinkListViewModel {
       if let selectedTabID,
          selectedTabID != existingTab.id,
          let selectedIndex = openedTabs.firstIndex(where: { $0.id == selectedTabID }),
-         openedTabs[selectedIndex].articleID == nil,
+         openedTabs[selectedIndex].context == .allLinks,
          openedTabs[selectedIndex].history.entries.count == 1 {
         // 링크를 고르려고 방금 연 빈 탭이라면 남겨둘 이유가 없으므로 정리한다.
+        // `articleID == nil`로 두면 카테고리 탭도 걸려서, 사이드바 "새 탭에서 열기"로 연
+        // 카테고리 탭에서 이미 열린 링크를 고를 때 그 탭이 사라진다.
         openedTabs.remove(at: selectedIndex)
       }
 
