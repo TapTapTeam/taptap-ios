@@ -43,7 +43,8 @@ public struct LinkMovePopover: View {
       footer
     }
     .frame(width: 536, height: 400)
-    .background(Color.background)
+    // 다크 모드에서 딤 배경과 명도가 같아지지 않도록 한 단계 위 면(n0)을 쓴다.
+    .background(Color.n0)
     .clipShape(RoundedRectangle(cornerRadius: 14))
     .shadow(color: .bgShadow5, radius: 2, x: 0, y: 2)
     .shadow(color: .bgShadow5, radius: 8, x: 0, y: 0)

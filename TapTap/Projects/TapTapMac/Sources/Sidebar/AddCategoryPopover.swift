@@ -44,7 +44,9 @@ struct AddCategoryPopover: View {
     .padding(.top, 10)
     .padding(.bottom, 20)
     .frame(width: 560)
-    .background(Color.background)
+    // 다크 모드에서 `background`는 딤이 깔린 뒤 배경과 명도가 같아 카드 경계가 사라진다.
+    // 모달은 한 단계 위로 올라온 면이므로 `n0`을 쓴다.
+    .background(Color.n0)
     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     .shadow(color: Color.black.opacity(0.10), radius: 8, x: 0, y: 0)
     .onAppear {
@@ -159,8 +161,8 @@ struct AddCategoryPopover: View {
         LinearGradient(
           colors: [
             Color.bgButtonGrad4.opacity(0),
-            Color.background.opacity(0.90),
-            Color.background
+            Color.n0.opacity(0.90),
+            Color.n0
           ],
           startPoint: .top,
           endPoint: .bottom
