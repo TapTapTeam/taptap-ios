@@ -51,7 +51,7 @@ private extension HighlightItemView {
     } label: {
       HighlightSentenceBlock(
         text: highlight.sentence,
-        backgroundColor: kind.highlightColor
+        backgroundColor: kind.swatchColor
       )
     }
     .buttonStyle(.plain)
