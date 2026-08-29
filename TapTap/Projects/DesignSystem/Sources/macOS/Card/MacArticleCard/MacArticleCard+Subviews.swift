@@ -48,8 +48,8 @@ extension MacArticleCard {
 
       if !isEditing && (visualState == .defaultHover || isEditMenuPresented) {
         editButton
-          .padding(.trailing, 18)
-          .padding(.bottom, 18)
+          .padding(.trailing, 10)
+          .padding(.bottom, 10)
           .transition(.opacity.combined(with: .scale(scale: 0.95)))
       }
     }
