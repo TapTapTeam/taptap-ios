@@ -615,7 +615,7 @@ private extension LinkListViewModel {
   func title(for context: OpenedLinkTab.Context) -> String {
     switch context {
     case .allLinks:
-      return "모든 링크"
+      return "모두 보기"
     case let .category(id):
       return categories.first { $0.id == id }?.categoryName ?? "전체"
     case let .article(id):
