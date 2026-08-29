@@ -90,6 +90,7 @@ public extension MacIcon {
   static let shield = "mac_shield"
   static let chevron_right = "mac_chevron_right"
   static let chevron_left = "mac_chevron_left"
+  static let query_delete = "mac_query_delete"
 }
 
 public extension Image {

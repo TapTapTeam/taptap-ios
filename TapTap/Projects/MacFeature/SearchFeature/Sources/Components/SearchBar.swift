@@ -24,26 +24,32 @@ public struct SearchBar: View {
   }
 
   public var body: some View {
-    ZStack(alignment: .leading) {
-      if text.isEmpty {
-        Text("검색어를 입력해주세요")
+    HStack(spacing: 0) {
+      ZStack(alignment: .leading) {
+        if text.isEmpty {
+          Text("검색어를 입력해주세요")
+            .font(.B1_SB)
+            .foregroundStyle(.caption3)
+        }
+
+        TextField("", text: $text)
+          .textFieldStyle(.plain)
           .font(.B1_SB)
-          .foregroundStyle(.caption3)
-          .accessibilityHidden(true)
+          .foregroundStyle(.text1)
+          .focused(isFocused)
+          .onSubmit {
+            onSubmit()
+          }
       }
 
-      TextField("", text: $text)
-        .textFieldStyle(.plain)
-        .font(.B1_SB)
-        .foregroundStyle(.text1)
-        .focused(isFocused)
-        .onSubmit {
-          onSubmit()
+      if !text.isEmpty {
+        SearchClearButton {
+          text = ""
         }
-        .accessibilityLabel("검색어를 입력해주세요")
+      }
     }
     .padding(.vertical, 4)
-    .padding(.horizontal, 10)
+    .padding(.horizontal, 12)
     .frame(maxWidth: .infinity)
     .frame(height: 40)
     .background(.n20)
