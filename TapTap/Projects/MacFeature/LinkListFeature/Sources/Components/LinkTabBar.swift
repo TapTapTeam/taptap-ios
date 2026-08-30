@@ -55,9 +55,6 @@ struct LinkTabBar: View {
     }
     .frame(height: 36)
     .background(Color.n10)
-    .overlay(alignment: .bottom) {
-      Divider()
-    }
   }
 }
 
