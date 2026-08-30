@@ -47,6 +47,7 @@ public struct LinkMovePopover: View {
     .background(Color.n0)
     .clipShape(RoundedRectangle(cornerRadius: 14))
     .shadow(color: .bgShadow5, radius: 2, x: 0, y: 2)
+    .compositingGroup()
     .shadow(color: .bgShadow5, radius: 8, x: 0, y: 0)
   }
 }
@@ -155,10 +156,10 @@ private extension LinkMovePopover {
       .fill(
         LinearGradient(
           stops: [
-            Gradient.Stop(color: .bgButtonGrad1, location: 0.00),
-            Gradient.Stop(color: .bgButtonGrad2, location: 0.16),
-            Gradient.Stop(color: .bgButtonGrad3, location: 0.73),
-            Gradient.Stop(color: .bgButtonGrad4, location: 1.00)
+            Gradient.Stop(color: .n0.opacity(1.0), location: 0.00),
+            Gradient.Stop(color: .n0.opacity(0.9), location: 0.16),
+            Gradient.Stop(color: .n0.opacity(0.2), location: 0.73),
+            Gradient.Stop(color: .n0.opacity(0.0), location: 1.00)
           ],
           startPoint: startPoint,
           endPoint: endPoint
