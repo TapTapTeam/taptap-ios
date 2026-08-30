@@ -88,7 +88,8 @@ private extension LinkTabBar {
     let isSelected = tab.id == selectedTabID
     let showsAllLinksIcon = tab.context == .allLinks && width < allLinksIconThreshold
     // 선택된 탭만 닫을 수 있으면 배경 탭을 닫으려고 먼저 선택해야 한다.
-    let showsCloseButton = isSelected || hoveredTabID == tab.id
+    // 탭이 하나뿐이면 탭바가 사라지지 않도록 닫기 버튼을 보여주지 않는다.
+    let showsCloseButton = tabs.count > 1 && (isSelected || hoveredTabID == tab.id)
 
     return HStack(spacing: 10) {
       if showsAllLinksIcon {
