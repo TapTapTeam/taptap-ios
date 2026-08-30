@@ -139,7 +139,7 @@ extension MacArticleCard {
         .frame(width: 24, height: 24)
         .frame(width: 36, height: 36)
         .background(isEditButtonHovered ? Color.n0 : Color.n10)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .onHover { isEditButtonHovered = $0 }
     }
     .buttonStyle(.plain)
