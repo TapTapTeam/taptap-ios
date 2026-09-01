@@ -278,5 +278,11 @@ platform :macos do
       app_platform: "osx",
       skip_waiting_for_build_processing: true
     )
+
+    notify_discord(
+      title: "🚀 macOS TestFlight 업로드 완료",
+      message: "새로운 맥 베타 빌드가 성공적으로 업로드되었습니다.\n버전: #{version} (#{next_build})",
+      color: 377472
+    )
   end
 end
