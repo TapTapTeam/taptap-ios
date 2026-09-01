@@ -5,7 +5,6 @@
 //  Created by 여성일 on 7/15/26.
 //
 
-import AppKit
 import SwiftUI
 import DesignSystem
 
@@ -45,10 +44,10 @@ struct SettingOpensourceView: View {
       
       VStack(spacing: 10) {
         SettingRowButton(icon: MacIcon.opensource, title: "Composable Architecture") {
-          NSWorkspace.shared.open(URL(string: "https://github.com/pointfreeco/swift-composable-architecture")!)
+          Platform.openExternalURL(URL(string: "https://github.com/pointfreeco/swift-composable-architecture")!)
         }
         SettingRowButton(icon: MacIcon.opensource, title: "Tuist") {
-          NSWorkspace.shared.open(URL(string: "https://tuist.dev/ko")!)
+          Platform.openExternalURL(URL(string: "https://tuist.dev/ko")!)
         }
       }
       .padding(.top, 10)

@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+
+#if os(macOS)
 import AppKit
 
 /// SwiftUI TextEditor에서 Shift 없는 Enter 입력을 저장 액션으로 연결하기 위한 AppKit 브릿지입니다.
@@ -65,3 +67,18 @@ struct EnterKeyMonitor: NSViewRepresentable {
     }
   }
 }
+
+#else
+
+/// iPadOS에는 AppKit의 전역 키 모니터가 없다.
+/// 하드웨어 키보드 Enter 처리는 별도 과제로 두고, 호출부가 그대로 컴파일되도록 빈 뷰로 대체한다.
+struct EnterKeyMonitor: View {
+  let isEnabled: Bool
+  let onEnter: () -> Void
+
+  var body: some View {
+    Color.clear.frame(width: 0, height: 0)
+  }
+}
+
+#endif

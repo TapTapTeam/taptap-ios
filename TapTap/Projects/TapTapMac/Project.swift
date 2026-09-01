@@ -51,6 +51,7 @@ let project = Project.project(
         .target(name: "MacSafariExtension"),
         .core(),
         .designSystem(),
+        .shell(),
         .macSearchFeature(),
         .macAddLinkFeature(),
         .macLinkListFeature(),

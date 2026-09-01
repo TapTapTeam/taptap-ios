@@ -42,7 +42,7 @@ extension Target {
       finalConfigs = signing.configs
     }
     
-    let finalDestinations = destinations ?? .init([.iPhone])
+    let finalDestinations = destinations ?? .init([.iPhone, .iPad])
     let finalDeploymentTargets: DeploymentTargets
     if let deploymentTargets {
       finalDeploymentTargets = deploymentTargets

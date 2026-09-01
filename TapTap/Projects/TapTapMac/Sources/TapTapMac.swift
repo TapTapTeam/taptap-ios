@@ -3,6 +3,7 @@ import SwiftUI
 import SwiftData
 import SwiftUI
 import Core
+import Shell
 import DesignSystem
 import MacSearchFeature
 import AppKit

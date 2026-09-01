@@ -52,7 +52,8 @@ let appTarget = Target.target(
     .onboardingFeature(),
     .originalFeature(),
     .searchFeature(),
-    .settingFeature()
+    .settingFeature(),
+    .shell()
   ]
 )
 

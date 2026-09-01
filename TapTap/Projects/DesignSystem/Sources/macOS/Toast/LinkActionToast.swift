@@ -5,7 +5,7 @@
 //  Created by 이승진 on 4/28/26.
 //
 
-#if os(macOS)
+#if os(macOS) || os(iOS)
 import SwiftUI
 
 /// 링크 이동/삭제 등 액션 완료 후 사용자에게 안내하는 공용 토스트입니다.

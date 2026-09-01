@@ -5,7 +5,7 @@
 //  Created by 이승진 on 5/12/26.
 //
 
-#if os(macOS)
+#if os(macOS) || os(iOS)
 import SwiftUI
 
 /// macOS 팝업 메뉴 컨테이너입니다.

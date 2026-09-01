@@ -5,7 +5,6 @@
 //  Created by 여성일 on 7/15/26.
 //
 
-import AppKit
 import SwiftUI
 import DesignSystem
 

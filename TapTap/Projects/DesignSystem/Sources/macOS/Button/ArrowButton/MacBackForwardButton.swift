@@ -5,7 +5,7 @@
 //  Created by 여성일 on 3/29/26.
 //
 
-#if os(macOS)
+#if os(macOS) || os(iOS)
 import SwiftUI
 
 /// 뒤로가기와 앞으로가기 버튼을 함께 제공하는 macOS용 복합 버튼입니다.

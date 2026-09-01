@@ -13,7 +13,7 @@ let project = Project.project(
   targets: [
     Target.target(
       name: Module.DesignSystem.rawValue,
-      destinations: [.iPhone, .mac],
+      destinations: [.iPhone, .iPad, .mac],
       product: .staticFramework,
       infoPlist: .extendingDefault(with: [
         "UIAppFonts": .array([

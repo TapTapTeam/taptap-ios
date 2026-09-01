@@ -13,7 +13,7 @@ let project = Project.project(
   targets: [
     Target.target(
       name: MacFeatureModule.MacAddLinkFeature.rawValue,
-      destinations: [.mac],
+      destinations: [.iPhone, .iPad, .mac],
       product: .staticFramework,
       sources: .sources,
       resources: .default,

@@ -15,7 +15,7 @@ import MacLinkListFeature
 import MacSearchFeature
 
 /// macOS 앱 전역 레이아웃(사이드바 고정 + 디테일 전환)을 소유하는 컨테이너 뷰.
-struct RootView: View {
+public struct RootView: View {
   @Environment(\.modelContext) private var modelContext
   @Query(sort: \CategoryItem.createdAt) private var allCategories: [CategoryItem]
   @Query(sort: \ArticleItem.lastViewedDate, order: .reverse) private var articles: [ArticleItem]
@@ -51,6 +51,10 @@ struct RootView: View {
   @State private var editCategoryIconNumber: Int = 1
   @State private var isDuplicateEditCategoryName: Bool = false
 
+  public init(searchViewModel: SearchViewModel) {
+    self.searchViewModel = searchViewModel
+  }
+
   private var isSeeAllSelected: Bool {
     linkListViewModel.activeContext == .allLinks
   }
@@ -60,7 +64,7 @@ struct RootView: View {
     return categoryID
   }
 
-  var body: some View {
+  public var body: some View {
     GeometryReader { geometry in
       contentView
         .onAppear {

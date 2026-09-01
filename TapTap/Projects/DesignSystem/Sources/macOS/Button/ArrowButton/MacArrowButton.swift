@@ -4,7 +4,7 @@
 //
 //  Created by 여성일 on 3/29/26.
 //
-#if os(macOS)
+#if os(macOS) || os(iOS)
 import SwiftUI
 
 /// 좌우 이동에 사용하는 macOS용 화살표 버튼입니다.

@@ -4,7 +4,7 @@
 //
 //  Created by 여성일 on 3/29/26.
 //
-#if os(macOS)
+#if os(macOS) || os(iOS)
 import SwiftUI
 
 /// 링크 삭제 완료를 안내하는 macOS용 토스트입니다.

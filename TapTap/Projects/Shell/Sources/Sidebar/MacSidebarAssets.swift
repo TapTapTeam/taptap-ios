@@ -3,7 +3,9 @@
 //  TapTapMac
 //
 
+#if os(macOS)
 import AppKit
+#endif
 import CoreImage
 import SwiftUI
 
@@ -47,7 +49,9 @@ enum SidebarHover {
   static let animation: Animation = .easeOut(duration: 0.12)
 }
 
-struct SidebarBackdropBlur: NSViewRepresentable {
+#if os(macOS)
+/// macOS 전용 백드롭 블러 구현. 크로스플랫폼 진입점은 `SidebarBackdropBlur`(PlatformCompat.swift).
+struct MacBackdropBlur: NSViewRepresentable {
   var radius: CGFloat = 8
 
   func makeNSView(context: Context) -> BlurView {
@@ -91,6 +95,7 @@ struct SidebarBackdropBlur: NSViewRepresentable {
     }
   }
 }
+#endif
 
 struct SidebarToggleIcon: View {
   var isCollapsed: Bool

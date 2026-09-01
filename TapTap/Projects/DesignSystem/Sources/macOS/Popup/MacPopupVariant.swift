@@ -7,7 +7,7 @@
 
 import Foundation
 
-#if os(macOS)
+#if os(macOS) || os(iOS)
 
 /// `MacPopupItem`의 시각적 스타일을 정의하는 enum입니다.
 public enum MacPopupVariant {

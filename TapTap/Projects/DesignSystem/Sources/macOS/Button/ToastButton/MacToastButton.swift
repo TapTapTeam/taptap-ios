@@ -4,7 +4,7 @@
 //
 //  Created by 여성일 on 3/29/26.
 //
-#if os(macOS)
+#if os(macOS) || os(iOS)
 import SwiftUI
 
 /// 토스트 내부에서 사용하는 macOS용 액션 버튼입니다.

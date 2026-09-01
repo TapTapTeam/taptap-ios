@@ -4,7 +4,7 @@
 //
 //  Created by 여성일 on 3/29/26.
 //
-#if os(macOS)
+#if os(macOS) || os(iOS)
 import SwiftUI
 
 /// 작은 크기의 macOS용 CTA 버튼입니다.

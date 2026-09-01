@@ -5,7 +5,7 @@
 //  Created by 이승진 on 4/13/26.
 //
 
-#if os(macOS)
+#if os(macOS) || os(iOS)
 
 import SwiftUI
 

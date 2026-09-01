@@ -92,4 +92,17 @@ public extension View {
     modifier(EscapeDismissModifier(action: action))
   }
 }
+
+#else
+
+import SwiftUI
+
+public extension View {
+  /// iPadOS에는 AppKit의 전역 Escape 모니터가 없다.
+  /// 터치에서는 Escape 개념이 없어 no-op으로 두고, 하드웨어 키보드 대응은 별도 과제로 남긴다.
+  func onEscape(perform action: @escaping () -> Void) -> some View {
+    self
+  }
+}
+
 #endif

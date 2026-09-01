@@ -5,7 +5,7 @@
 //  Created by 이승진 on 5/12/26.
 //
 
-#if os(macOS)
+#if os(macOS) || os(iOS)
 import SwiftUI
 
 /// macOS 팝업 메뉴에서 사용하는 액션 row입니다.

@@ -5,7 +5,7 @@
 //  Created by 이승진 on 5/17/26.
 //
 
-#if os(macOS)
+#if os(macOS) || os(iOS)
 import SwiftUI
 
 /// macOS에서 삭제/위험 액션을 확인할 때 사용하는 공용 알럿 다이얼로그입니다.

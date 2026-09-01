@@ -6,7 +6,12 @@
 //
 
 import SwiftUI
+
+#if os(macOS)
 import AppKit
+#else
+import UIKit
+#endif
 
 import Core
 import DesignSystem
@@ -169,11 +174,16 @@ private extension LinkDetailView {
 
   func openOriginalLink() {
     guard let url = URL(string: viewModel.article.urlString) else { return }
+#if os(macOS)
     if let safariURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.Safari") {
       NSWorkspace.shared.open([url], withApplicationAt: safariURL, configuration: NSWorkspace.OpenConfiguration())
     } else {
       NSWorkspace.shared.open(url)
     }
+#else
+    // iPadOS에는 기본 브라우저 지정 개념이 있어 특정 앱을 지목하지 않고 시스템에 맡긴다.
+    UIApplication.shared.open(url)
+#endif
   }
 
   func closeMemoPanel() {

@@ -4,7 +4,7 @@
 //
 //  Created by 여성일 on 3/29/26.
 //
-#if os(macOS)
+#if os(macOS) || os(iOS)
 import SwiftUI
 
 /// macOS용 토스트 닫기 버튼입니다.

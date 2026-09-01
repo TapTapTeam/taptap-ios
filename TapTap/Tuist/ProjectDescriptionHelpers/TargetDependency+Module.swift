@@ -124,3 +124,10 @@ extension TargetDependency {
     .project(target: Module.Core.rawValue, path: .relativeToRoot("Projects/Core"))
   }
 }
+
+extension TargetDependency {
+  /// macOS 앱과 iPad가 공유하는 넓은 화면 셸(사이드바 + 목록 + 상세).
+  public static func shell() -> TargetDependency {
+    .project(target: Module.Shell.rawValue, path: .relativeToRoot("Projects/Shell"))
+  }
+}

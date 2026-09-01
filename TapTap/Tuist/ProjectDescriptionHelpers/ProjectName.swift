@@ -14,6 +14,7 @@ public enum Module: String {
   case Core
   case Shared
   case TapTapMac
+  case Shell
 }
 
 public enum FeatureModule: String {

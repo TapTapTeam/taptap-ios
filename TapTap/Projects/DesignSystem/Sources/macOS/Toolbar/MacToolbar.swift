@@ -5,7 +5,7 @@
 //  Created by 여성일 on 4/6/26.
 //
 
-#if os(macOS)
+#if os(macOS) || os(iOS)
 import SwiftUI
 
 public struct MacToolbar: View {

@@ -5,7 +5,6 @@
 //  Created by 여성일 on 7/15/26.
 //
 
-import AppKit
 import SwiftUI
 import DesignSystem
 
@@ -126,7 +125,7 @@ struct SettingPrivacyView: View {
             .foregroundStyle(.caption2)
             .padding(.top, 8)
           Button {
-            NSWorkspace.shared.open(URL(string: "https://firebase.google.com/support/privacy")!)
+            Platform.openExternalURL(URL(string: "https://firebase.google.com/support/privacy")!)
           } label: {
             HStack(spacing: 4) {
               Text("·")
@@ -141,7 +140,7 @@ struct SettingPrivacyView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
           .buttonStyle(.plain)
           Button {
-            NSWorkspace.shared.open(URL(string: "https://amplitude.com/privacy")!)
+            Platform.openExternalURL(URL(string: "https://amplitude.com/privacy")!)
           } label: {
             HStack(spacing: 4) {
               Text("·")
@@ -215,7 +214,7 @@ struct SettingPrivacyView: View {
               .font(.B3_R_HLM)
               .foregroundStyle(.caption2)
             Button {
-              NSWorkspace.shared.open(URL(string: "https://privacy.kisa.or.kr")!)
+              Platform.openExternalURL(URL(string: "https://privacy.kisa.or.kr")!)
             } label: {
               Text("privacy.kisa.or.kr")
                 .font(.B3_R_HLM)
@@ -232,7 +231,7 @@ struct SettingPrivacyView: View {
               .font(.B3_R_HLM)
               .foregroundStyle(.caption2)
             Button {
-              NSWorkspace.shared.open(URL(string: "https://www.kopico.go.kr")!)
+              Platform.openExternalURL(URL(string: "https://www.kopico.go.kr")!)
             } label: {
               Text("www.kopico.go.kr")
                 .font(.B3_R_HLM)
@@ -250,7 +249,7 @@ struct SettingPrivacyView: View {
               .font(.B3_R_HLM)
               .foregroundStyle(.caption2)
             Button {
-              NSWorkspace.shared.open(URL(string: "https://www.spo.go.kr")!)
+              Platform.openExternalURL(URL(string: "https://www.spo.go.kr")!)
             } label: {
               Text("www.spo.go.kr")
                 .font(.B3_R_HLM)
@@ -268,7 +267,7 @@ struct SettingPrivacyView: View {
               .font(.B3_R_HLM)
               .foregroundStyle(.caption2)
             Button {
-              NSWorkspace.shared.open(URL(string: "https://ecrm.cyber.go.kr")!)
+              Platform.openExternalURL(URL(string: "https://ecrm.cyber.go.kr")!)
             } label: {
               Text("ecrm.cyber.go.kr")
                 .font(.B3_R_HLM)

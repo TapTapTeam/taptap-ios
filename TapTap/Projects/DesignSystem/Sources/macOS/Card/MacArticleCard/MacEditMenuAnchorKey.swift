@@ -5,7 +5,7 @@
 //  Created by Claude on 8/16/26.
 //
 
-#if os(macOS)
+#if os(macOS) || os(iOS)
 
 import SwiftUI
 
