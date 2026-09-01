@@ -144,7 +144,7 @@ struct RootView: View {
       .overlay(alignment: .topLeading) {
         if isSidebarCollapsed {
           Button(action: toggleSidebar) {
-            SidebarToggleIcon(isCollapsed: true)
+            SidebarToggleIcon(isCollapsed: true, isFloating: true)
           }
           .buttonStyle(.plain)
           .padding(.top, 20)
