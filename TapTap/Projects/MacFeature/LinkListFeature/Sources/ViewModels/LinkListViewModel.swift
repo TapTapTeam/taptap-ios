@@ -154,7 +154,11 @@ public final class LinkListViewModel {
   @ObservationIgnored private var deleteToastDismissTask: Task<Void, Never>?
   @ObservationIgnored private var articleDeleteToastDismissTask: Task<Void, Never>?
 
-  public init() {}
+  public init() {
+    let tab = OpenedLinkTab.newTab(title: title(for: .allLinks))
+    openedTabs = [tab]
+    selectedTabID = tab.id
+  }
 
   deinit {
     moveToastDismissTask?.cancel()
@@ -290,6 +294,7 @@ public final class LinkListViewModel {
   }
 
   public func closeTab(_ tabID: String) {
+    guard openedTabs.count > 1 else { return }
     guard let closingIndex = openedTabs.firstIndex(where: { $0.id == tabID }) else { return }
     openedTabs.remove(at: closingIndex)
 
