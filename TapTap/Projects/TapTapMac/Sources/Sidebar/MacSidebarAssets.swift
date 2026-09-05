@@ -94,8 +94,17 @@ struct SidebarBackdropBlur: NSViewRepresentable {
 
 struct SidebarToggleIcon: View {
   var isCollapsed: Bool
+  /// 사이드바 밖(콘텐츠 위)에 떠 있을 때 켠다. 옆의 네비게이션 버튼과 같은 배경·그림자를 쓴다.
+  var isFloating: Bool = false
 
   @State private var isHovered = false
+
+  private var cornerRadius: CGFloat { isFloating ? 12 : 8 }
+
+  private var backgroundColor: Color {
+    if isFloating { return isHovered ? Color.n40 : Color.n0 }
+    return isHovered ? Color.n20 : Color.clear
+  }
 
   var body: some View {
     Image(icon: isCollapsed ? MacIcon.sidebarOpen : MacIcon.sidebarClose)
@@ -104,10 +113,12 @@ struct SidebarToggleIcon: View {
       .frame(width: 24, height: 24)
       .frame(width: 40, height: 40)
       .background(
-        RoundedRectangle(cornerRadius: 8, style: .continuous)
-          .fill(isHovered ? Color.n20 : Color.clear)
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+          .fill(backgroundColor)
       )
-      .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+      .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+      .shadow(color: isFloating ? Color.bgShadow2 : .clear, radius: 3, x: 0, y: 2)
+      .shadow(color: isFloating ? Color.bgShadow1 : .clear, radius: 2, x: 0, y: 2)
       .onHover { isHovered = $0 }
       .animation(SidebarHover.animation, value: isHovered)
   }

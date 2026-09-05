@@ -24,12 +24,15 @@ struct SidebarHeaderView: View {
         .padding(.top, 35)
       } else {
         HStack(spacing: 12) {
-          MacSidebarLogoIcon()
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+          HStack(spacing: 12) {
+            MacSidebarLogoIcon()
+              .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
-          Text("탭탭")
-            .font(.H4_M)
-            .foregroundStyle(SidebarForeground.text1)
+            Text("탭탭")
+              .font(.H4_M)
+              .foregroundStyle(SidebarForeground.text1)
+          }
+          .offset(y: 8)
 
           Spacer(minLength: 0)
 

@@ -128,7 +128,6 @@ struct SidebarCategoryMorePopup: View {
         title: "카테고리 삭제하기",
         icon: MacIcon.trash,
         foregroundColor: Color.danger,
-        backgroundColor: Color.bgDimDanger,
         hoverColor: Color.bgDimDanger,
         action: onDelete
       )
@@ -151,8 +150,7 @@ private struct SidebarCategoryMorePopupButton: View {
   let title: String
   let icon: String
   var foregroundColor: Color = Color.text1
-  var backgroundColor: Color = Color.clear
-  var hoverColor: Color = Color.n20
+  var hoverColor: Color = Color.n40
   let action: () -> Void
 
   @State private var isHovered = false
@@ -180,7 +178,6 @@ private struct SidebarCategoryMorePopupButton: View {
       .padding(.vertical, 6)
       .frame(maxWidth: .infinity, alignment: .leading)
       .background(isHovered ? hoverColor : Color.clear)
-      .background(backgroundColor)
       .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
       .contentShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
     }
