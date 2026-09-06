@@ -7,6 +7,7 @@
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
@@ -50,6 +51,7 @@ public struct MyCategoryCollectionFeature {
   }
   
   @Dependency(\.swiftDataClient) var swiftDataClient
+  @Dependency(\.analytics) var analytics
 
   /// 즐겨찾기 최대 개수
   private let favoriteLimit = 6
@@ -79,6 +81,7 @@ public struct MyCategoryCollectionFeature {
         return .none
         
       case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.myCategory))
         return .run { send in
           do {
             let links = try swiftDataClient.link.fetchLinks()
@@ -125,6 +128,7 @@ public struct MyCategoryCollectionFeature {
 
         // 이미 즐겨찾기 → 해제
         if category.isFavorite {
+          analytics.track(UsageEvent.categoryFavoriteToggled(isFavorite: false))
           return .run { send in
             try? swiftDataClient.category.setFavorite(id: categoryID, isFavorite: false)
             await send(.myCategoryGrid(.onAppear))
@@ -138,6 +142,7 @@ public struct MyCategoryCollectionFeature {
           state.favoriteFullAlert = category
           return .none
         }
+        analytics.track(UsageEvent.categoryFavoriteToggled(isFavorite: true))
         return .run { send in
           try? swiftDataClient.category.setFavorite(id: categoryID, isFavorite: true)
           await send(.myCategoryGrid(.onAppear))

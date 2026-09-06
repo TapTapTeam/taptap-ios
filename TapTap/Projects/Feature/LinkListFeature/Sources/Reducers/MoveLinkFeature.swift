@@ -10,6 +10,7 @@ import SwiftData
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import DesignSystem
 import Core
 import Shared
@@ -18,6 +19,7 @@ import Shared
 public struct MoveLinkFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
   @Dependency(\.uuid) var uuid
+  @Dependency(\.analytics) var analytics
   
   @ObservableState
   public struct State: Equatable {
@@ -169,6 +171,7 @@ public struct MoveLinkFeature {
         }
         
       case let .moveDone(count):
+        analytics.track(ConversionEvent.linkMovedToCategory(count: count))
         let moveCategoryName = state.targetCategory?.categoryName ?? "전체"
         return .run { send in
           try? await Task

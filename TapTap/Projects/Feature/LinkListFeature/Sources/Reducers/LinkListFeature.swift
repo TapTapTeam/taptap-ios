@@ -9,6 +9,7 @@ import SwiftUI
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import DesignSystem
 import Core
 import Shared
@@ -17,6 +18,7 @@ import Shared
 public struct LinkListFeature {
   // MARK: - Dependencies
   @Dependency(\.swiftDataClient) var swiftDataClient
+  @Dependency(\.analytics) var analytics
   @Dependency(\.uuid) var uuid
 
   // MARK: - State
@@ -133,6 +135,7 @@ private extension LinkListFeature {
     switch action {
 
     case .onAppear:
+      analytics.track(UsageEvent.screenViewed(.linkList))
       guard state.currentPage == 0 else { return .none }
       return .run { send in
         await send(.fetchCategories)

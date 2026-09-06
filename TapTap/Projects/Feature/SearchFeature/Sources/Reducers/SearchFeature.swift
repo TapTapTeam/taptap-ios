@@ -9,6 +9,7 @@ import Foundation
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
@@ -50,6 +51,8 @@ public struct SearchFeature {
 
   public enum CancelID { case searchDebounce }
 
+  @Dependency(\.analytics) var analytics
+
   public var body: some ReducerOf<Self> {
     Scope(state: \.recentSearch, action: \.recentSearch) { RecentSearchFeature() }
     Scope(state: \.recentLink, action: \.recentLink) { RecentLinkFeature() }
@@ -78,6 +81,7 @@ public struct SearchFeature {
     Reduce { state, action in
       switch action {
       case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.search))
         state.isSearchFieldFocused = true
         return .merge(
           .send(.recentSearch(.onAppear)),
@@ -109,6 +113,7 @@ public struct SearchFeature {
       case .recentSearch(.delegate(let action)):
         switch action {
         case .chipTapped(let term):
+          analytics.track(UsageEvent.recentSearchTapped)
           state.searchQuery = term
           state.isSearchSubmitted = true
           state.isSearchFieldFocused = false

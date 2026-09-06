@@ -9,6 +9,7 @@ import SwiftUI
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import DesignSystem
 import Core
 import Shared
@@ -16,6 +17,7 @@ import Shared
 @Reducer
 public struct LinkDetailFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
+  @Dependency(\.analytics) var analytics
 
   private enum CancelID { case editNotification }
   
@@ -89,6 +91,7 @@ public struct LinkDetailFeature {
     Reduce { state, action in
       switch action {
       case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.linkDetail))
         state.editedTitle = state.link.title
         state.editedMemo  = state.link.userMemo
         return .merge(
@@ -178,7 +181,9 @@ public struct LinkDetailFeature {
         }
         
       case .saveMemoSucceeded:
+        let hadMemo = (state.link.userMemo ?? "").isEmpty == false
         state.link.userMemo = state.editedMemo.trimmingCharacters(in: .whitespacesAndNewlines)
+        analytics.track(ConversionEvent.memoSaved(isEdit: hadMemo))
         return .none
         
       case .saveMemoFailed(let error):

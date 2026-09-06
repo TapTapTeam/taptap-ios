@@ -7,6 +7,7 @@
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
@@ -49,6 +50,7 @@ struct AppFeature {
 
   @Dependency(\.userDefaultsClient) var userDefaultsClient
   @Dependency(\.appVersionCheckClient) var appVersionCheckClient
+  @Dependency(\.analytics) var analytics
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -102,6 +104,9 @@ struct AppFeature {
         }
 
       case .onboardingStateLoaded(let hasCompleted):
+        // 이번 실행에서 온보딩을 끝냈든 예전에 끝냈든 "온보딩을 마친 사람"이라는 사실은 같다.
+        // 프로퍼티는 사람에 붙는 값이라 실행할 때마다 다시 세팅해도 중복이 아니다.
+        analytics.setUserProperty(.hasOnboarded(hasCompleted))
         if hasCompleted {
           state.launchState = .home
           state.onboardingCoordinator = nil
@@ -114,6 +119,10 @@ struct AppFeature {
         return .none
 
       case .onboardingCoordinator(.delegate(.completed)):
+        // 전환 이벤트는 코디네이터의 완료 델리게이트에서만 찍는다.
+        // 온보딩 화면을 몇 장으로 쪼개든 이 지점은 그대로라 지표가 끊기지 않는다.
+        analytics.track(ConversionEvent.onboardingCompleted)
+        analytics.setUserProperty(.hasOnboarded(true))
         state.launchState = .home
         state.onboardingCoordinator = nil
         if state.appCoordinator == nil { state.appCoordinator = .init() }

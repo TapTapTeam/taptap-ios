@@ -7,6 +7,7 @@
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
@@ -32,6 +33,8 @@ public struct ArticleListFeature {
     }
   }
   
+  @Dependency(\.analytics) var analytics
+
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -39,6 +42,7 @@ public struct ArticleListFeature {
         return .send(.delegate(.route(.linkList(initCategory: "전체"))))
         
       case .listCellTapped(let article):
+        analytics.track(ConversionEvent.linkOpened(source: .app))
         return .send(.delegate(.route(.linkDetail(article))))
         
       case .tipCardTapped:

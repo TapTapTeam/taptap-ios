@@ -7,7 +7,8 @@ import struct ProjectDescription.PackageSettings
 let packageSettings = PackageSettings(
   productTypes: [
     "ComposableArchitecture": .framework,
-    "Lottie": .staticFramework
+    "Lottie": .staticFramework,
+    "AmplitudeSwift": .staticFramework
   ]
 )
 #endif
@@ -22,6 +23,14 @@ let package = Package(
     .package(
       url: "https://github.com/airbnb/lottie-spm.git",
       from: "4.5.2"
+    ),
+    .package(
+      url: "https://github.com/firebase/firebase-ios-sdk.git",
+      from: "12.18.0"
+    ),
+    .package(
+      url: "https://github.com/amplitude/Amplitude-Swift.git",
+      from: "1.18.8"
     )
   ]
 )

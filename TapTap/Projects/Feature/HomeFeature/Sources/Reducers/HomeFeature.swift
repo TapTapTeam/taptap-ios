@@ -9,6 +9,7 @@ import SwiftUI
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import MyCategoryFeature
 import Shared
@@ -17,6 +18,7 @@ import Shared
 public struct HomeFeature {
   @Dependency(\.clipboard) var clipboard
   @Dependency(\.swiftDataClient) var swiftDataClient
+  @Dependency(\.analytics) var analytics
   
   @ObservableState
   public struct State: Equatable {
@@ -78,6 +80,7 @@ public struct HomeFeature {
     Reduce { state, action in
       switch action {
       case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.home))
         return .run { send in
           await send(.fetchArticles)
         }

@@ -10,6 +10,7 @@ import SwiftData
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import DesignSystem
 import Core
 import Shared
@@ -51,6 +52,7 @@ public struct SearchResultFeature {
   
   @Dependency(\.swiftDataClient) var swiftDataClient
   @Dependency(\.uuid) var uuid
+  @Dependency(\.analytics) var analytics
   
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -93,6 +95,14 @@ public struct SearchResultFeature {
         state.isFetching = false
         if let totalCount {
           state.totalCount = totalCount
+          // `totalCount`가 실린 응답은 첫 페이지뿐이다 — 무한스크롤(`loadMore`)로 페이지를
+          // 더 받을 때마다 검색이 또 일어난 것처럼 세지 않으려고 여기서만 찍는다.
+          analytics.track(
+            ConversionEvent.searchSubmitted(
+              queryLength: state.query.count,
+              resultCount: totalCount
+            )
+          )
         }
         
         if item.isEmpty || item.count < state.pageSize {
@@ -113,6 +123,7 @@ public struct SearchResultFeature {
         return .none
         
       case .linkCardTapped(let item):
+        analytics.track(ConversionEvent.linkOpened(source: .search))
         return .send(.delegate(.route(.linkDetail(item))))
         
       case .categoryButtonTapped:

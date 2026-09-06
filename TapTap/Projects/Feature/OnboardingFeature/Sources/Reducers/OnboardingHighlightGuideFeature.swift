@@ -9,6 +9,7 @@ import Foundation
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Shared
 
 @Reducer
@@ -97,6 +98,7 @@ public struct OnboardingHighlightGuideFeature {
   }
   
   @Dependency(\.continuousClock) var clock
+  @Dependency(\.analytics) var analytics
   
   enum CancelID {
     case onboarding
@@ -112,6 +114,7 @@ public struct OnboardingHighlightGuideFeature {
         guard state.animationPhase == .onAppear else {
           return .none
         }
+        analytics.track(UsageEvent.onboardingStepViewed(step: 3, name: "highlight_guide"))
         state.animationPhase = .doubleTapGuideEvent
         
         return .run { send in

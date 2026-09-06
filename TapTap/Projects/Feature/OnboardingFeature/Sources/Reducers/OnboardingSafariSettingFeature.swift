@@ -7,10 +7,13 @@
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Shared
 
 @Reducer
 public struct OnboardingSafariSettingFeature {
+  @Dependency(\.analytics) var analytics
+
   @ObservableState
   public struct State: Equatable {
     var isAlert: Bool = false
@@ -38,6 +41,7 @@ public struct OnboardingSafariSettingFeature {
       switch action {
       case .onAppear:
         state.hasOpenedSettings = false
+        analytics.track(UsageEvent.onboardingStepViewed(step: 2, name: "safari_setting"))
         return .none
         
       case .settingsOpened:

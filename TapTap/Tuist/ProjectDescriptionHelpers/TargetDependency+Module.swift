@@ -124,3 +124,11 @@ extension TargetDependency {
     .project(target: Module.Core.rawValue, path: .relativeToRoot("Projects/Core"))
   }
 }
+
+// MARK: - Analytics
+extension TargetDependency {
+  /// GA4(Firebase) · Amplitude로 이벤트를 동시에 보내는 계측 모듈.
+  public static func analyticsKit() -> TargetDependency {
+    .project(target: Module.AnalyticsKit.rawValue, path: .relativeToRoot("Projects/AnalyticsKit"))
+  }
+}

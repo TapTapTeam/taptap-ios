@@ -18,7 +18,11 @@ let project = Project.project(
       resources: .default,
       dependencies: [
         .TCA(),
-        .core()
+        .core(),
+        // 모든 Feature가 이미 .shared()를 물고 있다. 계측은 어느 피처에서든 필요하므로
+        // 여기 한 번만 걸어 피처마다 Project.swift를 고치지 않게 한다.
+        // (익스텐션들은 .core()만 쓰므로 Firebase·Amplitude가 딸려가지 않는다)
+        .analyticsKit()
       ]
     )
   ]

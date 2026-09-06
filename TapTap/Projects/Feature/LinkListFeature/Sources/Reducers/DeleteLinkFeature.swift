@@ -10,12 +10,14 @@ import SwiftData
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
 @Reducer
 public struct DeleteLinkFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
+  @Dependency(\.analytics) var analytics
   
   @ObservableState
   public struct State: Equatable {
@@ -134,7 +136,8 @@ public struct DeleteLinkFeature {
           }
         }
         
-      case .deleteDone:
+      case let .deleteDone(count):
+        analytics.track(ConversionEvent.linkDeleted(count: count))
         return .send(.delegate(.route(.back)))
         
       case .binding, .delegate:
