@@ -182,7 +182,9 @@ TapTap.memo = {
       };
       highlight.memos.push(memoToSave);
     }
-    
+
+    if (TapTap.analytics) TapTap.analytics.trackMemoSaved(Boolean(memoId), memoText);
+
     localStorage.setItem(pageKey, JSON.stringify(highlights));
     TapTap.highlight._updateSharedDom(highlights); // DOM에 데이터 저장
     return memoToSave;
@@ -197,6 +199,7 @@ TapTap.memo = {
           highlight.memos = highlight.memos.filter(m => String(m.id) !== String(memoId));
           localStorage.setItem(pageKey, JSON.stringify(highlights));
           TapTap.highlight._updateSharedDom(highlights); // DOM에 데이터 저장
+          if (TapTap.analytics) TapTap.analytics.trackMemoDeleted();
       }
   },
 

@@ -94,6 +94,7 @@ TapTap.highlight = {
     highlights.push(newHighlight);
     localStorage.setItem(pageKey, JSON.stringify(highlights));
     this._updateSharedDom(highlights); // DOM에 데이터 저장
+    if (TapTap.analytics) TapTap.analytics.trackHighlightCreated(newHighlight);
     window.getSelection().removeAllRanges();
     return highlightId;
   },
@@ -270,9 +271,11 @@ TapTap.highlight = {
   _removeHighlightData: function(id) {
     const pageKey = this._getPageKey();
     let highlights = JSON.parse(localStorage.getItem(pageKey) || '[]');
+    const removed = highlights.length;
     highlights = highlights.filter(h => h.id !== id);
     localStorage.setItem(pageKey, JSON.stringify(highlights));
-    this._updateSharedDom(highlights); 
+    this._updateSharedDom(highlights);
+    if (removed !== highlights.length && TapTap.analytics) TapTap.analytics.trackHighlightDeleted();
   },
   
   restoreHighlights: function() {
@@ -399,6 +402,7 @@ TapTap.highlight = {
           imageURL: this._extractThumbnailImage(),
           highlights: highlights
         }).catch(() => {});
+        if (TapTap.analytics) TapTap.analytics.trackHighlightSynced(highlights.length);
       }, 300);
     }
   },

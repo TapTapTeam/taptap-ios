@@ -17,7 +17,7 @@
   },
   
   "content_scripts": [{
-      "js": [ "bootstrap.js", "gesture.js", "sentence.js", "highlight.js", "tooltip.js", "memo.js", "custom-alert.js" ],
+      "js": [ "bootstrap.js", "analytics.js", "gesture.js", "sentence.js", "highlight.js", "tooltip.js", "memo.js", "custom-alert.js" ],
       "matches": [ "<all_urls>" ]
   }],
 
