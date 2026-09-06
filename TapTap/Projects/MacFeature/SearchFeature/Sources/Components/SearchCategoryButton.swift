@@ -10,13 +10,16 @@ import DesignSystem
 
 public struct SearchCategoryButton: View {
   private let selectedCategory: String
+  private let isExpanded: Bool
   private let action: () -> Void
   
   public init(
     selectedCategory: String = "전체",
+    isExpanded: Bool = false,
     action: @escaping () -> Void
   ) {
     self.selectedCategory = selectedCategory
+    self.isExpanded = isExpanded
     self.action = action
   }
 }
@@ -30,18 +33,19 @@ public extension SearchCategoryButton {
           .foregroundStyle(.caption1)
           .padding(.horizontal, 8)
         
-        Image(icon: "small-chevron-up")
+        Image(icon: isExpanded ? "small-chevron-up" : "small-chevron-down")
           .frame(width: 20, height: 20)
       }
+      .frame(height: 32)
+      .padding(.horizontal, 8)
+      .macHoverBackground(Capsule(), normal: .clear, hovered: .n30)
+      .background(
+        Capsule()
+          .strokeBorder(Color.divider2, lineWidth: 1)
+      )
+      .backgroundStyle(Color.background)
     }
     .buttonStyle(.plain)
-    .frame(height: 32)
-    .padding(.horizontal, 8)
-    .background(
-      Capsule()
-        .strokeBorder(Color.divider2, lineWidth: 1)
-    )
-    .backgroundStyle(Color.background)
   }
 }
 

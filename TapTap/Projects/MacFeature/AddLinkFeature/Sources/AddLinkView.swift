@@ -14,6 +14,7 @@ import DesignSystem
 public struct AddLinkView: View {
   private let categories: [CategoryItem]
   private let totalLinkCount: Int
+  private let backForwardLeadingPadding: CGFloat
   private let onSave: (ArticleItem) -> Void
   private let onShowExistingLink: () -> Void
   private let onAddCategory: () -> Void
@@ -32,6 +33,7 @@ public struct AddLinkView: View {
   public init(
     categories: [CategoryItem] = [],
     totalLinkCount: Int = 0,
+    backForwardLeadingPadding: CGFloat = 20,
     onSave: @escaping (ArticleItem) -> Void = { _ in },
     onShowExistingLink: @escaping () -> Void = {},
     onAddCategory: @escaping () -> Void = {},
@@ -39,6 +41,7 @@ public struct AddLinkView: View {
   ) {
     self.categories = categories
     self.totalLinkCount = totalLinkCount
+    self.backForwardLeadingPadding = backForwardLeadingPadding
     self.onSave = onSave
     self.onShowExistingLink = onShowExistingLink
     self.onAddCategory = onAddCategory
@@ -50,6 +53,7 @@ public struct AddLinkView: View {
       AddLinkMainContentView(
         categories: categories,
         totalLinkCount: totalLinkCount,
+        backForwardLeadingPadding: backForwardLeadingPadding,
         isSaving: isSaving,
         canSubmit: canSubmit,
         onAdd: addButtonTapped,
