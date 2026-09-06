@@ -270,10 +270,10 @@ struct RootView: View {
       .onChange(of: articles) { _, newValue in
         searchViewModel.updateArticles(newValue)
       }
-      .onChange(of: searchViewModel.searchResults.map(\.id)) { _, resultIDs in
+      .onChange(of: searchViewModel.filteredResults.map(\.id)) { _, resultIDs in
         guard searchViewModel.hasSubmittedSearch,
               resultIDs.count == 1,
-              let onlyResult = searchViewModel.searchResults.first
+              let onlyResult = searchViewModel.filteredResults.first
         else { return }
 
         openArticleDetail(onlyResult)

@@ -4,6 +4,8 @@
 //
 //  Created by 여성일 on 4/6/26.
 //
+#if os(macOS)
+
 import SwiftUI
 
 public struct MacSearchBarButton: View {
@@ -41,3 +43,5 @@ public struct MacSearchBarButton: View {
     .buttonStyle(.plain)
   }
 }
+
+#endif
