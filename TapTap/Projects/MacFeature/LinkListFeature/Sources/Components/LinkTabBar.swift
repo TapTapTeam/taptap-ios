@@ -76,7 +76,8 @@ private extension LinkTabBar {
         .aspectRatio(contentMode: .fit)
         .foregroundStyle(.iconGray)
         .frame(width: width, height: 14)
-        .contentShape(Rectangle())
+        .frame(width: width, height: 28)
+        .macHoverBackground(cornerRadius: 6, normal: .clear, hovered: .n30)
     }
     .buttonStyle(.plain)
   }
@@ -113,6 +114,8 @@ private extension LinkTabBar {
             .aspectRatio(contentMode: .fit)
             .foregroundStyle(.iconGray)
             .frame(width: 14, height: 14)
+            .frame(width: 20, height: 20)
+            .macHoverBackground(cornerRadius: 4, normal: .clear, hovered: .n30)
         }
         .buttonStyle(.plain)
       }

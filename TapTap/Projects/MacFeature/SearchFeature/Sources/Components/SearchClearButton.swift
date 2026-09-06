@@ -26,7 +26,7 @@ public extension SearchClearButton {
         .frame(width: 17.97, height: 17.97)
         .foregroundStyle(.iconDisabled)
         .frame(width: 20, height: 20)
-        .contentShape(Rectangle())
+        .macHoverBackground(Circle(), normal: .clear, hovered: .n30)
     }
     .buttonStyle(.plain)
   }

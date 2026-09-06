@@ -68,8 +68,7 @@ private extension LinkListHeaderView {
           .foregroundStyle(.caption1)
           .padding(.horizontal, 10)
           .frame(height: 28)
-          .background(Color.n30)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .macHoverBackground(cornerRadius: 8, normal: .n30, hovered: .n40)
       }
       .buttonStyle(.plain)
       .disabled(totalCount == 0)

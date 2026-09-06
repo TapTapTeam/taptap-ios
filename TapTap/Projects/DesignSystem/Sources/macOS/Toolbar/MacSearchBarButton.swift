@@ -36,8 +36,7 @@ public struct MacSearchBarButton: View {
       .padding(.horizontal, 10)
       .frame(maxWidth: .infinity)
       .frame(height: 40)
-      .background(.n30)
-      .clipShape(RoundedRectangle(cornerRadius: 12))
+      .macHoverBackground(cornerRadius: 12, normal: .n30, hovered: .n40)
     }
     .buttonStyle(.plain)
   }

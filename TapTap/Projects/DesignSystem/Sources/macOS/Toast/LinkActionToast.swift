@@ -74,6 +74,7 @@ public struct LinkActionToast: View {
             .foregroundStyle(tintColor)
             .padding(.horizontal, 12)
             .frame(height: 40)
+            .macHoverBackground(cornerRadius: 10, normal: .clear, hovered: .n30)
         }
         .buttonStyle(.plain)
       }
@@ -87,6 +88,7 @@ public struct LinkActionToast: View {
           .foregroundStyle(.text1)
           .frame(width: 24, height: 24)
           .frame(width: 44, height: 44)
+          .macHoverBackground(cornerRadius: 10, normal: .clear, hovered: .n30)
       }
       .buttonStyle(.plain)
       .padding(.leading, 12)

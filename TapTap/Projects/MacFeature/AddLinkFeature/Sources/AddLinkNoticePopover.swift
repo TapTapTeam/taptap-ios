@@ -77,7 +77,7 @@ public struct AddLinkNoticePopover: View {
           .frame(width: 20, height: 20)
           .foregroundStyle(Color.icon)
           .frame(width: 40, height: 40)
-          .contentShape(Rectangle())
+          .macHoverBackground(cornerRadius: 8, style: .continuous, normal: .clear, hovered: .n30)
       }
       .buttonStyle(.plain)
       .accessibilityLabel("닫기")
@@ -151,8 +151,9 @@ public struct AddLinkNoticePopover: View {
         Text("다시 보지 않기")
           .font(.system(size: 12, weight: .medium))
           .foregroundStyle(Color.caption1)
+          .padding(.trailing, 10)
       }
-      .contentShape(Rectangle())
+      .macHoverBackground(cornerRadius: 8, style: .continuous, normal: .clear, hovered: .n20)
     }
     .buttonStyle(.plain)
     .accessibilityLabel("다시 보지 않기")
