@@ -24,9 +24,7 @@ struct LinkDetailToolbar: View {
       
       Spacer()
       
-      Button {
-        onOpenOriginalLink()
-      } label: {
+      LinkDetailToolbarButton(horizontalPadding: 14, action: onOpenOriginalLink) {
         Label {
           Text("링크 원문보기")
             .font(.B1_M)
@@ -37,34 +35,17 @@ struct LinkDetailToolbar: View {
             .scaledToFit()
             .frame(width: 16, height: 16)
         }
-        .padding(.horizontal, 14)
-        .frame(height: 40)
-        .background(Color.n0)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
       }
-      .buttonStyle(.plain)
       
-      Button {
-        onOpenMemo()
-      } label: {
+      LinkDetailToolbarButton(width: 52, action: onOpenMemo) {
         DesignSystemAsset.macSquareEdit.swiftUIImage
           .foregroundStyle(.textw)
-          .frame(width: 52, height: 40)
-          .background(Color.n0)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
       }
-      .buttonStyle(.plain)
       
-      Button {
-        onDelete()
-      } label: {
+      LinkDetailToolbarButton(width: 52, action: onDelete) {
         DesignSystemAsset.macTrashBold.swiftUIImage
           .foregroundStyle(.danger)
-          .frame(width: 52, height: 40)
-          .background(Color.n0)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
       }
-      .buttonStyle(.plain)
     }
     .padding(.horizontal, 12)
     .frame(height: 60)
@@ -94,5 +75,29 @@ private extension LinkDetailToolbar {
           .lineLimit(1)
       }
     }
+  }
+}
+
+
+private struct LinkDetailToolbarButton<Content: View>: View {
+  var horizontalPadding: CGFloat = 0
+  var width: CGFloat?
+  let action: () -> Void
+  @ViewBuilder let content: () -> Content
+
+  @State private var isHovered = false
+
+  var body: some View {
+    Button(action: action) {
+      content()
+        .padding(.horizontal, horizontalPadding)
+        .frame(width: width, height: 40)
+        .background(isHovered ? Color.n40 : Color.n0)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .contentShape(RoundedRectangle(cornerRadius: 12))
+    }
+    .buttonStyle(.plain)
+    .onHover { isHovered = $0 }
+    .animation(.easeOut(duration: 0.12), value: isHovered)
   }
 }

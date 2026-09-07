@@ -22,7 +22,6 @@ final class AnalyticsServiceTests: XCTestCase {
   }
 
   func test_프로바이더가_없어도_아무_일도_일어나지_않는다() {
-    // 키를 받기 전 상태 — 앱은 그대로 굴러가야 한다.
     let service = AnalyticsService(providers: [])
 
     service.start()

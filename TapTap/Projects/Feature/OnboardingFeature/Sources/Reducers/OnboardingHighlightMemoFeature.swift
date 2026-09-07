@@ -19,6 +19,7 @@ public struct OnboardingHighlightMemoFeature {
   }
   
   public enum Action: Equatable {
+    case onAppear
     case backButtonTapped
     case nextButtonTapped
     case skipButtonTapped
@@ -32,11 +33,14 @@ public struct OnboardingHighlightMemoFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.onboardingStepViewed(step: 4, name: "highlight_memo"))
+        return .none
+
       case .backButtonTapped:
         return .send(.delegate(.route(.back)))
         
       case .nextButtonTapped:
-        analytics.track(UsageEvent.onboardingStepViewed(step: 4, name: "highlight_memo"))
         return .send(.delegate(.route(.onboardingHighlightGuide)))
         
       case .skipButtonTapped:

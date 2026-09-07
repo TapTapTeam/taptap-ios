@@ -36,6 +36,9 @@ extension SettingView: View {
       }
     }
     .toolbar(.hidden)
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
   
   private var navigationBar: some View {

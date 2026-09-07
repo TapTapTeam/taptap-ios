@@ -8,11 +8,6 @@
 import Foundation
 import os
 
-/// 콘솔로만 찍는 프로바이더.
-///
-/// 두 가지 용도가 있다.
-/// 1. 키가 아직 없어도 "무엇이 언제 찍히는지"를 눈으로 확인할 수 있다.
-/// 2. GA4 DebugView는 반영이 늦어서, 심는 시점이 맞는지 보려면 로컬 로그가 더 빠르다.
 public final class ConsoleAnalyticsProvider: AnalyticsProviding {
   public let identifier = "Console"
 

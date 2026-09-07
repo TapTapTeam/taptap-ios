@@ -82,6 +82,7 @@ public struct EditCategoryIconNameFeature {
         state.textFieldStyle = isDuplicate ? .errorCaption : .default
         
         if !isDuplicate {
+          analytics.track(UsageEvent.categoryEdited(field: "name"))
           return .run { [id = state.category?.id, name = state.categoryName, icon = state.selectedIcon] send in
             guard let id, let icon else { return }
             await MainActor.run {

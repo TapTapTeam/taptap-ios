@@ -26,6 +26,7 @@ public struct OriginalArticleFeature {
   }
   
   public enum Action: Equatable {
+    case onAppear
     case editButtonTapped
     case backButtonTapped
     
@@ -38,6 +39,10 @@ public struct OriginalArticleFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.original))
+        return .none
+
       case .editButtonTapped:
         analytics.track(UsageEvent.originalEditOpened)
         return .send(.delegate(.route(.originalEdit(state.articleItem))))

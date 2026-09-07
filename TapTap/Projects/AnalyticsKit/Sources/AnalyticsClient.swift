@@ -9,16 +9,6 @@ import Foundation
 
 import ComposableArchitecture
 
-/// 리듀서에서 쓰는 계측 창구.
-///
-/// ```swift
-/// @Dependency(\.analytics) var analytics
-/// ...
-/// case .saveLinkResponse(let article):
-///   analytics.track(ConversionEvent.linkSaved(source: .app, hasCategory: ...))
-/// ```
-///
-/// 뷰가 아니라 리듀서에서 부르는 게 핵심이다. 뷰에 심으면 UI를 바꿀 때마다 전환 지표가 끊긴다.
 public struct AnalyticsClient: Sendable {
   public var start: @Sendable () -> Void
   public var trackEvent: @Sendable (AnalyticsEvent) -> Void
@@ -42,7 +32,6 @@ public struct AnalyticsClient: Sendable {
 }
 
 public extension AnalyticsClient {
-  /// 호출부는 항상 이 쪽을 쓴다 — 이벤트 이름 문자열이 호출부로 새 나가지 않게.
   func track(_ event: some AnalyticsEventConvertible) {
     trackEvent(event.event)
   }
@@ -71,11 +60,6 @@ public extension AnalyticsClient {
 extension AnalyticsClient: DependencyKey {
   public static let liveValue = AnalyticsClient.live(service: .shared)
 
-  /// 테스트에서는 조용히 버린다.
-  ///
-  /// TCA 관례상 `unimplemented`를 쓰지만, 계측은 부수효과라 그렇게 두면
-  /// 계측을 심을 때마다 상관없는 기존 테스트가 깨진다. 계측 자체를 검증하고 싶으면
-  /// 그 테스트에서 `$0.analytics`를 직접 갈아끼운다.
   public static let testValue = AnalyticsClient.noop
 
   public static let previewValue = AnalyticsClient.live(

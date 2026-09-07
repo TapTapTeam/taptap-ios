@@ -74,7 +74,6 @@ public struct AddCategoryFeature {
           )
           return .run { [analytics] send in
             try swiftDataClient.category.addCategory(newCategory)
-            // 저장이 끝난 뒤 다시 세어야 방금 만든 것까지 포함된다. 실패하면 -1 → "unknown" 구간.
             let totalCount = (try? swiftDataClient.category.fetchCategories().count) ?? -1
             analytics.track(ConversionEvent.categoryCreated(totalCount: totalCount))
             analytics.setUserProperty(.categoryCount(totalCount))

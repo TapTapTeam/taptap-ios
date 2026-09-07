@@ -67,7 +67,7 @@ struct AddCategoryPopover: View {
           .frame(width: 20, height: 20)
           .foregroundStyle(Color.icon)
           .frame(width: 40, height: 40)
-          .contentShape(Rectangle())
+          .macHoverBackground(cornerRadius: 8, style: .continuous, normal: .clear, hovered: .n30)
       }
       .buttonStyle(.plain)
       .accessibilityLabel("닫기")
@@ -185,8 +185,12 @@ struct AddCategoryPopover: View {
           .foregroundStyle(canSave ? Color.textw : Color.caption2)
           .padding(.horizontal, 22)
           .frame(height: 48)
-          .background(canSave ? Color.bl6 : Color.n40)
-          .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+          .macHoverBackground(
+            cornerRadius: 12,
+            style: .continuous,
+            normal: canSave ? Color.bl6 : Color.n40,
+            hovered: canSave ? Color.bl7 : Color.n40
+          )
       }
       .buttonStyle(.plain)
       .disabled(!canSave)
@@ -295,7 +299,7 @@ private struct AddCategoryIconButton: View {
     }
     
     if isHovered {
-      return Color.statePressedDim
+      return Color.bl1
     }
     
     return Color.n0

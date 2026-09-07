@@ -13,6 +13,7 @@ import DesignSystem
 struct AddLinkMainContentView: View {
   let categories: [CategoryItem]
   let totalLinkCount: Int
+  let backForwardLeadingPadding: CGFloat
   let isSaving: Bool
   let canSubmit: Bool
   let onAdd: () -> Void
@@ -26,6 +27,7 @@ struct AddLinkMainContentView: View {
   var body: some View {
     VStack(spacing: 20) {
       AddLinkTopBar(
+        backForwardLeadingPadding: backForwardLeadingPadding,
         isSaving: isSaving,
         canSubmit: canSubmit,
         onAdd: onAdd,
@@ -52,6 +54,7 @@ struct AddLinkMainContentView: View {
 }
 
 private struct AddLinkTopBar: View {
+  let backForwardLeadingPadding: CGFloat
   let isSaving: Bool
   let canSubmit: Bool
   let onAdd: () -> Void
@@ -78,16 +81,22 @@ private struct AddLinkTopBar: View {
             .foregroundStyle(canSubmit ? Color.bl6 : Color.caption2)
             .padding(.horizontal, 14)
             .padding(.vertical, 9)
-            .background(canSubmit ? Color.bl1 : Color.n40)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .macHoverBackground(
+              cornerRadius: 12,
+              style: .continuous,
+              normal: canSubmit ? Color.bl1 : Color.n40,
+              hovered: canSubmit ? Color.bl6.opacity(0.22) : Color.n40
+            )
         }
         .buttonStyle(.plain)
         .disabled(!canSubmit)
       }
-      .padding(.leading, 20)
+      .padding(.leading, backForwardLeadingPadding)
       .padding(.trailing, 32)
     }
+    .padding(.top, 20)
     .padding(.bottom, 20)
+    .macFullScreenTopPadding()
     .frame(maxWidth: .infinity)
     .background(Color.n0)
     .overlay(alignment: .bottom) {
@@ -222,6 +231,8 @@ private struct AddLinkCategorySection: View {
 private struct AddLinkCategoryHeader: View {
   let onAddCategory: () -> Void
   
+  @State private var isAddCategoryHovered: Bool = false
+  
   var body: some View {
     HStack {
       Text("카테고리 선택")
@@ -246,10 +257,13 @@ private struct AddLinkCategoryHeader: View {
         .padding(.leading, 10)
         .padding(.trailing, 16)
         .frame(height: 34)
-        .background(Color.bl1)
+        .background(isAddCategoryHovered ? Color.bl6.opacity(0.22) : Color.bl1)
         .clipShape(Capsule())
+        .contentShape(Capsule())
       }
       .buttonStyle(.plain)
+      .onHover { isAddCategoryHovered = $0 }
+      .animation(.easeOut(duration: 0.12), value: isAddCategoryHovered)
     }
     .padding(.leading, 4)
   }

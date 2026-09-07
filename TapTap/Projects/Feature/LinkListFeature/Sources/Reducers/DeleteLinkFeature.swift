@@ -86,7 +86,6 @@ public struct DeleteLinkFeature {
         }
         return .none
         
-        /// 전체 선택 or 해제
       case .binding(\.isSelectAll):
         if state.isSelectAll {
           state.selectedLinks = Set(state.allLinks.map(\.id))
@@ -95,7 +94,6 @@ public struct DeleteLinkFeature {
         }
         return .none
         
-        /// 개별 토글 시 전체선택 여부 갱신
       case let .toggleSelect(link):
         if state.selectedLinks.contains(link.id) {
           state.selectedLinks.remove(link.id)

@@ -31,6 +31,9 @@ extension OpenSourceListView {
       }
     }
     .toolbar(.hidden)
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
   
   private var naivgationBar: some View {

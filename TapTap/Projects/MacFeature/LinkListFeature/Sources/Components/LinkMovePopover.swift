@@ -70,10 +70,10 @@ private extension LinkMovePopover {
           .aspectRatio(contentMode: .fit)
           .foregroundStyle(.iconGray)
           .frame(width: 20, height: 20)
+          .frame(width: 40, height: 40)
+          .macHoverBackground(cornerRadius: 8, normal: .clear, hovered: .n30)
       }
       .buttonStyle(.plain)
-      .frame(width: 40, height: 40)
-      .contentShape(Rectangle())
     }
     .padding(.leading, 22)
     .padding(.trailing, 12)
@@ -104,9 +104,6 @@ private extension LinkMovePopover {
       }
     }
     .frame(maxHeight: .infinity)
-    .overlay(alignment: .top) {
-      verticalGradientFade(startPoint: .top, endPoint: .bottom)
-    }
     .overlay(alignment: .bottom) {
       verticalGradientFade(startPoint: .bottom, endPoint: .top)
     }
@@ -124,8 +121,7 @@ private extension LinkMovePopover {
           .font(.B1_SB)
           .foregroundStyle(.textw)
           .frame(width: 68, height: 46)
-          .background(Color.bl6)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+          .macHoverBackground(cornerRadius: 12, normal: .bl6, hovered: .bl7)
       }
       .buttonStyle(.plain)
     }

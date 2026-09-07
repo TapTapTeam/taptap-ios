@@ -154,12 +154,15 @@ struct SeeMoreButton: View {
   var isSelectedRow: Bool = false
 
   @Environment(\.colorScheme) private var colorScheme
+  @State private var isHovered = false
 
   private static let selectedBackground = Color(red: 218 / 255, green: 215 / 255, blue: 254 / 255)
+  private static let selectedHoverBackground = Color(red: 196 / 255, green: 191 / 255, blue: 253 / 255)
 
   private var backgroundColor: Color {
-    if colorScheme == .dark { return Color.bgDimSelect }
-    return isSelectedRow ? Self.selectedBackground : Color.n30
+    if colorScheme == .dark { return isHovered ? Color.n50 : Color.bgDimSelect }
+    if isSelectedRow { return isHovered ? Self.selectedHoverBackground : Self.selectedBackground }
+    return isHovered ? Color.n40 : Color.n30
   }
 
   var body: some View {
@@ -174,6 +177,9 @@ struct SeeMoreButton: View {
         .frame(width: 16, height: 16)
     }
     .frame(width: 24, height: 24)
+    .contentShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+    .onHover { isHovered = $0 }
+    .animation(SidebarHover.animation, value: isHovered)
     .accessibilityLabel("더보기")
   }
 }

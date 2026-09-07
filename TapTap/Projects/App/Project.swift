@@ -22,12 +22,8 @@ let appTarget = Target.target(
       "CFBundleShortVersionString": "$(MARKETING_VERSION)",
       "ITSAppUsesNonExemptEncryption": false,
 
-      // 분석 키는 저장소에 넣지 않는다 — gitignore된 Tuist/Config/Project.xcconfig에서 주입한다.
-      // 값이 비면 AnalyticsKit이 Amplitude를 건너뛰고 앱은 그대로 돈다.
       "AMPLITUDE_API_KEY": "$(AMPLITUDE_API_KEY)",
 
-      // Firebase의 화면 자동수집은 UIViewController 기준이라 SwiftUI 앱에선 전부
-      // UIHostingController로 뭉개진다 — 끄고 AnalyticsKit이 직접 screen_view를 심는다.
       "FirebaseAutomaticScreenReportingEnabled": false,
 
       "NSAppTransportSecurity": [

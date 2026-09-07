@@ -23,6 +23,7 @@ public struct SettingFeature {
   }
   
   public enum Action: Equatable {
+    case onAppear
     case backButtonTapped
     case safariExtensionTipTapped
     case highlightTipTapped
@@ -42,6 +43,10 @@ public struct SettingFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.setting))
+        return .none
+        
       case .serviceOpenLinkTapped:
         analytics.track(UsageEvent.settingRowTapped(row: "service_open_link"))
         return .none

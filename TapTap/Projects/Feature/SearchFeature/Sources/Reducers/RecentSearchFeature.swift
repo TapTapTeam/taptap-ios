@@ -22,10 +22,10 @@ public struct RecentSearchFeature {
   
   public enum Action: Equatable {
     case onAppear
-    case loadRecentSearches([String]) // 최근 검색어 불러오기
-    case add(String) // 최근 검색어 저장하기
-    case del(id: SearchTerm.ID) // 최근 검색어 삭제하기
-    case clear // 모든 최근 검색어 삭제하기
+    case loadRecentSearches([String])
+    case add(String)
+    case del(id: SearchTerm.ID)
+    case clear
     case chipTapped(String)
     
     case delegate(Delegate)

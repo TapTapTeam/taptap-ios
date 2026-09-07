@@ -74,21 +74,27 @@ public struct MacAlertDialog: View {
         HStack(spacing: 10) {
           Spacer()
 
-          Button(cancelTitle, action: onCancel)
-            .font(.H4_SB)
-            .foregroundStyle(.text1)
-            .frame(width: 72, height: 48)
-            .background(.n30)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .buttonStyle(.plain)
+          Button(action: onCancel) {
+            Text(cancelTitle)
+              .font(.H4_SB)
+              .foregroundStyle(.text1)
+              .frame(width: 72, height: 48)
+              .macHoverBackground(cornerRadius: 12, normal: .n30, hovered: .n40)
+          }
+          .buttonStyle(.plain)
 
-          Button(destructiveTitle, action: onDestructive)
-            .font(.H4_SB)
-            .foregroundStyle(.textw)
-            .frame(width: 72, height: 48)
-            .background(.danger)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .buttonStyle(.plain)
+          Button(action: onDestructive) {
+            Text(destructiveTitle)
+              .font(.H4_SB)
+              .foregroundStyle(.textw)
+              .frame(width: 72, height: 48)
+              .macHoverBackground(
+                cornerRadius: 12,
+                normal: .danger,
+                hovered: .danger.mix(with: .black, by: 0.12)
+              )
+          }
+          .buttonStyle(.plain)
         }
       }
       .padding(.horizontal, 20)

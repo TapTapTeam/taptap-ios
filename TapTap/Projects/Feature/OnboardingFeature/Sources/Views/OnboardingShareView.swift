@@ -79,5 +79,8 @@ extension OnboardingShareView: View {
     }
     .background(Color.background)
     .toolbar(.hidden)
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
 }

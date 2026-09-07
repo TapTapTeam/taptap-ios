@@ -46,7 +46,6 @@ public struct LinkDetailFeature {
   public enum Action: Equatable {
     case onAppear
     
-    /// 제목
     case editButtonTapped
     case titleChanged(String)
     case titleFocusChanged(Bool)
@@ -54,23 +53,19 @@ public struct LinkDetailFeature {
     case saveSucceeded
     case saveFailed(String)
     
-    /// 메모
     case memoChanged(String)
     case memoFocusChanged(Bool)
     case saveMemoIfNeeded
     case saveMemoSucceeded
     case saveMemoFailed(String)
     
-    /// 삭제
     case deleteTapped
     case deleteSucceeded
     case deleteFailed(String)
     
-    /// 원문보기
     case originalArticleTapped
     case refreshed(ArticleItem?)
     
-    /// 토스트
     case editCompletedNotification
     case showToast
     case dismissToast
@@ -112,7 +107,6 @@ public struct LinkDetailFeature {
             .cancellable(id: CancelID.editNotification)
         )
         
-        /// 제목 편집
       case .editButtonTapped:
         state.isEditingTitle = true
         state.editedTitle = state.link.title
@@ -155,7 +149,6 @@ public struct LinkDetailFeature {
         print("제목 수정 실패:", error)
         return .none
         
-        /// 메모
       case let .memoChanged(text):
         state.editedMemo = text
         return .none
@@ -190,7 +183,6 @@ public struct LinkDetailFeature {
         print("save memo failed:", error)
         return .none
         
-        /// 삭제
       case .deleteTapped:
         let id = state.link.id
         return .run { send in
@@ -214,7 +206,6 @@ public struct LinkDetailFeature {
         print("링크 삭제 실패:", error)
         return .none
         
-        /// 원문보기
       case .originalArticleTapped:
         return .send(.delegate(.route(.originalArticle(state.link))))
         

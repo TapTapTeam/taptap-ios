@@ -47,8 +47,8 @@ public struct HomeFeature {
     case clipboardResponded(String?)
     case dismissAlertBanner
     case alertBannerTapped
-    case articleList(ArticleListFeature.Action) //TODO: 정말 필요한지 확인이 필요함
-    case categoryList(CategoryListFeature.Action) //TODO: 정말 필요한지 확인이 필요함
+    case articleList(ArticleListFeature.Action)
+    case categoryList(CategoryListFeature.Action)
     case floatingButtonTapped
     case fetchArticles
     case articlesResponse([ArticleItem])

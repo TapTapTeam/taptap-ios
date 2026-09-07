@@ -184,7 +184,6 @@ private extension ShareViewController {
                 print(error.localizedDescription)
               }
             } else {
-              // 이전 버전의 highlights 키를 처리하는 코드도 유지합니다.
               if let highlights = results["highlights"] as? [[String: Any]] {
                 self.draftHighlights = highlights
               }

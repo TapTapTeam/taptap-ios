@@ -95,7 +95,6 @@ public struct MoveLinkFeature {
         }
         return .none
         
-        /// 전체 선택 or 해제
       case .binding(\.isSelectAll):
         if state.isSelectAll {
           state.selectedLinks = Set(state.allLinks.map(\.id))
@@ -104,7 +103,6 @@ public struct MoveLinkFeature {
         }
         return .none
         
-        /// 개별 토글 시 전체선택 여부 갱신
       case let .toggleSelect(link):
         if state.selectedLinks.contains(link.id) {
           state.selectedLinks.remove(link.id)
@@ -117,7 +115,6 @@ public struct MoveLinkFeature {
       case .backButtonTapped:
         return .send(.delegate(.route(.back)))
         
-        /// 이동 버튼
       case .confirmMoveTapped:
         let selected = state.allLinks.filter { state.selectedLinks.contains($0.id) }
         guard !selected.isEmpty else { return .none }
@@ -127,7 +124,6 @@ public struct MoveLinkFeature {
           return .send(.openCategorySheet)
         }
         
-        /// 카테고리 로드
       case .fetchCategories:
         return .run { send in
           let items = try swiftDataClient.category.fetchCategories()
@@ -138,7 +134,6 @@ public struct MoveLinkFeature {
         state.categories = items
         return .send(.openCategorySheet)
         
-        /// 시트 오픈
       case .openCategorySheet:
         var props: [CategoryProps] = [CategoryProps(id: uuid(), title: "전체")]
         props.append(contentsOf: state.categories.map { CategoryProps(id: uuid(), title: $0.categoryName) })
@@ -148,7 +143,6 @@ public struct MoveLinkFeature {
         )
         return .none
         
-        /// 시트에서 "선택하기"
       case .selectBottomSheet(.presented(.delegate(.categorySelected(let name)))):
         guard let name else {
           state.selectBottomSheet = nil
@@ -189,7 +183,6 @@ public struct MoveLinkFeature {
           await send(.delegate(.route(.back)))
         }
         
-        /// 시트에서 닫기
       case .selectBottomSheet(.presented(.delegate(.dismiss))):
         state.selectBottomSheet = nil
         return .none

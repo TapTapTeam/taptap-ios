@@ -22,6 +22,7 @@ public struct OpenSourceListFeature {
   }
   
   public enum Action: Equatable {
+    case onAppear
     case backButtonTapped
     case libraryTapped(String)
     
@@ -34,6 +35,10 @@ public struct OpenSourceListFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.settingOpenSource))
+        return .none
+
       case .backButtonTapped:
         return .send(.delegate(.route(.back)))
         

@@ -19,6 +19,7 @@ public struct OnboardingShareFeature {
   }
   
   public enum Action: Equatable {
+    case onAppear
     case backButtonTapped
     case nextButtonTapped
     case skipButtonTapped
@@ -32,11 +33,14 @@ public struct OnboardingShareFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.onboardingStepViewed(step: 5, name: "share"))
+        return .none
+
       case .backButtonTapped:
         return .send(.delegate(.route(.back)))
         
       case .nextButtonTapped:
-        analytics.track(UsageEvent.onboardingStepViewed(step: 5, name: "share"))
         return .send(.delegate(.route(.onboardingShareGuide)))
         
       case .skipButtonTapped:

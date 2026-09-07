@@ -33,6 +33,7 @@ public struct SummaryFeature {
   }
   
   public enum Action: Equatable, BindableAction {
+    case onAppear
     case commentLongpress(Comment)
     case commentTextFieldChanged(String)
     case saveCommentButtonTapped
@@ -51,6 +52,10 @@ public struct SummaryFeature {
     
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.summaryViewed)
+        return .none
+
       case .commentLongpress(let comment):
         state.hightlightEditSheet = .init(context: .comment(comment))
         return .none

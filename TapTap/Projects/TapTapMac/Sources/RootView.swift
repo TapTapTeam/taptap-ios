@@ -25,6 +25,7 @@ struct RootView: View {
   @State private var selectedDetail: DetailDestination = .linkList
   @State private var isSaveSuccessToastPresented: Bool = false
   @State private var saveSuccessCategoryName: String = "전체"
+  @State private var saveSuccessToastID: UUID = UUID()
   @State private var isAddCategoryPopoverPresented: Bool = false
   @State private var newCategoryName: String = ""
   @State private var selectedNewCategoryIconNumber: Int = 1
@@ -136,6 +137,14 @@ struct RootView: View {
             .padding(.horizontal, 20)
             .padding(.top, 60)
             .zIndex(20)
+            .transition(.opacity)
+            .task(id: saveSuccessToastID) {
+              try? await Task.sleep(nanoseconds: 1_500_000_000)
+              guard !Task.isCancelled else { return }
+              withAnimation(.easeInOut(duration: 0.2)) {
+                isSaveSuccessToastPresented = false
+              }
+            }
           }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -149,6 +158,7 @@ struct RootView: View {
           .buttonStyle(.plain)
           .padding(.top, 20)
           .padding(.leading, 20)
+          .macFullScreenTopPadding()
         }
       }
       .overlay {
@@ -260,6 +270,14 @@ struct RootView: View {
       .onChange(of: articles) { _, newValue in
         searchViewModel.updateArticles(newValue)
       }
+      .onChange(of: searchViewModel.filteredResults.map(\.id)) { _, resultIDs in
+        guard searchViewModel.hasSubmittedSearch,
+              resultIDs.count == 1,
+              let onlyResult = searchViewModel.filteredResults.first
+        else { return }
+
+        openArticleDetail(onlyResult)
+      }
       .onChange(of: newCategoryName) { _, _ in
         isDuplicateCategoryName = false
       }
@@ -288,7 +306,8 @@ struct RootView: View {
               maxAvailableHeight: currentHeight - searchPanelVerticalPadding * 2,
               onClose: {
                 isSearchOverlayPresented = false
-              }
+              },
+              onArticleTap: openArticleDetail
             )
             .padding(.horizontal, currentWidth <= 720 ? 20 : 0)
             .padding(.top, searchPanelVerticalPadding)
@@ -343,10 +362,7 @@ struct RootView: View {
   }
   
   private var searchContent: some View {
-    SearchView(viewModel: searchViewModel, onArticleTap: { item in
-      item.lastViewedDate = Date()
-      try? modelContext.save()
-    })
+    SearchView(viewModel: searchViewModel, onArticleTap: openArticleDetail)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
   }
   
@@ -444,6 +460,7 @@ struct RootView: View {
         AddLinkView(
           categories: allCategories,
           totalLinkCount: articles.count,
+          backForwardLeadingPadding: isSidebarCollapsed ? 72 : 20,
           onSave: showSavedLink,
           onShowExistingLink: showAllLinks,
           onAddCategory: showAddCategoryPopover,
@@ -542,6 +559,18 @@ struct RootView: View {
     isAddLinkNoticePresented = !isAddLinkNoticeHidden
   }
 
+  private func openArticleDetail(_ article: ArticleItem) {
+    article.lastViewedDate = Date()
+    try? modelContext.save()
+
+    selectedDetail = .linkList
+    isSearchOverlayPresented = false
+    isSaveSuccessToastPresented = false
+    searchViewModel.clearSearch()
+    linkListViewModel.endEditing()
+    linkListViewModel.openArticle(article)
+  }
+
   private func showAllLinks() {
     selectedDetail = .linkList
     isSaveSuccessToastPresented = false
@@ -559,6 +588,7 @@ struct RootView: View {
     linkListViewModel.selectContext(context)
 
     saveSuccessCategoryName = article.category?.categoryName ?? "전체"
+    saveSuccessToastID = UUID()
     isSaveSuccessToastPresented = true
   }
 }
@@ -587,7 +617,7 @@ private struct SaveSuccessToast: View {
       .padding(.leading, 8)
       .padding(.vertical, 15)
       
-      ToastCloseButtonWithoutHover {
+      SaveSuccessToastCloseButton {
         onClose()
       }
     }
@@ -603,7 +633,7 @@ private struct SaveSuccessToast: View {
   }
 }
 
-private struct ToastCloseButtonWithoutHover: View {
+private struct SaveSuccessToastCloseButton: View {
   let onTap: () -> Void
   
   var body: some View {
@@ -613,7 +643,7 @@ private struct ToastCloseButtonWithoutHover: View {
         .frame(width: 24, height: 24)
         .foregroundStyle(Color.icon)
         .frame(width: 40, height: 40)
-        .contentShape(RoundedRectangle(cornerRadius: 8))
+        .macHoverBackground(cornerRadius: 8, style: .continuous, normal: .clear, hovered: .n0)
     }
     .buttonStyle(.plain)
   }

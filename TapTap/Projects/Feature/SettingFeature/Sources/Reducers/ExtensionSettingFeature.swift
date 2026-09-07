@@ -21,6 +21,7 @@ public struct ExtensionSettingFeature {
   }
   
   public enum Action: Equatable {
+    case onAppear
     case settingButtonTapped
     case backButtonTapped
     case naviPush
@@ -34,6 +35,10 @@ public struct ExtensionSettingFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.settingExtension))
+        return .none
+
       case .backButtonTapped:
         return .send(.delegate(.route(.back)))
         

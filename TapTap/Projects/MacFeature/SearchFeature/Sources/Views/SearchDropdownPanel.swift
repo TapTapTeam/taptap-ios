@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+
+import Core
 import DesignSystem
 
 public struct SearchDropdownPanel: View {
   @ObservedObject private var viewModel: SearchViewModel
   @FocusState private var isFocused: Bool
   private let onClose: () -> Void
+  private let onArticleTap: (ArticleItem) -> Void
 
   private let maxAvailableHeight: CGFloat
 
@@ -24,11 +27,13 @@ public struct SearchDropdownPanel: View {
   public init(
     viewModel: SearchViewModel,
     maxAvailableHeight: CGFloat,
-    onClose: @escaping () -> Void
+    onClose: @escaping () -> Void,
+    onArticleTap: @escaping (ArticleItem) -> Void = { _ in }
   ) {
     self.viewModel = viewModel
     self.maxAvailableHeight = maxAvailableHeight
     self.onClose = onClose
+    self.onArticleTap = onArticleTap
   }
 }
 
@@ -97,7 +102,10 @@ public extension SearchDropdownPanel {
           SearchRecentLinksView(
             items: viewModel.recentLinks,
             showDivider: false,
-            onTap: { _ in onClose() }
+            onTap: { item in
+              onArticleTap(item)
+              onClose()
+            }
           )
           .frame(maxWidth: .infinity)
           .padding(.bottom, 20)
@@ -121,7 +129,10 @@ public extension SearchDropdownPanel {
           if !viewModel.recentLinks.isEmpty {
             SearchRecentLinksView(
               items: viewModel.recentLinks,
-              onTap: { _ in onClose() }
+              onTap: { item in
+                onArticleTap(item)
+                onClose()
+              }
             )
           }
         }
@@ -149,6 +160,7 @@ public extension SearchDropdownPanel {
     SearchRecentLinksView(
       items: viewModel.recentLinks,
       onTap: { item in
+        onArticleTap(item)
         onClose()
       }
     )

@@ -10,10 +10,12 @@ import Foundation
 import ComposableArchitecture
 
 import Core
+import AnalyticsKit
 import Shared
 
 @Reducer
 public struct OriginalEditFeature {
+  @Dependency(\.analytics) var analytics
   @Dependency(\.swiftDataClient) var swiftDataClient
   
   @ObservableState
@@ -27,6 +29,7 @@ public struct OriginalEditFeature {
   }
   
   public enum Action: Equatable {
+    case onAppear
     case completeButtonTapped
     case backButtonTapped
     case highlightsDataResponse([HighlightPayload])
@@ -42,7 +45,12 @@ public struct OriginalEditFeature {
       state,
       action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.originalEdit))
+        return .none
+
       case .completeButtonTapped:
+        analytics.track(UsageEvent.originalEditCompleted)
         state.isDataRequestTriggered = true
         return .none
         

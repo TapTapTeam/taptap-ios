@@ -49,6 +49,9 @@ extension SummaryView {
     }
     .bind($store.isCommentTextFieldFocused, to: self.$isCommentTextFieldFocused)
     .bind($store.isNewCommentTextFieldFocused, to: self.$isNewCommentTextFieldFocused)
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
   
   /// 하이라이트 섹션

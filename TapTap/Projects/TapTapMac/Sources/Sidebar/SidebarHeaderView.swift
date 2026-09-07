@@ -32,7 +32,7 @@ struct SidebarHeaderView: View {
               .font(.H4_M)
               .foregroundStyle(SidebarForeground.text1)
           }
-          .offset(y: 8)
+          .offset(y: 16)
 
           Spacer(minLength: 0)
 

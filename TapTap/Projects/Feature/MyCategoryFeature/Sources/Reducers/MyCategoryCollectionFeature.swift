@@ -53,7 +53,6 @@ public struct MyCategoryCollectionFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
   @Dependency(\.analytics) var analytics
 
-  /// 즐겨찾기 최대 개수
   private let favoriteLimit = 6
 
   public var body: some ReducerOf<Self> {
@@ -126,7 +125,6 @@ public struct MyCategoryCollectionFeature {
         state.favoriteModal = nil
         let categoryID = category.id
 
-        // 이미 즐겨찾기 → 해제
         if category.isFavorite {
           analytics.track(UsageEvent.categoryFavoriteToggled(isFavorite: false))
           return .run { send in
@@ -136,7 +134,6 @@ public struct MyCategoryCollectionFeature {
           }
         }
 
-        // 미즐겨찾기 → 추가 (꽉 찼으면 알럿)
         let favoriteCount = state.myCategoryGrid.categories.filter(\.isFavorite).count
         if favoriteCount >= favoriteLimit {
           state.favoriteFullAlert = category
@@ -157,7 +154,6 @@ public struct MyCategoryCollectionFeature {
         guard let category = state.favoriteFullAlert else { return .none }
         state.favoriteFullAlert = nil
         let newID = category.id
-        // 생성일이 가장 오래된 즐겨찾기 카테고리를 해제하고 새 카테고리를 고정
         let oldestFavoriteID = state.myCategoryGrid.categories
           .filter(\.isFavorite)
           .min(by: { $0.createdAt < $1.createdAt })?

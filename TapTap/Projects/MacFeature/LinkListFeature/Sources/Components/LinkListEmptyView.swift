@@ -41,9 +41,7 @@ struct LinkListEmptyView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .frame(minHeight: 44)
-        .background(.bgBtn)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .contentShape(RoundedRectangle(cornerRadius: 12))
+        .macHoverBackground(cornerRadius: 12, normal: .bgBtn, hovered: .bl7)
       }
       .buttonStyle(.plain)
     }

@@ -135,7 +135,6 @@ public struct AddLinkFeature {
           let url = URL(string: state.linkURL)
         else {
           state.isLoading = false
-          //TODO: 에러 처리하기..
           return .none
         }
         
@@ -186,13 +185,9 @@ public struct AddLinkFeature {
         
       case let .saveLinkResponse(savedArticle):
         state.isLoading = false
-        // 탭탭의 핵심 전환. 저장이 실제로 끝난 액션에서만 찍는다 —
-        // 버튼 탭에 심으면 메타데이터 추출 실패까지 저장으로 세어진다.
         analytics.track(
           ConversionEvent.linkSaved(source: .app, hasCategory: savedArticle.category != nil)
         )
-        // `articles`는 `onAppear`에서 저장된 링크 전체를 읽어온 것이라 +1이 저장 직후 총개수다.
-        // (`totalLinksCount`는 선언만 되어 있고 아무도 채우지 않아 늘 0이라 못 쓴다)
         analytics.setUserProperty(.savedLinkCount(state.articles.count + 1))
         NotificationCenter.default.post(
           name: .linkSaved,

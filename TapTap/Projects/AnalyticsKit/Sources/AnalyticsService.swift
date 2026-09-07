@@ -8,10 +8,6 @@
 import Foundation
 import os
 
-/// 이벤트 하나를 붙어 있는 모든 프로바이더로 흘려보낸다.
-///
-/// 호출부는 GA4가 있는지 Amplitude가 있는지 몰라야 한다. 나중에 어트리뷰션 툴
-/// (AppsFlyer / Airbridge)을 붙일 때도 프로바이더 하나를 추가하면 끝나도록 여기서 갈라둔다.
 public final class AnalyticsService: Sendable {
   public static let shared = AnalyticsService(
     configuration: .fromMainBundle()
@@ -45,7 +41,6 @@ public final class AnalyticsService: Sendable {
     self.providers = providers
   }
 
-  /// 앱 시작 시 한 번. 키가 없는 프로바이더는 조용히 빠지고 앱은 그대로 굴러간다.
   public func start() {
     let started = providers.filter { $0.start() }.map(\.identifier)
     if started.isEmpty {

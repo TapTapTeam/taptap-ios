@@ -38,5 +38,8 @@ extension PolicyDetailView {
       }
     }
     .toolbar(.hidden)
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
 }

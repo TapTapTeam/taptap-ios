@@ -10,8 +10,6 @@ import ComposableArchitecture
 
 @main
 struct NbsApp: App {
-  /// Firebase는 다른 SDK보다 먼저, 앱 실행 초기에 configure되어야 자동 이벤트
-  /// (`first_open`·`session_start`)를 놓치지 않는다. SwiftUI에서 그 시점은 `AppDelegate`다.
   @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
   let store = Store(initialState: AppFeature.State()) {

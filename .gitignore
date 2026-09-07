@@ -136,3 +136,6 @@ iOSInjectionProject/
 # GA4(Firebase) 설정 파일 — 프로젝트 식별자가 들어 있어 커밋하지 않는다.
 # Firebase 콘솔 > 프로젝트 설정 > iOS 앱에서 받아 TapTap/Projects/App/Resources/에 넣는다.
 GoogleService-Info.plist
+
+# Xcode 빌드 산출물 (로컬 검증용)
+TapTap/dd/
