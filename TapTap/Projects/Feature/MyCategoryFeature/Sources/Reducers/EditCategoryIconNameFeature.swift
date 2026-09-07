@@ -10,12 +10,14 @@ import SwiftUI
 import ComposableArchitecture
 
 import DesignSystem
+import AnalyticsKit
 import Core
 import Shared
 
 @Reducer
 public struct EditCategoryIconNameFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
+  @Dependency(\.analytics) var analytics
   
   @ObservableState
   public struct State: Equatable {
@@ -60,6 +62,7 @@ public struct EditCategoryIconNameFeature {
         return .none
         
       case let .selectIcon(icon):
+        analytics.track(UsageEvent.categoryEdited(field: "icon"))
         state.selectedIcon = icon
         return .none
         

@@ -37,6 +37,30 @@ public enum UsageEvent: AnalyticsEventConvertible, Equatable, Sendable {
   /// 설정에서 항목을 눌렀다.
   case settingRowTapped(row: String)
 
+  /// 카테고리를 편집했다 (이름·아이콘).
+  case categoryEdited(field: String)
+
+  /// 링크 목록에서 카테고리 칩으로 걸러 봤다.
+  case categoryChipSelected
+
+  /// 링크 편집 시트를 열었다.
+  case linkEditSheetOpened
+
+  /// 연관 검색어를 눌러 검색했다.
+  case relatedSearchTapped
+
+  /// 검색창의 최근 본 링크를 눌렀다.
+  case recentLinkTapped
+
+  /// 최근 검색어를 지웠다 (하나 / 전체).
+  case recentSearchDeleted(isAll: Bool)
+
+  /// 링크 요약을 펼쳐 봤다.
+  case summaryViewed
+
+  /// 원문 편집 화면을 열었다.
+  case originalEditOpened
+
   /// 화면 이름은 문자열 리터럴 대신 여기 모아둔다 — 오타 하나면 리포트에서 화면이 둘로 갈린다.
   public enum Screen: String, Equatable, Sendable {
     case onboarding
@@ -47,7 +71,13 @@ public enum UsageEvent: AnalyticsEventConvertible, Equatable, Sendable {
     case search
     case myCategory = "my_category"
     case original
+    case originalEdit = "original_edit"
     case setting
+    case settingExtension = "setting_extension"
+    case settingShare = "setting_share"
+    case settingFavorite = "setting_favorite"
+    case settingOpenSource = "setting_open_source"
+    case settingPolicy = "setting_policy"
   }
 
   public var event: AnalyticsEvent {
@@ -96,6 +126,36 @@ public enum UsageEvent: AnalyticsEventConvertible, Equatable, Sendable {
         name: "setting_row_tap",
         parameters: ["row": .string(row)]
       )
+
+    case .categoryEdited(let field):
+      return AnalyticsEvent(
+        name: "category_edit",
+        parameters: ["field": .string(field)]
+      )
+
+    case .categoryChipSelected:
+      return AnalyticsEvent(name: "category_chip_select")
+
+    case .linkEditSheetOpened:
+      return AnalyticsEvent(name: "link_edit_sheet_open")
+
+    case .relatedSearchTapped:
+      return AnalyticsEvent(name: "related_search_tap")
+
+    case .recentLinkTapped:
+      return AnalyticsEvent(name: "recent_link_tap")
+
+    case .recentSearchDeleted(let isAll):
+      return AnalyticsEvent(
+        name: "recent_search_delete",
+        parameters: ["is_all": .bool(isAll)]
+      )
+
+    case .summaryViewed:
+      return AnalyticsEvent(name: "summary_view")
+
+    case .originalEditOpened:
+      return AnalyticsEvent(name: "original_edit_open")
     }
   }
 }

@@ -9,10 +9,12 @@ import Foundation
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Shared
 
 @Reducer
 public struct RecentSearchFeature {
+  @Dependency(\.analytics) var analytics
   @ObservableState
   public struct State: Equatable {
     var searches: IdentifiedArrayOf<SearchTerm> = []
@@ -56,12 +58,14 @@ public struct RecentSearchFeature {
         
       case .del(let id):
         guard let deleteItem = state.searches[id: id] else { return .none }
+        analytics.track(UsageEvent.recentSearchDeleted(isAll: false))
         return .run { send in
           let updateSearches = try await recentSearchClient.remove(deleteItem.text)
           await send(.loadRecentSearches(updateSearches))
         }
         
       case .clear:
+        analytics.track(UsageEvent.recentSearchDeleted(isAll: true))
         return .run { send in
           let updateSearches = try await recentSearchClient.clear()
           await send(.loadRecentSearches(updateSearches))

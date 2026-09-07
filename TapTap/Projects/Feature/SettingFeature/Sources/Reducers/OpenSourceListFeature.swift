@@ -10,10 +10,12 @@ import SwiftUI
 import ComposableArchitecture
 
 import DesignSystem
+import AnalyticsKit
 import Shared
 
 @Reducer
 public struct OpenSourceListFeature {
+  @Dependency(\.analytics) var analytics
   @ObservableState
   public struct State: Equatable {
     public init() {}
@@ -36,6 +38,7 @@ public struct OpenSourceListFeature {
         return .send(.delegate(.route(.back)))
         
       case let .libraryTapped(url):
+        analytics.track(UsageEvent.settingRowTapped(row: "open_source_library"))
         if let link = URL(string: url) {
           UIApplication.shared.open(link)
         }

@@ -7,11 +7,13 @@
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
 @Reducer
 public struct RecentLinkFeature {
+  @Dependency(\.analytics) var analytics
   @ObservableState
   public struct State: Equatable {
     var recentLinkItem: [ArticleItem] = []
@@ -44,6 +46,7 @@ public struct RecentLinkFeature {
         return .none
       
       case .recentLinkTapped(let item):
+        analytics.track(UsageEvent.recentLinkTapped)
         return .send(.delegate(.route(.linkDetail(item))))
       
       case .delegate:

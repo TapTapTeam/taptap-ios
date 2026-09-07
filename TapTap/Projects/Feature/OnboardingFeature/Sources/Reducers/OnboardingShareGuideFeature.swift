@@ -7,10 +7,12 @@
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Shared
 
 @Reducer
 public struct OnboardingShareGuideFeature {
+  @Dependency(\.analytics) var analytics
   @ObservableState
   public struct State: Equatable {
     public init() {}
@@ -33,6 +35,7 @@ public struct OnboardingShareGuideFeature {
         return .send(.delegate(.route(.back)))
         
       case .completeButtonTapped:
+        analytics.track(UsageEvent.onboardingStepViewed(step: 6, name: "share_guide"))
         return .send(.delegate(.route(.onboardingFinish)))
         
       case .delegate:

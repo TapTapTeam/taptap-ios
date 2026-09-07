@@ -33,6 +33,9 @@ GA4(Firebase) · Amplitude로 **같은 이벤트를 동시에** 보낸다. 둘 �
 | `category_create` | `category_count` | `AddCategoryFeature.setDuplicate`(중복 아님) | ✅ |
 | `link_move_category` | `item_count` | `MoveLinkFeature.moveDone` | ✅ |
 | `search_submit` | `query_length`, `result_count`, `has_result` | `SearchResultFeature.searchResponse`(첫 페이지만) | ✅ |
+| `link_save` (공유 시트) | `link_source=share_extension`, `has_category`, `highlight_count` | `ShareViewController` 저장 성공 → 앱 그룹 큐 | ✅ |
+| `highlight_delete` | — | `HighlightEditFeature.confirmDeleteButtonTapped`(앱) · `highlight.js`(확장) | ✅ |
+| `category_delete` | `item_count`(딸린 링크 수) | `DeleteCategoryFeature.confirmAlertConfirmButtonTapped` | ✅ |
 
 `link_source` 값: `app` · `share_extension` · `safari_extension` · `search` · `widget` · `unknown`.
 사파리 확장·공유 시트가 실제로 쓰이는지가 탭탭의 제품 가설 자체라 반드시 나눠 본다.
@@ -41,7 +44,7 @@ GA4(Firebase) · Amplitude로 **같은 이벤트를 동시에** 보낸다. 둘 �
 
 | 이벤트 | 파라미터 | 발화 지점 | 상태 |
 |---|---|---|---|
-| `screen_view` | `screen_name` | 각 피처 `.onAppear` | ✅ home · link_list · link_detail · add_link · search · my_category |
+| `screen_view` | `screen_name` | 각 피처 `.onAppear` | ✅ home · link_list · link_detail · add_link · search · my_category / ⬜ onboarding · original · setting (해당 화면에 `.onAppear` 액션이 없다 — 설정 하위 화면은 `setting_row_tap`으로 대신 본다) |
 | `onboarding_step_view` | `step_index`, `step_name` | `OnboardingFeature`(1 intro) · `OnboardingSafariSettingFeature`(2 safari_setting) · `OnboardingHighlightGuideFeature`(3 highlight_guide) | ✅ |
 | `onboarding_skip` | `step_index` | 온보딩 건너뛰기 | ⬜ 미삽입 |
 | `category_favorite_toggle` | `is_favorite` | `MyCategoryCollectionFeature` 즐겨찾기 토글 | ✅ |
@@ -49,6 +52,16 @@ GA4(Firebase) · Amplitude로 **같은 이벤트를 동시에** 보낸다. 둘 �
 | `recent_search_tap` | — | `SearchFeature.recentSearch(.delegate(.chipTapped))` | ✅ |
 | `safari_guide_view` | — | 사파리 안내 시트 | ⬜ 미삽입 |
 | `setting_row_tap` | `row` | `SettingFeature` 6개 행 (`safari_extension_tip`·`highlight_tip`·`share_tip`·`favorite_tip`·`privacy_policy`·`terms_of_service`·`open_source`·`service_open_link`) | ✅ (화면 뷰는 `.onAppear`가 없어 아직) |
+| `onboarding_skip` | `step_index` | `OnboardingShareFeature`·`OnboardingHighlightMemoFeature` 건너뛰기 | ✅ |
+| `safari_guide_view` | — | `ExtensionSettingFeature.naviPush` | ✅ |
+| `category_edit` | `field` | `EditCategoryIconNameFeature` 아이콘 선택 | ✅ |
+| `category_chip_select` | — | `CategoryChipFeature.categoryTapped` | ✅ |
+| `link_edit_sheet_open` | — | `LinkListFeature` 편집 버튼·길게 누르기 | ✅ |
+| `related_search_tap` | — | `SearchSuggestionFeature.suggestionTapped` | ✅ |
+| `recent_link_tap` | — | `RecentLinkFeature.recentLinkTapped` | ✅ |
+| `recent_search_delete` | `is_all` | `RecentSearchFeature.del`·`clear` | ✅ |
+| `summary_view` | — | (미삽입 — 요약 화면 진입 액션이 없다) | ⬜ |
+| `original_edit_open` | — | `OriginalArticleFeature.editButtonTapped` | ✅ |
 
 ## 사파리 확장(JS) 이벤트
 
@@ -76,6 +89,8 @@ highlight.js / memo.js
 | `memo_saved` | `is_edit`, `text_length`, `surface` | `memo.js` 메모 저장/수정 |
 | `memo_deleted` | `surface` | `memo.js.deleteMemo` |
 | `highlight_synced` | `count`, `surface` | 앱으로 동기화를 보낼 때 (맥 사파리 경로) |
+| `link_save` | `link_source=share_extension`, `has_category`, `highlight_count` | 공유 시트에서 저장 성공 |
+| `share_category_picked` | `link_source` | 공유 시트 저장 후 카테고리를 골랐을 때 |
 
 전송된 이벤트에는 `occurred_at`(확장에서 실제로 일어난 시각)과 `delivered_by=app_launch`가 붙는다.
 큐가 200건을 넘으면 오래된 것부터 버린다.

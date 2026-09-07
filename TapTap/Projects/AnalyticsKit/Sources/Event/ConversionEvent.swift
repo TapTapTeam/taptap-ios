@@ -42,6 +42,12 @@ public enum ConversionEvent: AnalyticsEventConvertible, Equatable, Sendable {
   /// 검색을 실행하고 결과를 받았다.
   case searchSubmitted(queryLength: Int, resultCount: Int)
 
+  /// 하이라이트를 지웠다.
+  case highlightDeleted
+
+  /// 카테고리를 지웠다 — 딸린 링크가 몇 개였는지 같이 본다.
+  case categoryDeleted(linkCount: Int)
+
   /// 링크가 어디서 들어오고 어디서 열렸는지.
   ///
   /// 사파리 확장·공유 시트가 실제로 쓰이는지가 탭탭의 제품 가설 자체라 반드시 나눠서 본다.
@@ -110,6 +116,15 @@ public enum ConversionEvent: AnalyticsEventConvertible, Equatable, Sendable {
           "result_count": .int(resultCount),
           "has_result": .bool(resultCount > 0)
         ]
+      )
+
+    case .highlightDeleted:
+      return AnalyticsEvent(name: "highlight_delete")
+
+    case .categoryDeleted(let linkCount):
+      return AnalyticsEvent(
+        name: "category_delete",
+        parameters: ["item_count": .int(linkCount)]
       )
     }
   }

@@ -322,6 +322,14 @@ private extension ShareViewController {
     
     do {
       try context.save()
+      ExtensionAnalyticsQueue.append(
+        name: "link_save",
+        properties: [
+          "link_source": "share_extension",
+          "has_category": self.categoryToSave != nil ? "true" : "false",
+          "highlight_count": String(self.draftHighlights?.count ?? 0)
+        ]
+      )
       DispatchQueue.main.async {
         self.isSaveComplete = true
         self.configureHostingController()
@@ -348,6 +356,10 @@ private extension ShareViewController {
     
     do {
       try context.save()
+      ExtensionAnalyticsQueue.append(
+        name: "share_category_picked",
+        properties: ["link_source": "share_extension"]
+      )
       self.closeExtension(clearDrafts: true)
     } catch {
       self.closeExtension(clearDrafts: false)

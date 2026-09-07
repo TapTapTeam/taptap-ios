@@ -150,10 +150,12 @@ private extension LinkListFeature {
       return .send(.delegate(.route(.search)))
 
     case .editButtonTapped:
+      analytics.track(UsageEvent.linkEditSheetOpened)
       state.editSheet = EditSheetFeature.State(link: nil)
       return .none
 
     case let .linkLongPressed(link):
+      analytics.track(UsageEvent.linkEditSheetOpened)
       state.editSheet = EditSheetFeature.State(link: link)
       return .none
 

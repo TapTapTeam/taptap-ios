@@ -9,11 +9,13 @@ import SwiftUI
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
 @Reducer
 public struct SummaryFeature {
+  @Dependency(\.analytics) var analytics
   @Dependency(\.swiftDataClient) var swiftDataClient
   
   @ObservableState
@@ -58,6 +60,7 @@ public struct SummaryFeature {
         return .none
       
       case .saveCommentButtonTapped:
+        analytics.track(ConversionEvent.memoSaved(isEdit: true))
         state.isCommentTextFieldFocused = false
         guard let editingId = state.editingCommentId else { return .none }
         
@@ -94,6 +97,7 @@ public struct SummaryFeature {
         return .none
         
       case .saveNewCommentButtonTapped:
+        analytics.track(ConversionEvent.memoSaved(isEdit: false))
         state.isNewCommentTextFieldFocused = false
         guard let highlightId = state.addingCommentToHighlightId, !state.newCommentText.isEmpty else {
           state.addingCommentToHighlightId = nil
