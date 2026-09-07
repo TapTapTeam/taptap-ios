@@ -102,8 +102,8 @@ platform :ios do
       app_identifier: "com.Nbs.dev.ADA.app",
       app_version: version,
       force: true,
-      skip_metadata: false,
-      skip_screenshots: false,
+      skip_metadata: options[:skip_metadata] ? true : false,
+      skip_screenshots: options[:skip_screenshots] ? true : false,
       submit_for_review: false,
       run_precheck_before_submit: false
     )
