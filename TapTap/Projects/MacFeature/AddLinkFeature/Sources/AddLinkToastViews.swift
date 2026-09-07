@@ -92,13 +92,16 @@ private struct DuplicateLinkToast: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.leading, 8)
       
-      Button("보러가기") {
+      Button {
         onShowLink()
+      } label: {
+        Text("보러가기")
+          .font(.system(size: 14, weight: .semibold))
+          .foregroundStyle(Color.bl7)
+          .padding(.horizontal, 16)
+          .frame(height: 40)
+          .macHoverBackground(cornerRadius: 10, style: .continuous, normal: .clear, hovered: .n0)
       }
-      .font(.system(size: 14, weight: .semibold))
-      .foregroundStyle(Color.bl7)
-      .padding(.horizontal, 16)
-      .frame(height: 40)
       .buttonStyle(.plain)
       
       AddLinkToastCloseButton {
@@ -128,7 +131,7 @@ private struct AddLinkToastCloseButton: View {
         .frame(width: 24, height: 24)
         .foregroundStyle(Color.icon)
         .frame(width: 40, height: 40)
-        .contentShape(RoundedRectangle(cornerRadius: 8))
+        .macHoverBackground(cornerRadius: 8, style: .continuous, normal: .clear, hovered: .n0)
     }
     .buttonStyle(.plain)
   }

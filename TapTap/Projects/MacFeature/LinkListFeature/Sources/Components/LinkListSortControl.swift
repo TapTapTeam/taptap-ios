@@ -37,8 +37,9 @@ private extension LinkListSortControl {
       Text(title)
         .font(.B2_M)
         .foregroundStyle(selectedOrder == order ? Color.caption1 : Color.caption2)
-        .padding(.horizontal, 4)
+        .padding(.horizontal, 8)
         .padding(.vertical, 7)
+        .macHoverBackground(cornerRadius: 8, normal: .clear, hovered: .n30)
     }
     .buttonStyle(.plain)
     .frame(height: 32)

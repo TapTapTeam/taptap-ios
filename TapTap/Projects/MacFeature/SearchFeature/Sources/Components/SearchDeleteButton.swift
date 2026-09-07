@@ -22,10 +22,9 @@ public extension SearchDeleteButton {
       Text("전체 삭제")
         .font(.B2_M)
         .foregroundStyle(.caption1)
+        .frame(width: 64, height: 28)
+        .macHoverBackground(cornerRadius: 8, normal: .n30, hovered: .n40)
     }
     .buttonStyle(.plain)
-    .frame(width: 64, height: 28)
-    .background(.n30)
-    .clipShape(RoundedRectangle(cornerRadius: 8))
   }
 }

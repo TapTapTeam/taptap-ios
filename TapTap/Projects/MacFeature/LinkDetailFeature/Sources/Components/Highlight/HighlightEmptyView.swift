@@ -43,8 +43,7 @@ struct HighlightEmptyView: View {
         .foregroundStyle(.textw)
         .padding(.horizontal, 18)
         .frame(height: 44)
-        .background(.bgBtn)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .macHoverBackground(cornerRadius: 10, normal: .bgBtn, hovered: .bl7)
       }
       .buttonStyle(.plain)
       .padding(.top, 70)

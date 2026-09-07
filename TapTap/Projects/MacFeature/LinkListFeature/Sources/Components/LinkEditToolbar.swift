@@ -35,6 +35,7 @@ struct LinkEditToolbar: View {
             isEnabled: selectedCount > 0,
             foreground: .danger,
             background: .bgDimDanger,
+            hoverBackground: .danger.opacity(0.22),
             action: onDelete
           )
           
@@ -44,6 +45,7 @@ struct LinkEditToolbar: View {
             isEnabled: selectedCount > 0,
             foreground: .textw,
             background: .bgBtn,
+            hoverBackground: .bl7,
             action: onMove
           )
         }
@@ -70,6 +72,7 @@ private extension LinkEditToolbar {
     isEnabled: Bool,
     foreground: Color,
     background: Color,
+    hoverBackground: Color,
     action: @escaping () -> Void
   ) -> some View {
     Button(action: action) {
@@ -88,9 +91,11 @@ private extension LinkEditToolbar {
       .padding(.horizontal, 14)
       .frame(height: 40)
       .foregroundStyle(isEnabled ? foreground : .caption2)
-      .background(isEnabled ? background : .n40)
-      .clipShape(RoundedRectangle(cornerRadius: 12))
-      .contentShape(RoundedRectangle(cornerRadius: 12))
+      .macHoverBackground(
+        cornerRadius: 12,
+        normal: isEnabled ? background : .n40,
+        hovered: isEnabled ? hoverBackground : .n40
+      )
     }
     .buttonStyle(.plain)
     .disabled(!isEnabled)

@@ -42,7 +42,8 @@ let project = Project.project(
       infoPlist: .extendingDefault(with: [
         "LSApplicationCategoryType": "public.app-category.productivity",
         "CFBundleShortVersionString": "$(MARKETING_VERSION)",
-        "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)"
+        "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
+        "ITSAppUsesNonExemptEncryption": false
       ]),
       sources: .sources,
       resources: .default,

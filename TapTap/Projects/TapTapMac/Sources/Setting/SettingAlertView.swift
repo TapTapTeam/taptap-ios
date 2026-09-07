@@ -32,7 +32,7 @@ struct SettingAlertView: View {
               .scaledToFit()
               .frame(width: 20, height: 20)
               .padding(10)
-              .contentShape(Rectangle())
+              .macHoverBackground(cornerRadius: 8, normal: .clear, hovered: .n30)
           }
           .padding(.trailing, -8)
           .buttonStyle(.plain)

@@ -63,7 +63,7 @@ extension SettingRowButton {
         }
       }
       .frame(height: 52)
-      .contentShape(Rectangle())
+      .macHoverBackground(cornerRadius: 8, normal: .clear, hovered: .n30)
     }
     .buttonStyle(.plain)
   }

@@ -40,7 +40,10 @@ public extension SearchView {
           
           Spacer()
           
-          SearchCategoryButton(selectedCategory: viewModel.selectedCategory) {
+          SearchCategoryButton(
+            selectedCategory: viewModel.selectedCategory,
+            isExpanded: isDropdownOpen
+          ) {
             isDropdownOpen.toggle()
           }
           

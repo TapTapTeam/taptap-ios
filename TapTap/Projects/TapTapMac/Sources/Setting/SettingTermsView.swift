@@ -23,6 +23,7 @@ struct SettingTermsView: View {
             .scaledToFit()
             .foregroundStyle(.icon)
             .frame(width: 24, height: 24)
+            .macHoverBackground(cornerRadius: 6, normal: .clear, hovered: .n30)
         }
         .buttonStyle(.plain)
         Text("서비스 이용약관")
@@ -36,7 +37,7 @@ struct SettingTermsView: View {
             .scaledToFit()
             .frame(width: 20, height: 20)
             .padding(10)
-            .contentShape(Rectangle())
+            .macHoverBackground(cornerRadius: 8, normal: .clear, hovered: .n30)
         }
         .padding(.trailing, -8)
         .buttonStyle(.plain)
