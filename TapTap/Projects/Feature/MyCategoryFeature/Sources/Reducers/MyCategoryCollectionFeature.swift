@@ -158,11 +158,12 @@ public struct MyCategoryCollectionFeature {
           .filter(\.isFavorite)
           .min(by: { $0.createdAt < $1.createdAt })?
           .id
-        return .run { send in
+        return .run { [analytics] send in
           if let oldestFavoriteID {
             try? swiftDataClient.category.setFavorite(id: oldestFavoriteID, isFavorite: false)
           }
           try? swiftDataClient.category.setFavorite(id: newID, isFavorite: true)
+          analytics.track(UsageEvent.categoryFavoriteToggled(isFavorite: true))
           await send(.myCategoryGrid(.onAppear))
           await send(.showToast("즐겨찾기에 추가했어요"))
         }

@@ -7,14 +7,12 @@
 
 import ComposableArchitecture
 
-import AnalyticsKit
 import Core
 import Shared
 
 @Reducer
 public struct HighlightEditFeature {
   @Dependency(\.dismiss) var dismiss
-  @Dependency(\.analytics) var analytics
   
   @ObservableState
   public struct State: Equatable {
@@ -88,7 +86,6 @@ public struct HighlightEditFeature {
         return .none
       case .confirmDeleteButtonTapped:
         state.isShowDeleteModal = false
-        analytics.track(ConversionEvent.highlightDeleted)
         return .merge(
           .send(.delegate(.delete(state.context))),
           .send(.delegate(.dismiss))

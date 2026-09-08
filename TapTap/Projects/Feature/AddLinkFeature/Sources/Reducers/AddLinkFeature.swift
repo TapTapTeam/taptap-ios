@@ -188,12 +188,13 @@ public struct AddLinkFeature {
         analytics.track(
           ConversionEvent.linkSaved(source: .app, hasCategory: savedArticle.category != nil)
         )
-        analytics.setUserProperty(.savedLinkCount(state.articles.count + 1))
         NotificationCenter.default.post(
           name: .linkSaved,
           object: savedArticle.category
         )
-        return .run { send in
+        return .run { [analytics] send in
+          let totalCount = (try? swiftDataClient.link.fetchLinksCount(predicate: nil)) ?? -1
+          analytics.setUserProperty(.savedLinkCount(totalCount))
           try await Task.sleep(nanoseconds: 2_000_000_000)
           await send(.delegate(.route(.back)))
         }

@@ -25,7 +25,7 @@ struct NbsApp: App {
     }
     .onChange(of: scenePhase) { _, phase in
       guard phase == .active else { return }
-      appDelegate.deliverPendingExtensionEvents()
+      appDelegate.deliverPendingExtensionEvents(trigger: .foreground)
     }
   }
 }
@@ -39,11 +39,11 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
   ) -> Bool {
     analytics.start()
     analytics.setUserProperty(.deviceShell(UIDevice.current.userInterfaceIdiom == .pad ? "pad" : "phone"))
-    deliverPendingExtensionEvents()
+    deliverPendingExtensionEvents(trigger: .appLaunch)
     return true
   }
 
-  func deliverPendingExtensionEvents() {
+  func deliverPendingExtensionEvents(trigger: ExtensionEvent.DeliveryTrigger) {
     let queuedEvents = ExtensionAnalyticsQueue.drain()
 
     for queued in queuedEvents {
@@ -51,7 +51,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         ExtensionEvent(
           name: queued.name,
           properties: queued.properties,
-          occurredAt: queued.occurredAt
+          occurredAt: queued.occurredAt,
+          deliveredBy: trigger
         )
       )
     }

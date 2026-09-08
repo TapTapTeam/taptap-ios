@@ -127,7 +127,7 @@ public struct DeleteLinkFeature {
             )
             
             try? await Task.sleep(nanoseconds: 400_000_000)
-            await send(.delegate(.route(.back)))
+            await send(.deleteDone(selectedIDs.count))
             
           } catch {
             print("delete by ids failed:", error)

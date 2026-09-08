@@ -158,10 +158,10 @@ public struct MoveLinkFeature {
         return .run { send in
           do {
             try swiftDataClient.link.moveLinks(selected, to: target)
+            await send(.moveDone(count: moveCount))
           } catch {
             print("❌ moveLinks failed:", error)
           }
-          await send(.moveDone(count: moveCount))
         }
         
       case let .moveDone(count):

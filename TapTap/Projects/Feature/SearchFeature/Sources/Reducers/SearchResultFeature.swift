@@ -73,7 +73,7 @@ public struct SearchResultFeature {
             let totalCount = try swiftDataClient.link.fetchLinksCount(predicate: descriptor.predicate)
             await send(.searchResponse(response: response, totalCount: totalCount))
           } catch {
-            await send(.searchResponse(response: [], totalCount: 0))
+            await send(.searchResponse(response: [], totalCount: nil))
           }
         }
         

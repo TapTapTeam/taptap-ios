@@ -20,6 +20,8 @@ public enum ConversionEvent: AnalyticsEventConvertible, Equatable, Sendable {
 
   case memoSaved(isEdit: Bool)
 
+  case memoDeleted
+
   case categoryCreated(totalCount: Int)
 
   case linkMovedToCategory(count: Int)
@@ -72,6 +74,9 @@ public enum ConversionEvent: AnalyticsEventConvertible, Equatable, Sendable {
         name: "memo_save",
         parameters: ["is_edit": .bool(isEdit)]
       )
+
+    case .memoDeleted:
+      return AnalyticsEvent(name: "memo_delete")
 
     case .categoryCreated(let totalCount):
       return AnalyticsEvent(

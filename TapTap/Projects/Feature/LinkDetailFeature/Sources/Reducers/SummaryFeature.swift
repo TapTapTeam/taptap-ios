@@ -65,7 +65,6 @@ public struct SummaryFeature {
         return .none
       
       case .saveCommentButtonTapped:
-        analytics.track(ConversionEvent.memoSaved(isEdit: true))
         state.isCommentTextFieldFocused = false
         guard let editingId = state.editingCommentId else { return .none }
         
@@ -88,8 +87,9 @@ public struct SummaryFeature {
         let highlightId = highlights[highlightIndex].id
         let newText = state.editedCommentText
         
-        return .run { _ in
+        return .run { [analytics] _ in
           try swiftDataClient.highlight.updateComment(commentId: editingId, newText: newText, highlightId: highlightId)
+          analytics.track(ConversionEvent.memoSaved(isEdit: true))
         }
         .cancellable(id: "edit-comment-\(editingId)")
       
@@ -102,7 +102,6 @@ public struct SummaryFeature {
         return .none
         
       case .saveNewCommentButtonTapped:
-        analytics.track(ConversionEvent.memoSaved(isEdit: false))
         state.isNewCommentTextFieldFocused = false
         guard let highlightId = state.addingCommentToHighlightId, !state.newCommentText.isEmpty else {
           state.addingCommentToHighlightId = nil
@@ -119,8 +118,9 @@ public struct SummaryFeature {
         
         state.addingCommentToHighlightId = nil
         
-        return .run { _ in
+        return .run { [analytics] _ in
           try swiftDataClient.highlight.addComment(newComment, to: highlightId)
+          analytics.track(ConversionEvent.memoSaved(isEdit: false))
         }
         .cancellable(id: "add-comment-\(newComment.id)")
         
@@ -155,8 +155,9 @@ public struct SummaryFeature {
           
           state.article.highlights?[highlightIndex].comments.removeAll { $0.id == comment.id }
           
-          return .run { _ in
+          return .run { [analytics] _ in
             try swiftDataClient.highlight.deleteComment(commentId: commentId, highlightId: highlightId)
+            analytics.track(ConversionEvent.memoDeleted)
           }
           .cancellable(id: "delete-comment-\(commentId)")
           
@@ -170,8 +171,9 @@ public struct SummaryFeature {
           
           let highlightId = highlight.id
           
-          return .run { _ in
+          return .run { [analytics] _ in
             try self.swiftDataClient.highlight.deleteHighlight(highlightId)
+            analytics.track(ConversionEvent.highlightDeleted)
           }
         }
         
