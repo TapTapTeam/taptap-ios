@@ -58,7 +58,7 @@ public struct CategoryGridFeature {
       case let .fetchCategoriesResponse(categories):
         var allCategories = categories
         if state.showAllCategory {
-          allCategories.append(CategoryItem(categoryName: "전체", icon: .init(number: 16)))
+          allCategories.append(CategoryItem(categoryName: "전체", icon: .init(number: 24)))
           state.categories = allCategories
         } else {
           state.categories = categories

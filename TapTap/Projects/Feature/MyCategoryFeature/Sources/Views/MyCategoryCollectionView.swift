@@ -33,7 +33,7 @@ extension MyCategoryCollectionView: View {
           store.send(.totalLinkTapped)
         } label: {
           HStack(spacing: 0) {
-            DesignSystemAsset.categoryIcon(number: 16)
+            DesignSystemAsset.categoryIcon(number: 24)
               .resizable()
               .frame(width: 28, height: 28)
               .padding(.trailing, 8)
