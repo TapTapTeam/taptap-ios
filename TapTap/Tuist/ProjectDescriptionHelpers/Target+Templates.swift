@@ -88,7 +88,7 @@ extension Target {
   private static func signingSettings(for product: Product, name: String)
   -> (base: [String: SettingValue], configs: [Configuration]) {
     
-    let baseSettings: [String: SettingValue] = [
+    var baseSettings: [String: SettingValue] = [
       "CODE_SIGN_STYLE": "Manual",
       "DEVELOPMENT_TEAM": "$(DEVELOPMENT_TEAM)"
     ]
@@ -106,6 +106,12 @@ extension Target {
     
     switch product {
     case .app:
+      // GoogleUtilities의 ObjC 카테고리(GULNSData+zlib 등)를 끌어오려면 -ObjC가 필요하다.
+      // 카테고리는 링크 시점에 미해결 심볼을 만들지 않아서, 없으면 그 오브젝트 파일이 아예 안 실린다.
+      // 빠지면 GA4가 이벤트를 찍기는 하는데 APMDatabase insertBundle에서
+      // "+[NSData gul_dataByGzippingData:error:]: unrecognized selector"로 죽어 업로드가 0건이 된다.
+      baseSettings["OTHER_LDFLAGS"] = "$(inherited) -ObjC"
+
       debugSettings["ASSETCATALOG_COMPILER_APPICON_NAME"] = "AppIconDev"
       releaseSettings["INFOPLIST_KEY_CFBundleDisplayName"] = "탭탭"
       if name == "TapTapMac" {
