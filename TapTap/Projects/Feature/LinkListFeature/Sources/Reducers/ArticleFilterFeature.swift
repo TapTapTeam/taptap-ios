@@ -7,11 +7,14 @@
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
 @Reducer
 public struct ArticleFilterFeature {
+  @Dependency(\.analytics) var analytics
+
   @ObservableState
   public struct State: Equatable {
     var link: [ArticleItem] = []
@@ -54,6 +57,7 @@ public struct ArticleFilterFeature {
         
       case let .sortOrderChanged(order):
         state.sortOrder = order
+        analytics.track(UsageEvent.linkFilterChanged(filter: order == .latest ? "latest" : "oldest"))
         return .none
         
       case .delegate:

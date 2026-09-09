@@ -96,6 +96,9 @@ extension ExtensionSettingView: View {
     }
     .background(Color.background)
     .toolbar(.hidden)
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
 }
 

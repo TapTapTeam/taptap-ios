@@ -7,19 +7,19 @@
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
 @Reducer
 public struct CategoryChipFeature {
+  @Dependency(\.analytics) var analytics
   @Dependency(\.swiftDataClient) var swiftDataClient
   
   @ObservableState
   public struct State: Equatable {
-    /// 선택 가능한 카테고리 목록
     var categories: [CategoryItem] = []
     
-    /// 현재 선택된 카테고리
     var selectedCategory: CategoryItem? = nil
   }
   
@@ -34,7 +34,6 @@ public struct CategoryChipFeature {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        /// 카테고리 불러오기
         return .run { send in
           do {
             let items = try swiftDataClient.category.fetchCategories()
@@ -62,9 +61,9 @@ public struct CategoryChipFeature {
         
       case let .categoryTapped(category):
         state.selectedCategory = category
+        analytics.track(UsageEvent.categoryChipSelected)
         return .none
       }
     }
   }
 }
-

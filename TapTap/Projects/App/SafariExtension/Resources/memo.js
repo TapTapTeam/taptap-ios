@@ -182,9 +182,13 @@ TapTap.memo = {
       };
       highlight.memos.push(memoToSave);
     }
-    
+
     localStorage.setItem(pageKey, JSON.stringify(highlights));
     TapTap.highlight._updateSharedDom(highlights); // DOM에 데이터 저장
+
+    if (memoToSave && TapTap.analytics) {
+      TapTap.analytics.trackMemoSaved(Boolean(memoId), memoText);
+    }
     return memoToSave;
   },
   
@@ -194,9 +198,13 @@ TapTap.memo = {
       const highlight = highlights.find(h => h.id === highlightId);
 
       if (highlight && highlight.memos) {
+          const previousCount = highlight.memos.length;
           highlight.memos = highlight.memos.filter(m => String(m.id) !== String(memoId));
           localStorage.setItem(pageKey, JSON.stringify(highlights));
           TapTap.highlight._updateSharedDom(highlights); // DOM에 데이터 저장
+          if (highlight.memos.length < previousCount && TapTap.analytics) {
+            TapTap.analytics.trackMemoDeleted();
+          }
       }
   },
 

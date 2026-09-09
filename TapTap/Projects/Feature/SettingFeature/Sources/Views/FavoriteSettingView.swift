@@ -72,6 +72,9 @@ extension FavoriteSettingView {
       }
     }
     .toolbar(.hidden)
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
 }
 

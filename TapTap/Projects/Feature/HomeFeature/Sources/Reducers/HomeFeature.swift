@@ -9,6 +9,7 @@ import SwiftUI
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import MyCategoryFeature
 import Shared
@@ -17,6 +18,7 @@ import Shared
 public struct HomeFeature {
   @Dependency(\.clipboard) var clipboard
   @Dependency(\.swiftDataClient) var swiftDataClient
+  @Dependency(\.analytics) var analytics
   
   @ObservableState
   public struct State: Equatable {
@@ -45,8 +47,8 @@ public struct HomeFeature {
     case clipboardResponded(String?)
     case dismissAlertBanner
     case alertBannerTapped
-    case articleList(ArticleListFeature.Action) //TODO: 정말 필요한지 확인이 필요함
-    case categoryList(CategoryListFeature.Action) //TODO: 정말 필요한지 확인이 필요함
+    case articleList(ArticleListFeature.Action)
+    case categoryList(CategoryListFeature.Action)
     case floatingButtonTapped
     case fetchArticles
     case articlesResponse([ArticleItem])
@@ -78,6 +80,7 @@ public struct HomeFeature {
     Reduce { state, action in
       switch action {
       case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.home))
         return .run { send in
           await send(.fetchArticles)
         }

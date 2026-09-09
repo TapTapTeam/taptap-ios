@@ -8,10 +8,12 @@
 import ComposableArchitecture
 
 import Core
+import AnalyticsKit
 import Shared
 
 @Reducer
 public struct ExtensionSettingFeature {
+  @Dependency(\.analytics) var analytics
   @ObservableState
   public struct State: Equatable {
     var currentPage: Int = 1
@@ -19,6 +21,7 @@ public struct ExtensionSettingFeature {
   }
   
   public enum Action: Equatable {
+    case onAppear
     case settingButtonTapped
     case backButtonTapped
     case naviPush
@@ -32,13 +35,19 @@ public struct ExtensionSettingFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.settingExtension))
+        return .none
+
       case .backButtonTapped:
         return .send(.delegate(.route(.back)))
         
       case .settingButtonTapped:
+        analytics.track(UsageEvent.settingRowTapped(row: "open_ios_settings"))
         return .none
         
       case .naviPush:
+        analytics.track(UsageEvent.safariGuideViewed)
         return .none
         
       case .delegate:

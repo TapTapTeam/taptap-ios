@@ -54,5 +54,8 @@ extension OriginalEditView {
       try? await Task.sleep(for: .seconds(0.1))
       isWebViewLoaded = true
     }
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
 }

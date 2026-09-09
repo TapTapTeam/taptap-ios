@@ -9,6 +9,7 @@ import SwiftUI
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import DesignSystem
 import Core
 import Shared
@@ -16,6 +17,7 @@ import Shared
 @Reducer
 public struct AddCategoryFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
+  @Dependency(\.analytics) var analytics
   
   @ObservableState
   public struct State: Equatable {
@@ -70,8 +72,11 @@ public struct AddCategoryFeature {
             categoryName: state.categoryName,
             icon: state.selectedIcon
           )
-          return .run { send in
+          return .run { [analytics] send in
             try swiftDataClient.category.addCategory(newCategory)
+            let totalCount = (try? swiftDataClient.category.fetchCategories().count) ?? -1
+            analytics.track(ConversionEvent.categoryCreated(totalCount: totalCount))
+            analytics.setUserProperty(.categoryCount(totalCount))
             NotificationCenter.default.post(name: .categoryAdded, object: nil)
             await send(.delegate(.route(.back)))
           }

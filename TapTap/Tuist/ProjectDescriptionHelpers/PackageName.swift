@@ -11,3 +11,8 @@ public extension Package {
   static let TCA = "ComposableArchitecture"
   static let lottie = "lottie"
 }
+
+public extension Package {
+  static let firebaseAnalytics = "FirebaseAnalytics"
+  static let amplitude = "AmplitudeSwift"
+}

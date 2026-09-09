@@ -52,5 +52,8 @@ extension OnboardingFinishView: View {
     }
     .toolbar(.hidden)
     .background(Color.background)
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
 }

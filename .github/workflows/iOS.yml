@@ -33,6 +33,17 @@ jobs:
       run: |
         mkdir -p TapTap/Tuist/Config
         echo "${{ secrets.PROJECT_XCCONFIG_CONTENT }}" >TapTap/Tuist/Config/Project.xcconfig
+    - name: Create GoogleService-Info.plist
+      # GA4(Firebase) 설정 파일. .gitignore에 걸려 있어서 CI에선 시크릿으로 복원한다.
+      # 시크릿이 비어 있으면 파일을 만들지 않고, AnalyticsKit이 GA4를 건너뛴 채 빌드된다.
+      env:
+        GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
+      run: |
+        if [ -n "$GOOGLE_SERVICE_INFO_PLIST" ]; then
+          echo "$GOOGLE_SERVICE_INFO_PLIST" > TapTap/Projects/App/Resources/GoogleService-Info.plist
+        else
+          echo "::warning::GOOGLE_SERVICE_INFO_PLIST 시크릿이 없다 — 이 빌드는 GA4 없이 나간다."
+        fi
     - name: Set up App Store Connect API
       env:
         ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}

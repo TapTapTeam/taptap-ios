@@ -10,10 +10,12 @@ import Foundation
 import ComposableArchitecture
 
 import Core
+import AnalyticsKit
 import Shared
 
 @Reducer
 public struct PolicyDetailFeature {
+  @Dependency(\.analytics) var analytics
   @ObservableState
   public struct State: Equatable {
     public var title: String
@@ -26,6 +28,7 @@ public struct PolicyDetailFeature {
   }
   
   public enum Action: Equatable {
+    case onAppear
     case backButtonTapped
     
     case delegate(Delegate)
@@ -37,6 +40,10 @@ public struct PolicyDetailFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.settingPolicy))
+        return .none
+
       case .backButtonTapped:
         return .send(.delegate(.route(.back)))
         

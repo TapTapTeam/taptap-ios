@@ -9,11 +9,13 @@ import Foundation
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
 @Reducer
 public struct OriginalArticleFeature {
+  @Dependency(\.analytics) var analytics
   @ObservableState
   public struct State: Equatable {
     var articleItem: ArticleItem
@@ -24,6 +26,7 @@ public struct OriginalArticleFeature {
   }
   
   public enum Action: Equatable {
+    case onAppear
     case editButtonTapped
     case backButtonTapped
     
@@ -36,7 +39,12 @@ public struct OriginalArticleFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.original))
+        return .none
+
       case .editButtonTapped:
+        analytics.track(UsageEvent.originalEditOpened)
         return .send(.delegate(.route(.originalEdit(state.articleItem))))
         
       case .backButtonTapped:

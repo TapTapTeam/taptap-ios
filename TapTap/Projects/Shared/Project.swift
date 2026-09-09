@@ -18,7 +18,8 @@ let project = Project.project(
       resources: .default,
       dependencies: [
         .TCA(),
-        .core()
+        .core(),
+        .analyticsKit()
       ]
     )
   ]

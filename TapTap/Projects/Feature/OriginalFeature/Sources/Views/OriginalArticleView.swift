@@ -72,6 +72,7 @@ extension OriginalArticleView {
     .toolbar(.hidden)
     .onAppear {
       isWebViewLoaded = true
+      store.send(.onAppear)
     }
   }
   

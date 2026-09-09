@@ -10,12 +10,14 @@ import SwiftData
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
 @Reducer
 public struct DeleteLinkFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
+  @Dependency(\.analytics) var analytics
   
   @ObservableState
   public struct State: Equatable {
@@ -84,7 +86,6 @@ public struct DeleteLinkFeature {
         }
         return .none
         
-        /// 전체 선택 or 해제
       case .binding(\.isSelectAll):
         if state.isSelectAll {
           state.selectedLinks = Set(state.allLinks.map(\.id))
@@ -93,7 +94,6 @@ public struct DeleteLinkFeature {
         }
         return .none
         
-        /// 개별 토글 시 전체선택 여부 갱신
       case let .toggleSelect(link):
         if state.selectedLinks.contains(link.id) {
           state.selectedLinks.remove(link.id)
@@ -127,14 +127,15 @@ public struct DeleteLinkFeature {
             )
             
             try? await Task.sleep(nanoseconds: 400_000_000)
-            await send(.delegate(.route(.back)))
+            await send(.deleteDone(selectedIDs.count))
             
           } catch {
             print("delete by ids failed:", error)
           }
         }
         
-      case .deleteDone:
+      case let .deleteDone(count):
+        analytics.track(ConversionEvent.linkDeleted(count: count))
         return .send(.delegate(.route(.back)))
         
       case .binding, .delegate:

@@ -10,6 +10,7 @@ import SwiftUI
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import DesignSystem
 import Shared
@@ -18,6 +19,7 @@ import MyCategoryFeature
 @Reducer
 public struct AddLinkFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
+  @Dependency(\.analytics) var analytics
   
   @ObservableState
   public struct State: Equatable {
@@ -81,6 +83,7 @@ public struct AddLinkFeature {
     Reduce { state, action in
       switch action {
       case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.addLink))
         if !UserDefaults.standard.bool(forKey: "safariInfo") {
           return .send(.setSheetPresented(true))
         }
@@ -132,7 +135,6 @@ public struct AddLinkFeature {
           let url = URL(string: state.linkURL)
         else {
           state.isLoading = false
-          //TODO: 에러 처리하기..
           return .none
         }
         
@@ -183,11 +185,16 @@ public struct AddLinkFeature {
         
       case let .saveLinkResponse(savedArticle):
         state.isLoading = false
+        analytics.track(
+          ConversionEvent.linkSaved(source: .app, hasCategory: savedArticle.category != nil)
+        )
         NotificationCenter.default.post(
           name: .linkSaved,
           object: savedArticle.category
         )
-        return .run { send in
+        return .run { [analytics] send in
+          let totalCount = (try? swiftDataClient.link.fetchLinksCount(predicate: nil)) ?? -1
+          analytics.setUserProperty(.savedLinkCount(totalCount))
           try await Task.sleep(nanoseconds: 2_000_000_000)
           await send(.delegate(.route(.back)))
         }

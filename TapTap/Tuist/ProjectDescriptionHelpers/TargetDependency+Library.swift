@@ -16,3 +16,13 @@ extension TargetDependency {
     .external(name: "Lottie")
   }
 }
+
+extension TargetDependency {
+  public static func FirebaseAnalytics() -> TargetDependency {
+    .external(name: Package.firebaseAnalytics)
+  }
+
+  public static func Amplitude() -> TargetDependency {
+    .external(name: Package.amplitude)
+  }
+}

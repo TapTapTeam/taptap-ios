@@ -10,6 +10,7 @@ import SwiftData
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import DesignSystem
 import Core
 import Shared
@@ -51,6 +52,7 @@ public struct SearchResultFeature {
   
   @Dependency(\.swiftDataClient) var swiftDataClient
   @Dependency(\.uuid) var uuid
+  @Dependency(\.analytics) var analytics
   
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -71,7 +73,7 @@ public struct SearchResultFeature {
             let totalCount = try swiftDataClient.link.fetchLinksCount(predicate: descriptor.predicate)
             await send(.searchResponse(response: response, totalCount: totalCount))
           } catch {
-            await send(.searchResponse(response: [], totalCount: 0))
+            await send(.searchResponse(response: [], totalCount: nil))
           }
         }
         
@@ -93,6 +95,12 @@ public struct SearchResultFeature {
         state.isFetching = false
         if let totalCount {
           state.totalCount = totalCount
+          analytics.track(
+            ConversionEvent.searchSubmitted(
+              queryLength: state.query.count,
+              resultCount: totalCount
+            )
+          )
         }
         
         if item.isEmpty || item.count < state.pageSize {
@@ -113,6 +121,7 @@ public struct SearchResultFeature {
         return .none
         
       case .linkCardTapped(let item):
+        analytics.track(ConversionEvent.linkOpened(source: .search))
         return .send(.delegate(.route(.linkDetail(item))))
         
       case .categoryButtonTapped:
@@ -164,4 +173,3 @@ public struct SearchResultFeature {
   
   public init() {}
 }
-

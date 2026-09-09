@@ -9,16 +9,20 @@ import SwiftUI
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Shared
 
 @Reducer
 public struct OnboardingFeature {
+  @Dependency(\.analytics) var analytics
+
   @ObservableState
   public struct State: Equatable {
     public init() {}
   }
   
   public enum Action: Equatable {
+    case onAppear
     case startButtonTapped
     
     case delegate(Delegate)
@@ -31,6 +35,11 @@ public struct OnboardingFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.screenViewed(.onboarding))
+        analytics.track(UsageEvent.onboardingStepViewed(step: 1, name: "intro"))
+        return .none
+
       case .startButtonTapped:
         return .send(.delegate(.route(.onboardingSafariSetting)))
         

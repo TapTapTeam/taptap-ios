@@ -7,16 +7,19 @@
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Shared
 
 @Reducer
 public struct OnboardingHighlightMemoFeature {
+  @Dependency(\.analytics) var analytics
   @ObservableState
   public struct State: Equatable {
     public init() {}
   }
   
   public enum Action: Equatable {
+    case onAppear
     case backButtonTapped
     case nextButtonTapped
     case skipButtonTapped
@@ -30,6 +33,10 @@ public struct OnboardingHighlightMemoFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.onboardingStepViewed(step: 4, name: "highlight_memo"))
+        return .none
+
       case .backButtonTapped:
         return .send(.delegate(.route(.back)))
         
@@ -37,6 +44,7 @@ public struct OnboardingHighlightMemoFeature {
         return .send(.delegate(.route(.onboardingHighlightGuide)))
         
       case .skipButtonTapped:
+        analytics.track(UsageEvent.onboardingSkipped(step: 4))
         return .send(.delegate(.route(.onboardingShare)))
         
       case .delegate:

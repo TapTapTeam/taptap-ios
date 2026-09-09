@@ -7,16 +7,19 @@
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Shared
 
 @Reducer
 public struct OnboardingFinishFeature {
+  @Dependency(\.analytics) var analytics
   @ObservableState
   public struct State: Equatable {
     public init() {}
   }
   
   public enum Action: Equatable {
+    case onAppear
     case startButtonTapped
     
     case delegate(Delegate)
@@ -30,6 +33,10 @@ public struct OnboardingFinishFeature {
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        analytics.track(UsageEvent.onboardingStepViewed(step: 7, name: "finish"))
+        return .none
+
       case .startButtonTapped:
         return .run { send in
           try userDefaultsClient.saveOnboardingState()

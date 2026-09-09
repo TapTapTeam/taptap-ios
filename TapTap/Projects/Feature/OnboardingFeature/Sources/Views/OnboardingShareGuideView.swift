@@ -99,5 +99,8 @@ extension OnboardingShareGuideView: View {
       .padding(.bottom, 8)
     }
     .toolbar(.hidden)
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
 }

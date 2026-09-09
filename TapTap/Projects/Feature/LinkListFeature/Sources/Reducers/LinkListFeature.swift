@@ -9,6 +9,7 @@ import SwiftUI
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import DesignSystem
 import Core
 import Shared
@@ -17,12 +18,12 @@ import Shared
 public struct LinkListFeature {
   // MARK: - Dependencies
   @Dependency(\.swiftDataClient) var swiftDataClient
+  @Dependency(\.analytics) var analytics
   @Dependency(\.uuid) var uuid
 
   // MARK: - State
   @ObservableState
   public struct State: Equatable {
-    // 자식 Feature 상태
     var categoryChipList = CategoryChipFeature.State()
     var articleList = ArticleFilterFeature.State()
 
@@ -36,13 +37,11 @@ public struct LinkListFeature {
 
     var bottomSheetCategories: IdentifiedArrayOf<CategoryProps> = []
     
-    // 페이징 상태
     var currentPage: Int = 0
     let pageSize: Int = 50
     var isFetching: Bool = false
     var hasMore: Bool = true
     
-    // 시트 상태 관리
     @Presents var editSheet: EditSheetFeature.State?
     @Presents var selectBottomSheet: SelectBottomSheetFeature.State?
 
@@ -51,7 +50,6 @@ public struct LinkListFeature {
       self.initialCategoryName = trimmed.isEmpty ? "전체" : trimmed
     }
 
-    // 기본 init()도 필요하면 "전체"로
     public init() {
       self.initialCategoryName = "전체"
     }
@@ -66,14 +64,11 @@ public struct LinkListFeature {
 
   // MARK: - Action
   public enum Action: Equatable {
-    /// 라이프사이클
     case onAppear
 
-    /// 자식 Feature 액션
     case categoryChipList(CategoryChipFeature.Action)
     case articleList(ArticleFilterFeature.Action)
 
-    /// UI 이벤트
     case bottomSheetButtonTapped
     case linkLongPressed(ArticleItem)
     case editButtonTapped
@@ -82,15 +77,12 @@ public struct LinkListFeature {
     case refresh
     case moveToCategoryName(String)
 
-    /// 시트 관련 액션
     case editSheet(PresentationAction<EditSheetFeature.Action>)
     case selectBottomSheet(PresentationAction<SelectBottomSheetFeature.Action>)
 
-    /// 알럿 관련 액션
     case hideAlertBanner
     case showAlert(title: String, tint: AlertBannerState.Tint)
 
-    /// 데이터 로드 관련
     case fetchLinks
     case fetchLinksResponse([ArticleItem])
     case fetchLinksResponseFailed(String)
@@ -133,6 +125,7 @@ private extension LinkListFeature {
     switch action {
 
     case .onAppear:
+      analytics.track(UsageEvent.screenViewed(.linkList))
       guard state.currentPage == 0 else { return .none }
       return .run { send in
         await send(.fetchCategories)
@@ -147,10 +140,12 @@ private extension LinkListFeature {
       return .send(.delegate(.route(.search)))
 
     case .editButtonTapped:
+      analytics.track(UsageEvent.linkEditSheetOpened)
       state.editSheet = EditSheetFeature.State(link: nil)
       return .none
 
     case let .linkLongPressed(link):
+      analytics.track(UsageEvent.linkEditSheetOpened)
       state.editSheet = EditSheetFeature.State(link: link)
       return .none
 

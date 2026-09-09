@@ -9,12 +9,14 @@ import SwiftUI
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
 @Reducer
 public struct DeleteCategoryFeature {
   @Dependency(\.swiftDataClient) var swiftDataClient
+  @Dependency(\.analytics) var analytics
   
   @ObservableState
   public struct State: Equatable {
@@ -76,11 +78,13 @@ public struct DeleteCategoryFeature {
         
       case .confirmAlertConfirmButtonTapped:
         state.isAlert = false
-        return .run { [selectedCategories = state.selectedCategories] send in
+        let deletedLinkCount = state.selectedCategories.reduce(0) { $0 + ($1.links?.count ?? 0) }
+        return .run { [analytics, selectedCategories = state.selectedCategories] send in
           let deletedCount = selectedCategories.count
           for category in selectedCategories {
             try swiftDataClient.category.deleteCategory(category)
           }
+          analytics.track(ConversionEvent.categoryDeleted(linkCount: deletedLinkCount))
           NotificationCenter.default.post(
             name: .categoryDeleted,
             object: ["deletedCount": deletedCount]

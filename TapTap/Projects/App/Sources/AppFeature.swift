@@ -7,6 +7,7 @@
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
@@ -49,6 +50,7 @@ struct AppFeature {
 
   @Dependency(\.userDefaultsClient) var userDefaultsClient
   @Dependency(\.appVersionCheckClient) var appVersionCheckClient
+  @Dependency(\.analytics) var analytics
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -102,6 +104,7 @@ struct AppFeature {
         }
 
       case .onboardingStateLoaded(let hasCompleted):
+        analytics.setUserProperty(.hasOnboarded(hasCompleted))
         if hasCompleted {
           state.launchState = .home
           state.onboardingCoordinator = nil
@@ -114,6 +117,8 @@ struct AppFeature {
         return .none
 
       case .onboardingCoordinator(.delegate(.completed)):
+        analytics.track(ConversionEvent.onboardingCompleted)
+        analytics.setUserProperty(.hasOnboarded(true))
         state.launchState = .home
         state.onboardingCoordinator = nil
         if state.appCoordinator == nil { state.appCoordinator = .init() }

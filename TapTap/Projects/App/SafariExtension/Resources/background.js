@@ -13,6 +13,16 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
     return true;
   }
+  if (message.action == "trackAnalytics") {
+    browser.runtime.sendNativeMessage("com.Nbs.dev.ADA.app", message)
+      .then(response => {
+        sendResponse(response);
+      })
+      .catch(error => {
+        sendResponse({ error: error.message });
+      });
+    return true;
+  }
   if (message.action == "syncHighlights") {
     browser.runtime.sendNativeMessage("com.Nbs.dev.ADA.app", message)
       .then(response => {

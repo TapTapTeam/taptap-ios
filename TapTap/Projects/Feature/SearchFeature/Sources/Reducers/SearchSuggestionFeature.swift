@@ -7,11 +7,13 @@
 
 import ComposableArchitecture
 
+import AnalyticsKit
 import Core
 import Shared
 
 @Reducer
 public struct SearchSuggestionFeature {
+  @Dependency(\.analytics) var analytics
   @ObservableState
   public struct State: Equatable {
     var suggestionItem: [ArticleItem] = []
@@ -49,6 +51,7 @@ public struct SearchSuggestionFeature {
         return .none
         
       case .suggestionTapped(let item):
+        analytics.track(UsageEvent.relatedSearchTapped)
         return .send(.delegate(.route(.linkDetail(item))))
         
       case .delegate:

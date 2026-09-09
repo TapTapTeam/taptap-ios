@@ -20,6 +20,11 @@ let appTarget = Target.target(
       "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
       "CFBundleDisplayName": "$(INFOPLIST_KEY_CFBundleDisplayName)",
       "CFBundleShortVersionString": "$(MARKETING_VERSION)",
+      "ITSAppUsesNonExemptEncryption": false,
+
+      "AMPLITUDE_API_KEY": "$(AMPLITUDE_API_KEY)",
+
+      "FirebaseAutomaticScreenReportingEnabled": false,
 
       "NSAppTransportSecurity": [
         "NSAllowsArbitraryLoads": true
@@ -52,7 +57,8 @@ let appTarget = Target.target(
     .onboardingFeature(),
     .originalFeature(),
     .searchFeature(),
-    .settingFeature()
+    .settingFeature(),
+    .analyticsKit()
   ]
 )
 

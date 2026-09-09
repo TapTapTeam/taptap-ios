@@ -94,6 +94,9 @@ extension ShareSettingView {
       }
     }
     .toolbar(.hidden)
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
 }
 

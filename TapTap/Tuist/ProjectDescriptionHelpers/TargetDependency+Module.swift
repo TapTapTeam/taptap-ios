@@ -124,3 +124,10 @@ extension TargetDependency {
     .project(target: Module.Core.rawValue, path: .relativeToRoot("Projects/Core"))
   }
 }
+
+// MARK: - Analytics
+extension TargetDependency {
+  public static func analyticsKit() -> TargetDependency {
+    .project(target: Module.AnalyticsKit.rawValue, path: .relativeToRoot("Projects/AnalyticsKit"))
+  }
+}

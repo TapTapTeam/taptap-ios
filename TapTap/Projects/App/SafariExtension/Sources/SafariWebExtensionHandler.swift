@@ -74,6 +74,20 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
       let synced = self.syncHighlights(url: url, title: title, imageURL: imageURL, drafts: drafts)
       self.sendResponse(to: context, with: ["success": synced])
       
+    case "trackAnalytics":
+      guard let event = message["event"] as? String else {
+        self.sendResponse(to: context, with: ["error": "Event not provided"])
+        return
+      }
+      let properties = (message["properties"] as? [String: Any] ?? [:])
+        .compactMapValues { value -> String? in
+          if let text = value as? String { return text }
+          if let number = value as? NSNumber { return number.stringValue }
+          return nil
+        }
+      ExtensionAnalyticsQueue.append(name: event, properties: properties)
+      self.sendResponse(to: context, with: ["success": true])
+
     default:
       self.sendResponse(to: context, with: ["error": "Unknown action"])
     }
