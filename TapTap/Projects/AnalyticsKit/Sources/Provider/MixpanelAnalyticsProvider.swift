@@ -33,9 +33,20 @@ public final class MixpanelAnalyticsProvider: AnalyticsProviding {
 
   @discardableResult
   public func start() -> Bool {
-    guard client != nil else {
+    guard let client else {
       logger.notice("MIXPANEL_TOKEN이 비어 있어 Mixpanel을 건너뛴다.")
       return false
+    }
+
+    // identify를 한 번도 부르지 않으면 유저 속성이 영원히 전송되지 않는다.
+    // `People.addPeopleRecordToQueueWithAction`이 distinctId가 nil일 때 레코드를
+    // 미식별 플래그로 저장하고, `loadEntitiesInBatch(type: .people)`은 flag: false인
+    // 행만 읽어가서 flush 대상에서 통째로 빠진다 — 큐에는 쌓이는데 나가지는 않는다.
+    // 탭탭은 로그인이 없어 setUserID가 불릴 일이 없으므로, SDK가 이미 만들어 둔
+    // 익명 distinct_id(`$device:<UUID>`)로 스스로 식별해 그 상태를 푼다.
+    // (identify가 `identifyPeople`로 기존 미식별 행의 플래그까지 뒤집는다)
+    if !client.distinctId.isEmpty {
+      client.identify(distinctId: client.distinctId)
     }
     return true
   }
