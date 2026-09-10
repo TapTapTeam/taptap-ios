@@ -8,7 +8,8 @@ let packageSettings = PackageSettings(
   productTypes: [
     "ComposableArchitecture": .framework,
     "Lottie": .staticFramework,
-    "AmplitudeSwift": .staticFramework
+    "AmplitudeSwift": .staticFramework,
+    "Mixpanel": .staticFramework
   ]
 )
 #endif
@@ -31,6 +32,10 @@ let package = Package(
     .package(
       url: "https://github.com/amplitude/Amplitude-Swift.git",
       from: "1.18.8"
+    ),
+    .package(
+      url: "https://github.com/mixpanel/mixpanel-swift.git",
+      from: "5.0.0"
     )
   ]
 )

@@ -18,7 +18,8 @@ let project = Project.project(
       dependencies: [
         .TCA(),
         .FirebaseAnalytics(),
-        .Amplitude()
+        .Amplitude(),
+        .Mixpanel()
       ]
     ),
     Target.target(
