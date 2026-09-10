@@ -15,4 +15,5 @@ public extension Package {
 public extension Package {
   static let firebaseAnalytics = "FirebaseAnalytics"
   static let amplitude = "AmplitudeSwift"
+  static let mixpanel = "Mixpanel"
 }

@@ -25,4 +25,8 @@ extension TargetDependency {
   public static func Amplitude() -> TargetDependency {
     .external(name: Package.amplitude)
   }
+
+  public static func Mixpanel() -> TargetDependency {
+    .external(name: Package.mixpanel)
+  }
 }
