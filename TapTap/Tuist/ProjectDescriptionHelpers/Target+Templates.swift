@@ -116,7 +116,9 @@ extension Target {
       releaseSettings["INFOPLIST_KEY_CFBundleDisplayName"] = "탭탭"
       if name == "TapTapMac" {
         debugSettings["ASSETCATALOG_COMPILER_APPICON_NAME"] = "AppIconDev"
-        releaseSettings["INFOPLIST_KEY_CFBundleDisplayName"] = "\(name)Dev"
+        // 기기에 표시되는 이름에 Apple 제품명(Mac)이 들어가면 심사에서 5.2.5로 리젝된다.
+        // 릴리스는 위에서 정한 "탭탭"을 그대로 쓰고, 개발 빌드만 구분되게 접미사를 붙인다.
+        debugSettings["INFOPLIST_KEY_CFBundleDisplayName"] = "탭탭Dev"
         debugSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.macOSbundleID)"
         releaseSettings["PRODUCT_BUNDLE_IDENTIFIER"] = "\(Project.macOSbundleIDAppStore)"
         debugSettings["PROVISIONING_PROFILE_SPECIFIER"] = "$(PROV_PROFILE_MAC_DEV)"

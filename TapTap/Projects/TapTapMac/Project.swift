@@ -39,8 +39,11 @@ let project = Project.project(
       deploymentTargets: .macOS("15.0"),
       // macOS 앱스토어 업로드에는 LSApplicationCategoryType이 필수다. (altool 90242)
       // 버전 키가 없으면 Tuist 기본값(1.0/1)으로 고정되어 익스텐션 버전과 어긋난다.
+      // 표시 이름을 매핑하지 않으면 빌드 설정의 INFOPLIST_KEY_CFBundleDisplayName이
+      // 조용히 버려지고 CFBundleName($(PRODUCT_NAME) = TapTapMac)이 그대로 노출된다. → 5.2.5 리젝
       infoPlist: .extendingDefault(with: [
         "LSApplicationCategoryType": "public.app-category.productivity",
+        "CFBundleDisplayName": "$(INFOPLIST_KEY_CFBundleDisplayName)",
         "CFBundleShortVersionString": "$(MARKETING_VERSION)",
         "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
         "ITSAppUsesNonExemptEncryption": false
