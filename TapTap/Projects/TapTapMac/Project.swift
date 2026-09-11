@@ -44,6 +44,9 @@ let project = Project.project(
       infoPlist: .extendingDefault(with: [
         "LSApplicationCategoryType": "public.app-category.productivity",
         "CFBundleDisplayName": "$(INFOPLIST_KEY_CFBundleDisplayName)",
+        // CFBundleName도 같이 덮는다. macOS는 메뉴바 앱 메뉴와 정보 패널에 이 값을 쓰므로
+        // 여기에 TapTapMac이 남으면 실행 중인 앱에 Apple 제품명이 그대로 보인다.
+        "CFBundleName": "$(INFOPLIST_KEY_CFBundleDisplayName)",
         "CFBundleShortVersionString": "$(MARKETING_VERSION)",
         "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
         "ITSAppUsesNonExemptEncryption": false
