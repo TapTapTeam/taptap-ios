@@ -9,16 +9,19 @@ import Foundation
 
 public struct AnalyticsConfiguration: Sendable {
   public let amplitudeAPIKey: String?
+  public let mixpanelToken: String?
   public let hasFirebaseConfigFile: Bool
 
   public let isDebugLoggingEnabled: Bool
 
   public init(
     amplitudeAPIKey: String?,
+    mixpanelToken: String?,
     hasFirebaseConfigFile: Bool,
     isDebugLoggingEnabled: Bool
   ) {
     self.amplitudeAPIKey = amplitudeAPIKey
+    self.mixpanelToken = mixpanelToken
     self.hasFirebaseConfigFile = hasFirebaseConfigFile
     self.isDebugLoggingEnabled = isDebugLoggingEnabled
   }
@@ -32,12 +35,14 @@ public struct AnalyticsConfiguration: Sendable {
 
     return AnalyticsConfiguration(
       amplitudeAPIKey: bundle.nonEmptyString(forInfoDictionaryKey: Self.amplitudeKeyName),
+      mixpanelToken: bundle.nonEmptyString(forInfoDictionaryKey: Self.mixpanelKeyName),
       hasFirebaseConfigFile: bundle.path(forResource: "GoogleService-Info", ofType: "plist") != nil,
       isDebugLoggingEnabled: isDebug
     )
   }
 
   static let amplitudeKeyName = "AMPLITUDE_API_KEY"
+  static let mixpanelKeyName = "MIXPANEL_TOKEN"
 }
 
 private extension Bundle {

@@ -33,6 +33,14 @@ public final class AnalyticsService: Sendable {
         )
       )
     }
+    if configuration.mixpanelToken != nil {
+      providers.append(
+        MixpanelAnalyticsProvider(
+          token: configuration.mixpanelToken,
+          isVerboseLoggingEnabled: configuration.isDebugLoggingEnabled
+        )
+      )
+    }
 
     self.providers = providers
   }

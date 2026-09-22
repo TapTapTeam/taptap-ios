@@ -32,6 +32,7 @@ final class AnalyticsServiceTests: XCTestCase {
   func test_키가_없으면_프로바이더가_붙지_않는다() {
     let configuration = AnalyticsConfiguration(
       amplitudeAPIKey: nil,
+      mixpanelToken: nil,
       hasFirebaseConfigFile: false,
       isDebugLoggingEnabled: false
     )
@@ -43,6 +44,10 @@ final class AnalyticsServiceTests: XCTestCase {
 
   func test_Amplitude는_키가_없으면_시작하지_않는다() {
     XCTAssertFalse(AmplitudeAnalyticsProvider(apiKey: nil).start())
+  }
+
+  func test_Mixpanel은_토큰이_없으면_시작하지_않는다() {
+    XCTAssertFalse(MixpanelAnalyticsProvider(token: nil).start())
   }
 
   func test_유저프로퍼티_이름과_구간() {

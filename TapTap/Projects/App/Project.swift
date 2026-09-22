@@ -23,6 +23,7 @@ let appTarget = Target.target(
       "ITSAppUsesNonExemptEncryption": false,
 
       "AMPLITUDE_API_KEY": "$(AMPLITUDE_API_KEY)",
+      "MIXPANEL_TOKEN": "$(MIXPANEL_TOKEN)",
 
       "FirebaseAutomaticScreenReportingEnabled": false,
 
