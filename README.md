@@ -1,6 +1,6 @@
 # taptap-ios
 
-![Release](https://img.shields.io/github/v/release/TapTapTeam/taptap-ios?display_name=tag&sort=semver)
+![Release](https://img.shields.io/github/v/release/dbsghdz1/taptap-ios?display_name=tag&sort=semver)
 ![iOS](https://img.shields.io/badge/iOS-18.6%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-6-orange)
 
@@ -53,7 +53,7 @@
 ## 🚀 Getting Started
 ```sh
 # 1. 프로젝트 clone
-git clone https://github.com/TapTapTeam/taptap-ios.git
+git clone https://github.com/dbsghdz1/taptap-ios.git
 
 # 2. Tuist 설치 
 tuist install
@@ -64,4 +64,4 @@ tuist generate
 <br>
 
 ## 📚 Documentation
-👉 자세한 내용은 [Wiki](https://github.com/TapTapTeam/taptap-ios/wiki)를 확인하세요!
+👉 자세한 내용은 [Wiki](https://github.com/dbsghdz1/taptap-ios/wiki)를 확인하세요!
